@@ -6,7 +6,7 @@ void main() {
     Namefully namefully;
 
     setUp(() {
-      namefully = Namefully();
+      namefully = Namefully('');
     });
 
     test('First Test', () {
