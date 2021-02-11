@@ -16,6 +16,13 @@ class FullName implements Nama {
       this.middleName = const [],
       @required this.lastName,
       this.suffix});
+  FullName.fromMap(Map<String, String> map)
+      : prefix = map['prefix'],
+        firstName = map['firstName'],
+        middleName =
+            map['middleName'] != null ? map['middleName'].split(' ') : [],
+        lastName = map['lastName'],
+        suffix = map['suffix'];
 }
 
 class Config {
@@ -52,20 +59,22 @@ class Config {
   /// source of truth the value set as optional parameter when instantiating
   /// namefully.
   LastNameFormat lastNameFormat;
+
+  Config(this.orderedBy, this.separator);
 }
 
 class Summary {}
 
 /// The [Separator] values representing some of the ASCII characters
 enum Separator {
-  colon,
   comma,
+  colon,
   empty,
+  doubleQuote,
   hyphen,
   period,
-  space,
   singleQuote,
-  doubleQuote,
+  space,
   underscore
 }
 
@@ -82,3 +91,102 @@ enum NameType { firstName, middleName, lastName }
 /// The word `Namon` is the singular form used to refer to a chunk|part|piece of
 /// a name. And the plural form is `Nama`. (Same idea as in criterion/criteria)
 enum Namon { prefix, firstName, middleName, lastName, suffix }
+
+abstract class Parser<T> {
+  /// raw data to be parsed
+  T raw;
+
+  /// Parses the raw data into a full name
+  FullName parse(
+      {NameOrder orderedBy,
+      Separator separator,
+      bool bypass,
+      LastNameFormat lastNameFormat});
+}
+
+class StringParser implements Parser<String> {
+  @override
+  String raw;
+
+  StringParser(this.raw);
+
+  @override
+  FullName parse(
+      {NameOrder orderedBy,
+      Separator separator,
+      bool bypass,
+      LastNameFormat lastNameFormat}) {
+    final names = raw.split(SeparatorToken.extract(separator));
+    return ListStringParser(names).parse(orderedBy: orderedBy, bypass: bypass);
+  }
+}
+
+class ListStringParser implements Parser<List<String>> {
+  @override
+  List<String> raw;
+
+  ListStringParser(this.raw);
+
+  @override
+  FullName parse(
+      {NameOrder orderedBy,
+      Separator separator,
+      bool bypass,
+      LastNameFormat lastNameFormat}) {
+    final raw = this.raw.map((n) => n.trim()).toList();
+    return _distribute(raw);
+  }
+
+  FullName _distribute(List<String> raw) {
+    final fullName = FullName.fromMap({});
+    switch (raw.length) {
+      case 2:
+        fullName.firstName = raw.elementAt(0);
+        fullName.lastName = raw.elementAt(1);
+        break;
+      case 3:
+        fullName.firstName = raw.elementAt(0);
+        fullName.middleName.add(raw.elementAt(1));
+        fullName.lastName = raw.elementAt(2);
+        break;
+    }
+    return fullName;
+  }
+}
+
+class SeparatorToken {
+  static final comma = ',';
+  static final colon = ':';
+  static final empty = '';
+  static final doubleQuote = '"';
+  static final hyphen = '-';
+  static final period = '.';
+  static final singleQuote = "'";
+  static final space = ' ';
+  static final underscore = '_';
+
+  static String extract(Separator separator) {
+    switch (separator.index) {
+      case 0:
+        return SeparatorToken.comma;
+      case 1:
+        return SeparatorToken.colon;
+      case 2:
+        return SeparatorToken.empty;
+      case 3:
+        return SeparatorToken.doubleQuote;
+      case 4:
+        return SeparatorToken.hyphen;
+      case 5:
+        return SeparatorToken.period;
+      case 6:
+        return SeparatorToken.singleQuote;
+      case 7:
+        return SeparatorToken.space;
+      case 8:
+        return SeparatorToken.underscore;
+      default:
+        return null;
+    }
+  }
+}

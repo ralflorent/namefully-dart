@@ -58,7 +58,12 @@ class Namefully {
   /// Holds a copy of the preset configuration
   Config _config;
 
-  Namefully(String name, {Config options});
+  Namefully(String name, {Config options}) {
+    _config = Config(options?.orderedBy ?? NameOrder.firstName,
+        options?.separator ?? Separator.space);
+    _fullName = StringParser(name)
+        .parse(orderedBy: _config.orderedBy, separator: _config.separator);
+  }
   Namefully.fromList(List<String> names, {Config options});
   Namefully.fromJson(Map<String, String> nama, {Config options});
 
@@ -84,19 +89,19 @@ class Namefully {
   /// The [includeAll] param determines whether to include other pieces of the
   /// [FirstName].
   String firstName({bool includeAll = true}) {
-    throw UnimplementedError();
+    return _fullName.firstName;
   }
 
   /// Gets the [lastName] part of the [fullName].
   /// the last name [format] overrides the how-to formatting of a surname
   /// output, considering its subparts.
   String lastName({LastNameFormat format}) {
-    throw UnimplementedError();
+    return _fullName.lastName;
   }
 
   /// Gets the [middleName] part of the [fullName].
   List<String> middleName() {
-    throw UnimplementedError();
+    return _fullName.middleName;
   }
 
   /// Gets the [prefix] part of the [fullName].
@@ -327,7 +332,13 @@ class Namefully {
 
   /// Flips definitely the name order from the preset/current config.
   void flip() {
-    throw UnimplementedError();
+    if (_config.orderedBy == NameOrder.firstName) {
+      _config.orderedBy = NameOrder.lastName;
+      print('The name order is now changed to: lastName');
+    } else {
+      _config.orderedBy = NameOrder.firstName;
+      print('The name order is now changed to: firstName');
+    }
   }
 
   /// Confirms that a name part was set.
