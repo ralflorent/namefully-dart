@@ -10,6 +10,8 @@
 /// @license MIT
 
 import 'model.dart';
+import './models/enums.dart';
+import './models/summary.dart';
 
 /// [Namefully] does not magically guess which part of the name is what. It relies
 /// actually on how the developer indicates the roles of the name parts so that
@@ -89,14 +91,14 @@ class Namefully {
   /// The [includeAll] param determines whether to include other pieces of the
   /// [FirstName].
   String firstName({bool includeAll = true}) {
-    return _fullName.firstName;
+    return _fullName.firstName.toString(includeAll: includeAll);
   }
 
   /// Gets the [lastName] part of the [fullName].
   /// the last name [format] overrides the how-to formatting of a surname
   /// output, considering its subparts.
   String lastName({LastNameFormat format}) {
-    return _fullName.lastName;
+    return _fullName.lastName.toString(format: format);
   }
 
   /// Gets the [middleName] part of the [fullName].

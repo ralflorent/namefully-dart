@@ -2,15 +2,28 @@
 
 import 'package:meta/meta.dart';
 
+import './models/first_name.dart';
+import './models/last_name.dart';
+import './models/enums.dart';
+
 abstract class Nama {
-  String prefix, firstName, lastName, suffix;
+  String prefix, suffix;
+  FirstName firstName;
+  LastName lastName;
   List<String> middleName;
 }
 
 class FullName implements Nama {
-  String prefix, firstName, lastName, suffix;
+  @override
+  String prefix, suffix;
+  @override
+  FirstName firstName;
+  @override
+  LastName lastName;
+  @override
   List<String> middleName;
-  FullName(
+  FullName();
+  FullName.inline(
       {this.prefix,
       @required this.firstName,
       this.middleName = const [],
@@ -18,10 +31,10 @@ class FullName implements Nama {
       this.suffix});
   FullName.fromMap(Map<String, String> map)
       : prefix = map['prefix'],
-        firstName = map['firstName'],
+        firstName = FirstName(map['firstName']),
         middleName =
             map['middleName'] != null ? map['middleName'].split(' ') : [],
-        lastName = map['lastName'],
+        lastName = LastName(map['lastName']),
         suffix = map['suffix'];
 }
 
@@ -62,35 +75,6 @@ class Config {
 
   Config(this.orderedBy, this.separator);
 }
-
-class Summary {}
-
-/// The [Separator] values representing some of the ASCII characters
-enum Separator {
-  comma,
-  colon,
-  empty,
-  doubleQuote,
-  hyphen,
-  period,
-  singleQuote,
-  space,
-  underscore
-}
-
-enum AbbrTitle { us, uk }
-
-enum LastNameFormat { father, mother, hyphenated, all }
-
-enum NameOrder { firstName, lastName }
-
-enum NameType { firstName, middleName, lastName }
-
-/// [Namon] contains the finite set of a representative piece of a name.
-///
-/// The word `Namon` is the singular form used to refer to a chunk|part|piece of
-/// a name. And the plural form is `Nama`. (Same idea as in criterion/criteria)
-enum Namon { prefix, firstName, middleName, lastName, suffix }
 
 abstract class Parser<T> {
   /// raw data to be parsed
@@ -138,16 +122,16 @@ class ListStringParser implements Parser<List<String>> {
   }
 
   FullName _distribute(List<String> raw) {
-    final fullName = FullName.fromMap({});
+    final fullName = FullName();
     switch (raw.length) {
       case 2:
-        fullName.firstName = raw.elementAt(0);
-        fullName.lastName = raw.elementAt(1);
+        fullName.firstName = FirstName(raw.elementAt(0));
+        fullName.lastName = LastName(raw.elementAt(1));
         break;
       case 3:
-        fullName.firstName = raw.elementAt(0);
+        fullName.firstName = FirstName(raw.elementAt(0));
         fullName.middleName.add(raw.elementAt(1));
-        fullName.lastName = raw.elementAt(2);
+        fullName.lastName = LastName(raw.elementAt(2));
         break;
     }
     return fullName;
@@ -188,5 +172,11 @@ class SeparatorToken {
       default:
         return null;
     }
+  }
+}
+
+extension StringConcatenation on String {
+  String concat(String str) {
+    return this + str;
   }
 }
