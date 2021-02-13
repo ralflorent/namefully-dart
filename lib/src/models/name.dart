@@ -30,7 +30,7 @@ class Name {
   /// Gives some descriptive statistics that summarize the central tendency,
   /// dispersion and shape of the characters' distribution.
   Summary stats() {
-    throw UnimplementedError();
+    return Summary(namon);
   }
 
   /// Gets the initials of the [Name].

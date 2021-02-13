@@ -4,9 +4,7 @@ import './enums.dart';
 import './name.dart';
 import './summary.dart';
 
-/// Represents a first name with some extra functionalities.
-///
-/// It helps to define and understand the concept of namon/nama.
+/// Represents a last name with some extra functionalities.
 class LastName extends Name {
   String father;
   String mother;
@@ -29,7 +27,7 @@ class LastName extends Name {
       case 2:
         return hasMother() ? '$father-$mother' : father;
       case 3:
-        return hasMother() ? '$father-$mother' : father;
+        return hasMother() ? '$father $mother' : father;
       default:
         return null;
     }
@@ -43,35 +41,73 @@ class LastName extends Name {
   /// Gives some descriptive statistics that summarize the central tendency,
   /// dispersion and shape of the characters' distribution.
   @override
-  Summary stats({bool includeAll = false}) {
-    throw UnimplementedError();
+  Summary stats(
+      {LastNameFormat format, List<String> restrictions = const [' ']}) {
+    return Summary(toString(format: format), restrictions: restrictions);
   }
 
   /// Gets the initials of the [LastName].
   @override
-  List<String> initials({bool includeAll = false}) {
-    throw UnimplementedError();
+  List<String> initials({LastNameFormat format}) {
+    format ??= this.format;
+    final initials = <String>[];
+    switch (format.index) {
+      case 0:
+        initials.add(father[0]);
+        break;
+      case 1:
+        if (hasMother()) initials.add(mother[0]);
+        break;
+      case 2:
+      case 3:
+        initials.add(father[0]);
+        if (hasMother()) initials.add(mother[0]);
+        break;
+      default:
+        initials.add(father[0]);
+    }
+    return initials;
   }
 
   /// Capitalizes a [LastName].
   @override
   LastName cap([Capitalization option]) {
-    throw UnimplementedError();
+    super.cap(option);
+    if (option == Capitalization.initial) {
+      father = father[0].toUpperCase() + father.substring(1);
+      if (hasMother()) mother = mother[0].toUpperCase() + mother.substring(1);
+    } else {
+      father = father.toUpperCase();
+      if (hasMother()) mother = mother.toUpperCase();
+    }
+    return this;
   }
 
   /// De-capitalizes a [LastName].
   @override
   LastName decap([Capitalization option]) {
-    throw UnimplementedError();
+    super.decap(option);
+    if (option == Capitalization.initial) {
+      father = father[0].toLowerCase() + father.substring(1);
+      if (hasMother()) mother = mother[0].toLowerCase() + mother.substring(1);
+    } else {
+      father = father.toLowerCase();
+      if (hasMother()) mother = mother.toLowerCase();
+    }
+    return this;
   }
 
   /// Normalizes the [LastName] as it should be.
   @override
   LastName norm() {
-    throw UnimplementedError();
+    father = father[0].toUpperCase() + father.substring(1).toLowerCase();
+    if (hasMother()) {
+      mother = mother[0].toUpperCase() + mother.substring(1).toLowerCase();
+    }
+    return this;
   }
 
-  /// Creates a password-like representation of a [FirstName].
+  /// Creates a password-like representation of a [LastName].
   @override
   String passwd() {
     throw UnimplementedError();

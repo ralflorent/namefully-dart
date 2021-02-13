@@ -20,7 +20,7 @@ class FirstName extends Name {
     return includeAll && hasMore() ? namon + ' ' + more.join(' ') : namon;
   }
 
-  /// Determines whether a [FirstName] has more name parts.
+  /// Determines whether a [FirstName] has [more] name parts.
   bool hasMore() {
     return more != null && more.isNotEmpty;
   }
@@ -28,8 +28,10 @@ class FirstName extends Name {
   /// Gives some descriptive statistics that summarize the central tendency,
   /// dispersion and shape of the characters' distribution.
   @override
-  Summary stats({bool includeAll = false}) {
-    throw UnimplementedError();
+  Summary stats(
+      {bool includeAll = false, List<String> restrictions = const [' ']}) {
+    return Summary(toString(includeAll: includeAll),
+        restrictions: restrictions);
   }
 
   /// Gets the initials of the [FirstName].

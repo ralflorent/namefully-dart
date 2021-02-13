@@ -167,8 +167,19 @@ class Namefully {
   ///
   /// Another thing to consider is that the summary is case *insensitive*. Note
   /// that the letter `a` has the top frequency, be it `3`.
-  Summary stats({NameType what}) {
-    throw UnimplementedError();
+  Summary stats({NameType what, List<String> restrictions = const [' ']}) {
+    switch (what.index) {
+      case 0:
+        return _fullName.firstName
+            .stats(includeAll: true, restrictions: restrictions);
+      case 1:
+        return null; // todo: middlename's summary.
+      case 2:
+        return _fullName.lastName
+            .stats(format: _config.lastNameFormat, restrictions: restrictions);
+      default:
+        return _summary;
+    }
   }
 
   /// Shortens a complex full name to a simple typical name, a combination of
@@ -190,7 +201,10 @@ class Namefully {
   /// the lastnameFormat is set as `mother` is equivalent to making it:
   /// `Firstname Mothername`.
   String shorten({NameOrder orderedBy}) {
-    throw UnimplementedError();
+    orderedBy ??= _config.orderedBy;
+    return orderedBy == NameOrder.firstName
+        ? [_fullName.firstName.namon, _fullName.lastName.toString()].join(' ')
+        : [_fullName.lastName.toString(), _fullName.firstName.namon].join(' ');
   }
 
   /// Compresses a name by using different forms of variants.
