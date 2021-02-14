@@ -21,11 +21,15 @@ class Name {
     if (cap != null) this.cap(cap);
   }
 
-  /// Returns a string representation of the namon.
+  /// Returns a [String] representation of the namon.
   @override
   String toString() {
     return namon;
   }
+
+  /// Returns true if [other] is equal to this [Name].
+  @override
+  bool operator ==(other) => other.namon == namon && other.type == type;
 
   /// Gives some descriptive statistics that summarize the central tendency,
   /// dispersion and shape of the characters' distribution.

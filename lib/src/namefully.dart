@@ -9,9 +9,9 @@
 ///
 /// @license MIT
 
-import 'model.dart';
-import './models/enums.dart';
-import './models/summary.dart';
+import 'config.dart';
+import 'models/model.dart';
+import 'parsers.dart';
 
 /// [Namefully] does not magically guess which part of the name is what. It relies
 /// actually on how the developer indicates the roles of the name parts so that
@@ -61,13 +61,29 @@ class Namefully {
   Config _config;
 
   Namefully(String name, {Config options}) {
-    _config = Config(options?.orderedBy ?? NameOrder.firstName,
-        options?.separator ?? Separator.space);
-    _fullName = StringParser(name)
-        .parse(orderedBy: _config.orderedBy, separator: _config.separator);
+    _config = Config.mergeWith(options);
+    _fullName = StringParser(name).parse(
+        orderedBy: _config.orderedBy,
+        separator: _config.separator,
+        bypass: _config.bypass,
+        lastNameFormat: _config.lastNameFormat);
   }
-  Namefully.fromList(List<String> names, {Config options});
-  Namefully.fromJson(Map<String, String> nama, {Config options});
+  Namefully.fromList(List<String> names, {Config options}) {
+    _config = Config.mergeWith(options);
+    _fullName = ListStringParser(names).parse(
+        orderedBy: _config.orderedBy,
+        separator: _config.separator,
+        bypass: _config.bypass,
+        lastNameFormat: _config.lastNameFormat);
+  }
+  Namefully.fromMap(Map<String, String> map, {Config options}) {
+    _config = Config.mergeWith(options);
+    _fullName = MapParser(map).parse(
+        orderedBy: _config.orderedBy,
+        separator: _config.separator,
+        bypass: _config.bypass,
+        lastNameFormat: _config.lastNameFormat);
+  }
 
   /// Gets the [fullName] ordered as configured
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
@@ -103,7 +119,11 @@ class Namefully {
 
   /// Gets the [middleName] part of the [fullName].
   List<String> middleName() {
-    return _fullName.middleName;
+    return _fullName.middleName.map((n) => n.namon).toList();
+  }
+
+  bool hasMiddleName() {
+    return _fullName.middleName.isNotEmpty;
   }
 
   /// Gets the [prefix] part of the [fullName].

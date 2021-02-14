@@ -1,4 +1,6 @@
 /// Main entry to the `namefully` library
-///
-export 'src/model.dart';
+
+library namefully;
+
+export 'src/models/model.dart';
 export 'src/namefully.dart';

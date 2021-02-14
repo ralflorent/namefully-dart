@@ -1,6 +1,6 @@
 import 'package:namefully/namefully.dart';
 
 void main() {
-  var namefully = Namefully('Jon Snow');
-  print(namefully.birthName(NameOrder.lastName));
+  var name = Namefully.fromMap({'firstName': 'John', 'lastName': 'Snow'});
+  print(name.firstName());
 }

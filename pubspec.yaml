@@ -2,6 +2,7 @@ name: namefully
 description: A Dart utility for handling person names.
 version: 0.0.1
 homepage: https://namefully.dev
+repository: https://github.com/ralflorent/namefully-dart
 
 environment:
   sdk: '>=2.8.1 <3.0.0'
