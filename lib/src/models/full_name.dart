@@ -20,7 +20,7 @@ class FullName implements Nama {
   @override
   LastName lastName;
   @override
-  List<Name> middleName;
+  List<Name> middleName = [];
   FullName();
   FullName.inline(
       {this.prefix,

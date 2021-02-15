@@ -60,29 +60,17 @@ class Namefully {
   /// Holds a copy of the preset configuration
   Config _config;
 
-  Namefully(String name, {Config options}) {
-    _config = Config.mergeWith(options);
-    _fullName = StringParser(name).parse(
-        orderedBy: _config.orderedBy,
-        separator: _config.separator,
-        bypass: _config.bypass,
-        lastNameFormat: _config.lastNameFormat);
+  Namefully(String names, {Config config}) {
+    _build(StringParser(names), config);
   }
-  Namefully.fromList(List<String> names, {Config options}) {
-    _config = Config.mergeWith(options);
-    _fullName = ListStringParser(names).parse(
-        orderedBy: _config.orderedBy,
-        separator: _config.separator,
-        bypass: _config.bypass,
-        lastNameFormat: _config.lastNameFormat);
+  Namefully.fromList(List<String> names, {Config config}) {
+    _build(ListStringParser(names), config);
   }
-  Namefully.fromMap(Map<String, String> map, {Config options}) {
-    _config = Config.mergeWith(options);
-    _fullName = MapParser(map).parse(
-        orderedBy: _config.orderedBy,
-        separator: _config.separator,
-        bypass: _config.bypass,
-        lastNameFormat: _config.lastNameFormat);
+  Namefully.fromMap(Map<String, String> names, {Config config}) {
+    _build(MapParser(names), config);
+  }
+  Namefully.fromNames(List<Name> names, {Config config}) {
+    _build(ListNameParser(names), config);
   }
 
   /// Gets the [fullName] ordered as configured
@@ -395,5 +383,15 @@ class Namefully {
   /// Gets an array-like representation of the [fullName].
   List<String> toList() {
     throw UnimplementedError();
+  }
+
+  void _build<T>(Parser<T> parser, [Config options]) {
+    _config = Config.mergeWith(options);
+    _fullName = parser.parse(
+        orderedBy: _config.orderedBy,
+        separator: _config.separator,
+        bypass: _config.bypass,
+        lastNameFormat: _config.lastNameFormat);
+    _summary = Summary(fullName());
   }
 }

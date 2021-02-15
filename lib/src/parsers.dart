@@ -31,23 +31,6 @@ class StringParser implements Parser<String> {
   }
 }
 
-class MapParser implements Parser<Map<String, String>> {
-  @override
-  Map<String, String> raw;
-
-  MapParser(this.raw);
-
-  @override
-  FullName parse(
-      {NameOrder orderedBy,
-      Separator separator,
-      bool bypass,
-      LastNameFormat lastNameFormat}) {
-    final fullName = FullName.fromMap(raw);
-    return fullName;
-  }
-}
-
 class ListStringParser implements Parser<List<String>> {
   @override
   List<String> raw;
@@ -89,6 +72,61 @@ class ListStringParser implements Parser<List<String>> {
         fullName.lastName = LastName(raw.elementAt(3));
         fullName.suffix = Name(raw.elementAt(4), Namon.suffix);
         break;
+    }
+    return fullName;
+  }
+}
+
+class MapParser implements Parser<Map<String, String>> {
+  @override
+  Map<String, String> raw;
+
+  MapParser(this.raw);
+
+  @override
+  FullName parse(
+      {NameOrder orderedBy,
+      Separator separator,
+      bool bypass,
+      LastNameFormat lastNameFormat}) {
+    final fullName = FullName.fromMap(raw);
+    return fullName;
+  }
+}
+
+class ListNameParser implements Parser<List<Name>> {
+  @override
+  List<Name> raw;
+
+  ListNameParser(this.raw);
+
+  @override
+  FullName parse(
+      {NameOrder orderedBy,
+      Separator separator,
+      bool bypass,
+      LastNameFormat lastNameFormat}) {
+    final fullName = FullName();
+    for (final name in raw) {
+      if (name.type == Namon.prefix) {
+        fullName.prefix = name;
+      } else if (name.type == Namon.firstName) {
+        if (name is FirstName) {
+          fullName.firstName = FirstName(name.namon, name.more);
+        } else {
+          fullName.firstName = FirstName(name.namon);
+        }
+      } else if (name.type == Namon.middleName) {
+        fullName.middleName.add(name);
+      } else if (name.type == Namon.lastName) {
+        if (name is LastName) {
+          fullName.lastName = LastName(name.father, name.mother);
+        } else {
+          fullName.lastName = LastName(name.namon);
+        }
+      } else if (name.type == Namon.suffix) {
+        fullName.suffix = name;
+      }
     }
     return fullName;
   }
