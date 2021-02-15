@@ -88,7 +88,20 @@ class Namefully {
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
   String birthName([NameOrder orderedBy]) {
-    throw UnimplementedError();
+    orderedBy ??= _config.orderedBy;
+    List<String> nama;
+    if (orderedBy == NameOrder.firstName) {
+      nama = <String>[]
+        ..add(firstName())
+        ..addAll(middleName())
+        ..add(lastName());
+    } else {
+      nama = <String>[]
+        ..add(lastName())
+        ..add(firstName())
+        ..addAll(middleName());
+    }
+    return nama.join(' ');
   }
 
   /// Gets the [firstName] part of the [fullName].
@@ -116,12 +129,15 @@ class Namefully {
 
   /// Gets the [prefix] part of the [fullName].
   String prefix() {
-    throw UnimplementedError();
+    return _fullName.prefix != null
+        ? _fullName.prefix.toString() +
+            (_config.titling == AbbrTitle.us ? '.' : '')
+        : null;
   }
 
   /// Gets the [suffix] part of the [fullName].
   String suffix() {
-    throw UnimplementedError();
+    return _fullName.suffix?.toString();
   }
 
   /// Gets the [initials] of the [fullName].

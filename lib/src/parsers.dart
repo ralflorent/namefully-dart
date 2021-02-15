@@ -44,33 +44,37 @@ class ListStringParser implements Parser<List<String>> {
       bool bypass,
       LastNameFormat lastNameFormat}) {
     final raw = this.raw.map((n) => n.trim()).toList();
-    return _distribute(raw);
+    final index = organizeNameIndex(orderedBy, raw.length);
+    return _distribute(raw, index);
   }
 
-  FullName _distribute(List<String> raw) {
+  FullName _distribute(List<String> raw, NameIndex index) {
     final fullName = FullName();
     switch (raw.length) {
       case 2:
-        fullName.firstName = FirstName(raw.elementAt(0));
-        fullName.lastName = LastName(raw.elementAt(1));
+        fullName.firstName = FirstName(raw.elementAt(index.firstName));
+        fullName.lastName = LastName(raw.elementAt(index.lastName));
         break;
       case 3:
-        fullName.firstName = FirstName(raw.elementAt(0));
-        fullName.middleName.add(Name(raw.elementAt(1), Namon.middleName));
-        fullName.lastName = LastName(raw.elementAt(2));
+        fullName.firstName = FirstName(raw.elementAt(index.firstName));
+        fullName.middleName
+            .add(Name(raw.elementAt(index.middleName), Namon.middleName));
+        fullName.lastName = LastName(raw.elementAt(index.lastName));
         break;
       case 4:
-        fullName.prefix = Name(raw.elementAt(0), Namon.prefix);
-        fullName.firstName = FirstName(raw.elementAt(1));
-        fullName.middleName.add(Name(raw.elementAt(2), Namon.middleName));
-        fullName.lastName = LastName(raw.elementAt(3));
+        fullName.prefix = Name(raw.elementAt(index.prefix), Namon.prefix);
+        fullName.firstName = FirstName(raw.elementAt(index.firstName));
+        fullName.middleName
+            .add(Name(raw.elementAt(index.middleName), Namon.middleName));
+        fullName.lastName = LastName(raw.elementAt(index.lastName));
         break;
       case 5:
-        fullName.prefix = Name(raw.elementAt(0), Namon.prefix);
-        fullName.firstName = FirstName(raw.elementAt(1));
-        fullName.middleName.add(Name(raw.elementAt(2), Namon.middleName));
-        fullName.lastName = LastName(raw.elementAt(3));
-        fullName.suffix = Name(raw.elementAt(4), Namon.suffix);
+        fullName.prefix = Name(raw.elementAt(index.prefix), Namon.prefix);
+        fullName.firstName = FirstName(raw.elementAt(index.firstName));
+        fullName.middleName
+            .add(Name(raw.elementAt(index.middleName), Namon.middleName));
+        fullName.lastName = LastName(raw.elementAt(index.lastName));
+        fullName.suffix = Name(raw.elementAt(index.suffix), Namon.suffix);
         break;
     }
     return fullName;
