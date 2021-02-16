@@ -1,4 +1,5 @@
 /// Constants
 import 'config.dart';
 
-final _defaultConfig = Config();
+final defaultConfig = Config();
+final RestrictedChars = const <String>[' ', "'", '-', '.', ','];

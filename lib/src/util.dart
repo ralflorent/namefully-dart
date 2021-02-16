@@ -48,7 +48,18 @@ NameIndex organizeNameIndex(NameOrder orderedBy, int argLength,
   return out;
 }
 
-class SeparatorToken {
+/// De-capitalizes a [string] via a [Capitalization] option.
+String decapitalize(String string,
+    [Capitalization option = Capitalization.initial]) {
+  if (string.isEmpty || option == Capitalization.none) return string;
+  final initial = string[0].toLowerCase();
+  final rest = string.substring(1);
+  return option == Capitalization.initial
+      ? (initial + rest)
+      : string.toLowerCase();
+}
+
+class SeparatorChar {
   static final comma = ',';
   static final colon = ':';
   static final empty = '';
@@ -60,25 +71,25 @@ class SeparatorToken {
   static final underscore = '_';
 
   static String extract(Separator separator) {
-    switch (separator.index) {
-      case 0:
-        return SeparatorToken.comma;
-      case 1:
-        return SeparatorToken.colon;
-      case 2:
-        return SeparatorToken.empty;
-      case 3:
-        return SeparatorToken.doubleQuote;
-      case 4:
-        return SeparatorToken.hyphen;
-      case 5:
-        return SeparatorToken.period;
-      case 6:
-        return SeparatorToken.singleQuote;
-      case 7:
-        return SeparatorToken.space;
-      case 8:
-        return SeparatorToken.underscore;
+    switch (separator) {
+      case Separator.comma:
+        return SeparatorChar.comma;
+      case Separator.colon:
+        return SeparatorChar.colon;
+      case Separator.empty:
+        return SeparatorChar.empty;
+      case Separator.doubleQuote:
+        return SeparatorChar.doubleQuote;
+      case Separator.hyphen:
+        return SeparatorChar.hyphen;
+      case Separator.period:
+        return SeparatorChar.period;
+      case Separator.singleQuote:
+        return SeparatorChar.singleQuote;
+      case Separator.space:
+        return SeparatorChar.space;
+      case Separator.underscore:
+        return SeparatorChar.underscore;
       default:
         return null;
     }

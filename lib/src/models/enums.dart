@@ -8,7 +8,21 @@ enum NameOrder { firstName, lastName }
 
 enum NameType { firstName, middleName, lastName }
 
+enum FlattenedBy { firstName, middleName, lastName, firstMid, midLast, all }
+
 enum Capitalization { none, initial, all }
+
+enum TitleCase {
+  camel,
+  dot,
+  hyphen,
+  kebab,
+  lower,
+  pascal,
+  snake,
+  toggle,
+  upper
+}
 
 /// [Namon] contains the finite set of a representative piece of a name.
 ///

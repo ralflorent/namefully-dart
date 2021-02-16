@@ -10,30 +10,36 @@
 /// @license MIT
 
 import 'config.dart';
+import 'contants.dart';
 import 'models/model.dart';
 import 'parsers.dart';
+import 'util.dart';
 
-/// [Namefully] does not magically guess which part of the name is what. It relies
+/// [Namefully] is a utility for handling person names.
+///
+/// It does not magically guess which part of the name is what. It relies
 /// actually on how the developer indicates the roles of the name parts so that
 /// it, internally, can perform certain operations and saves the developer some
 /// calculations/processings. Nevertheless, Namefully can be constructed using
 /// distinct raw data shapes. This is intended to give some flexibility to the
-/// developer so that he or she is not bound to a particular data format. Please,
-/// do follow closely the APIs to know how to properly use it in order to avoid
-/// some errors (mainly validation's).
+/// developer so that he or she is not bound to a particular data format.
+/// Please do follow closely the APIs to know how to properly use it in order to
+/// avoid some errors (mainly validation's).
 ///
 /// [Namefully] also works like a trapdoor. Once a raw data is provided and
-/// validated, a developer can only ACCESS in a vast amount of, yet effective ways
-/// the name info. NO EDITING is possible. If the name is mistaken, a new instance
-/// of [Namefully] must be created. Remember, this utility's primary objective is
-/// to help to **handle** a person name.
+/// validated, a developer can only ACCESS in a vast amount of, yet effective
+/// ways the name info. NO EDITING is possible. If the name is mistaken, a new
+/// instance of [Namefully] must be created. Remember, this utility's primary
+/// objective is to help to **handle** a person name.
 ///
 /// Note that the name standards used for the current version of this library are
 /// as follows:
 ///      [Prefix] Firstname [Middlename] Lastname [Suffix]
 /// The opening `[` and closing `]` brackets mean that these parts are optional.
-/// In other words, the most basic and typical case is a name that looks like this:
-/// `John Smith`, where `John` is the first name and `Smith`, the last name.
+/// In other words, the most basic and typical case is a name that looks like
+/// this: `John Smith`, where `John` is the first name and `Smith`, the last
+/// name.
+///
 /// @see https://departments.weber.edu/qsupport&training/Data_Standards/Name.htm
 /// for more info on name standards.
 ///
@@ -77,11 +83,32 @@ class Namefully {
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
   ///
-  /// [format] is used to alter manually the order of appearance of [fullName].
+  /// [format] may also be used to alter manually the order of appearance of
+  /// [fullName].
+  ///
   /// For example:
-  ///   [this.format('l f m')] outputs `lastname firstname middlename`.
+  /// ```dart
+  /// var name = Namefully('Jon Novak Snow');
+  /// print(name.format('l f m')); // "Snow Jon Novak"
+  /// ```
   String fullName([NameOrder orderedBy]) {
-    return 'namefully';
+    var pxSep = _config.titling == AbbrTitle.us ? '.' : '';
+    var sxSep = _config.ending ? ',' : '';
+    final nama = <String>[];
+
+    if (_fullName.prefix != null) nama.add(_fullName.prefix.toString() + pxSep);
+    if (orderedBy == NameOrder.firstName) {
+      nama.add(firstName());
+      nama.addAll(middleName());
+      nama.add(lastName() + sxSep);
+    } else {
+      nama.add(lastName());
+      nama.add(firstName());
+      nama.add(middleName().join(' ') + sxSep);
+    }
+    if (_fullName.suffix != null) nama.add(_fullName.suffix.toString());
+
+    return nama.join(' ');
   }
 
   /// Gets the [birthName] ordered as configured, no [prefix] or [suffix]
@@ -114,7 +141,7 @@ class Namefully {
   /// Gets the [lastName] part of the [fullName].
   /// the last name [format] overrides the how-to formatting of a surname
   /// output, considering its subparts.
-  String lastName({LastNameFormat format}) {
+  String lastName([LastNameFormat format]) {
     return _fullName.lastName.toString(format: format);
   }
 
@@ -123,6 +150,7 @@ class Namefully {
     return _fullName.middleName.map((n) => n.namon).toList();
   }
 
+  /// Returns true if any middle name's set.
   bool hasMiddleName() {
     return _fullName.middleName.isNotEmpty;
   }
@@ -154,11 +182,36 @@ class Namefully {
   ///
   /// **NOTE**:
   /// Ordered by last name obeys the following format:
-  ///  `lastname firstname [middlename]`
+  ///  `lastName firstName [middleName]`
   /// which means that if no middle name was set, setting [withMid] to true
   /// will output nothing and warn the end user about it.
   List<String> initials({NameOrder orderedBy, bool withMid = false}) {
-    throw UnimplementedError();
+    orderedBy ??= _config.orderedBy;
+    var midInits = _fullName.middleName.map((n) => n.initials()).toList();
+    final initials = <String>[];
+
+    if (withMid && !hasMiddleName()) {
+      print('No initials for middleName since none was set.');
+    }
+
+    if (orderedBy == NameOrder.firstName) {
+      initials.addAll(_fullName.firstName.initials());
+      if (withMid) {
+        midInits.forEach((m) {
+          initials.addAll(m);
+        });
+      }
+      initials.addAll(_fullName.lastName.initials());
+    } else {
+      initials.addAll(_fullName.lastName.initials());
+      initials.addAll(_fullName.firstName.initials());
+      if (withMid) {
+        midInits.forEach((m) {
+          initials.addAll(m);
+        });
+      }
+    }
+    return initials;
   }
 
   /// Gives some descriptive statistics that summarize the central tendency,
@@ -192,13 +245,17 @@ class Namefully {
   /// Another thing to consider is that the summary is case *insensitive*. Note
   /// that the letter `a` has the top frequency, be it `3`.
   Summary stats({NameType what, List<String> restrictions = const [' ']}) {
-    switch (what.index) {
-      case 0:
+    switch (what) {
+      case NameType.firstName:
         return _fullName.firstName
             .stats(includeAll: true, restrictions: restrictions);
-      case 1:
-        return null; // todo: middlename's summary.
-      case 2:
+      case NameType.middleName:
+        if (!hasMiddleName()) {
+          print('No Summary for middleName since none was set.');
+          return null;
+        }
+        return Summary(middleName().join(' '));
+      case NameType.lastName:
         return _fullName.lastName
             .stats(format: _config.lastNameFormat, restrictions: restrictions);
       default:
@@ -231,34 +288,39 @@ class Namefully {
         : [_fullName.lastName.toString(), _fullName.firstName.namon].join(' ');
   }
 
-  /// Compresses a name by using different forms of variants.
+  /// Flattens a long name using the name types as variants.
   ///
-  /// [limit]: sets a threshold as a limited number of characters supported.
-  /// [by]: `'firstname'|'lastname'|'middlename'|'firstmid'|'midlast'`
-  /// a variant to use when compressing the long name. The last two variants
-  /// represent respectively the combination of `firstname + middlename` and
-  /// `middlename + lastname`.
-  /// [warning] should warn when the set limit is violated
+  /// While [limit] sets a threshold as a limited number of characters
+  /// supported to flatten a [FullName], [FlattenedBy] indicates which variant
+  /// to use when doing so. By default, a full name gets flattened by
+  /// [FlattenedBy.middleName].
+  ///
+  /// if the set limit is violated, [warning] warns the user about it.
   ///
   /// @example
-  /// The compressing operation is only executed iff there is valid entry and it
+  /// The flattening operation is only executed iff there is valid entry and it
   /// surpasses the limit set. In the examples below, let us assume that the
   /// name goes beyond the limit value.
   ///
-  /// Compressing a long name refers to reducing the name to the following forms:
-  /// 1. by firstname: 'John Winston Ono Lennon' => 'J. Winston Ono Lennon'
-  /// 2. by middlename: 'John Winston Ono Lennon' => 'John W. O. Lennon'
-  /// 3. by lastname: 'John Winston Ono Lennon' => 'John Winston Ono L.'
-  /// 4. by firstmid: 'John Winston Ono Lennon' => 'J. W. O. Lennon'
-  /// 5. by midlast: 'John Winston Ono Lennon' => 'John W. O. L.'
+  /// Flattening a long name refers to reducing the name to the following forms.
+  /// For example, `John Winston Ono Lennon` flattened by:
+  /// * [FlattenedBy.firstName]: => 'J. Winston Ono Lennon'
+  /// * [FlattenedBy.middleName]: => 'John W. O. Lennon'
+  /// * [FlattenedBy.lastName]: => 'John Winston Ono L.'
+  /// * [FlattenedBy.firstMid]: => 'J. W. O. Lennon'
+  /// * [FlattenedBy.midLast]: => 'John W. O. L.'
+  /// * [FlattenedBy.all]: => 'J. W. O. L.'
   ///
-  /// By default, it compresses by 'middlename' variant: 'John W. O. Lennon'.
-  String compact({int limit = 20, String by = 'mn', bool warning = true}) {
+  /// A shorter version of this method is [zip()].
+  String flatten(
+      {int limit = 20,
+      FlattenedBy by = FlattenedBy.middleName,
+      bool warning = true}) {
     throw UnimplementedError();
   }
 
   /// Zips or compacts a name using different forms of variants.
-  String zip({String by = 'ml'}) {
+  String zip([FlattenedBy by = FlattenedBy.midLast]) {
     throw UnimplementedError();
   }
 
@@ -307,22 +369,22 @@ class Namefully {
 
   /// Gets the [count] of characters of the [birthName], excluding punctuations.
   int size() {
-    throw UnimplementedError();
+    return Summary(birthName(), restrictions: RestrictedChars).count;
   }
 
   /// Transforms a [birthName] to UPPERCASE.
   String upper() {
-    throw UnimplementedError();
+    return birthName().toUpperCase();
   }
 
   /// Transforms a [birthName]  to lowercase.
   String lower() {
-    throw UnimplementedError();
+    return birthName().toLowerCase();
   }
 
   /// Transforms a [birthName]  to camelCase.
   String camel() {
-    throw UnimplementedError();
+    return decapitalize(pascal());
   }
 
   /// Transforms a [birthName]  to PascalCase.
@@ -351,8 +413,28 @@ class Namefully {
   }
 
   /// Transforms a [birthName] to a specific title [case].
-  String to() {
-    throw UnimplementedError();
+  String to([TitleCase _case]) {
+    switch (_case) {
+      case TitleCase.camel:
+        return camel();
+      case TitleCase.dot:
+        return dot();
+      case TitleCase.hyphen:
+      case TitleCase.kebab:
+        return hyphen();
+      case TitleCase.lower:
+        return lower();
+      case TitleCase.pascal:
+        return pascal();
+      case TitleCase.snake:
+        return snake();
+      case TitleCase.toggle:
+        return toggle();
+      case TitleCase.upper:
+        return upper();
+      default:
+        return null;
+    }
   }
 
   /// Splits a [birthName] using a [separator].
@@ -392,7 +474,7 @@ class Namefully {
   }
 
   /// Gets a Map(json-like) representation of the [fullName].
-  Map<String, String> toJson() {
+  Map<String, String> toMap() {
     throw UnimplementedError();
   }
 

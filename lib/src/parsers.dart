@@ -26,7 +26,7 @@ class StringParser implements Parser<String> {
       Separator separator,
       bool bypass,
       LastNameFormat lastNameFormat}) {
-    final names = raw.split(SeparatorToken.extract(separator));
+    final names = raw.split(SeparatorChar.extract(separator));
     return ListStringParser(names).parse(orderedBy: orderedBy, bypass: bypass);
   }
 }

@@ -19,14 +19,14 @@ class LastName extends Name {
   @override
   String toString({LastNameFormat format}) {
     format = format ?? this.format;
-    switch (format.index) {
-      case 0:
+    switch (format) {
+      case LastNameFormat.father:
         return father;
-      case 1:
+      case LastNameFormat.mother:
         return mother ?? '';
-      case 2:
+      case LastNameFormat.hyphenated:
         return hasMother() ? '$father-$mother' : father;
-      case 3:
+      case LastNameFormat.all:
         return hasMother() ? '$father $mother' : father;
       default:
         return null;
@@ -51,15 +51,15 @@ class LastName extends Name {
   List<String> initials({LastNameFormat format}) {
     format ??= this.format;
     final initials = <String>[];
-    switch (format.index) {
-      case 0:
+    switch (format) {
+      case LastNameFormat.father:
         initials.add(father[0]);
         break;
-      case 1:
+      case LastNameFormat.mother:
         if (hasMother()) initials.add(mother[0]);
         break;
-      case 2:
-      case 3:
+      case LastNameFormat.hyphenated:
+      case LastNameFormat.all:
         initials.add(father[0]);
         if (hasMother()) initials.add(mother[0]);
         break;
