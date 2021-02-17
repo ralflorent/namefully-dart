@@ -1,3 +1,5 @@
+import 'package:namefully/src/util.dart';
+
 /// Name class definition
 
 import './enums.dart';
@@ -9,14 +11,17 @@ import './summary.dart';
 class Name {
   final String _initial;
   final String _body;
+  final Namon type;
   String namon;
-  Namon type;
+  bool isEmpty, isNotEmpty;
 
   /// Constructs a [Name] from a [Namon] by indicating which name [type] to use.
   ///
   /// [cap] determines how a [Name] should be capitalized.
   Name(this.namon, this.type, [Capitalization cap])
-      : _initial = namon[0],
+      : isEmpty = namon.isEmpty,
+        isNotEmpty = namon.isNotEmpty,
+        _initial = namon[0],
         _body = namon.substring(1) {
     if (cap != null) this.cap(cap);
   }
@@ -78,6 +83,6 @@ class Name {
 
   /// Creates a password-like representation of a [Name].
   String passwd() {
-    throw UnimplementedError();
+    return generatePassword(namon);
   }
 }

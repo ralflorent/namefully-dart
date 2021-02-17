@@ -1,5 +1,7 @@
 /// Utils
 
+import 'dart:math';
+
 import 'models/enums.dart';
 
 class NameIndex {
@@ -48,6 +50,17 @@ NameIndex organizeNameIndex(NameOrder orderedBy, int argLength,
   return out;
 }
 
+/// Capitalizes a [string] via a [Capitalization] option.
+String capitalize(String string,
+    [Capitalization option = Capitalization.initial]) {
+  if (string.isEmpty || option == Capitalization.none) return string;
+  final initial = string[0].toUpperCase();
+  final rest = string.substring(1).toLowerCase();
+  return option == Capitalization.initial
+      ? (initial + rest)
+      : string.toUpperCase();
+}
+
 /// De-capitalizes a [string] via a [Capitalization] option.
 String decapitalize(String string,
     [Capitalization option = Capitalization.initial]) {
@@ -57,6 +70,131 @@ String decapitalize(String string,
   return option == Capitalization.initial
       ? (initial + rest)
       : string.toLowerCase();
+}
+
+/// Toggles a [string] representation.
+String toggleCase(String string) {
+  var chars = [];
+  for (final c in string.split('')) {
+    if (c == c.toUpperCase()) {
+      chars.add(c.toLowerCase());
+    } else {
+      chars.add(c.toUpperCase());
+    }
+  }
+  return chars.join();
+}
+
+extension CharSet<T> on Set<T> {
+  T random() {
+    return List.from(this).elementAt(Random().nextInt(length)) as T;
+  }
+}
+
+final _passwordMapper = Map.fromIterables([
+  'a',
+  'b',
+  'c',
+  'd',
+  'e',
+  'f',
+  'g',
+  'h',
+  'i',
+  'j',
+  'k',
+  'l',
+  'm',
+  'n',
+  'o',
+  'p',
+  'q',
+  'r',
+  's',
+  't',
+  'u',
+  'v',
+  'w',
+  'x',
+  'y',
+  'z',
+  '\$'
+], [
+  {'a', 'A', '@', '4'},
+  {'b', 'B', '6', '|)', '|3', '|>'},
+  {'c', 'C', '(', '<'},
+  {'d', 'D', '(|', '<|'},
+  {'e', 'E', '3', '*'},
+  {'f', 'F', '7', '(-'},
+  {'g', 'G', '8', '&', '**'},
+  {'h', 'H', '#', '|-|'},
+  {'i', 'I', '!', '1', '|', '--'},
+  {'j', 'J', ')', '1'},
+  {'k', 'K', '%', '|<'},
+  {'l', 'L', '1', '!', '|_'},
+  {'m', 'M', '^^', '>>'},
+  {'n', 'N', '!=', '++'},
+  {'o', 'O', '0', '.', '*'},
+  {'p', 'P', '|3', '|)', '|>'},
+  {'q', 'Q', '&', '9', '<|'},
+  {'r', 'R', '7', '&'},
+  {'s', 'S', '5', '\$'},
+  {'t', 'T', '7', '['},
+  {'u', 'U', '|_|', 'v'},
+  {'v', 'V', '>', '<', '^'},
+  {'w', 'W', '[|]', 'vv'},
+  {'x', 'X', '%', '#'},
+  {'y', 'Y', '-/', '-]'},
+  {'z', 'Z', '2', '!='},
+  {
+    '!',
+    '@',
+    '#',
+    '\$',
+    '%',
+    '^',
+    '&',
+    '*',
+    '(',
+    ')',
+    '-',
+    '+',
+    '[',
+    '_',
+    '=',
+    '{',
+    '}',
+    ':',
+    ';',
+    ',',
+    '.',
+    '<',
+    '>',
+    '|',
+    '~',
+    ']',
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9'
+  }
+]);
+
+/// Generates a password [str] content.
+String generatePassword(String str) {
+  var mapper = _passwordMapper;
+  return str.split('').map((char) {
+    if (mapper.containsKey(char.toLowerCase())) {
+      return mapper[char.toLowerCase()].random();
+    }
+    return mapper['\$'].random();
+  }).join();
 }
 
 class SeparatorChar {

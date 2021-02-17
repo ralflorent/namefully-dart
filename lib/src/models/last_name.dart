@@ -1,3 +1,5 @@
+import 'package:namefully/src/util.dart';
+
 /// [LastName] class definition
 
 import './enums.dart';
@@ -110,6 +112,6 @@ class LastName extends Name {
   /// Creates a password-like representation of a [LastName].
   @override
   String passwd() {
-    throw UnimplementedError();
+    return generatePassword(toString());
   }
 }

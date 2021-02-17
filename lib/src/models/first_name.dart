@@ -1,8 +1,9 @@
 /// [FirstName] class definition
 
-import './enums.dart';
-import './name.dart';
-import './summary.dart';
+import 'enums.dart';
+import 'name.dart';
+import 'summary.dart';
+import '../util.dart';
 
 /// Represents a first name with some extra functionalities.
 ///
@@ -89,6 +90,6 @@ class FirstName extends Name {
   /// Creates a password-like representation of a [FirstName].
   @override
   String passwd() {
-    throw UnimplementedError();
+    return generatePassword(toString(includeAll: true));
   }
 }
