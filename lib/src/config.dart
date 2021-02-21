@@ -3,28 +3,39 @@
 import 'models/enums.dart';
 import 'parsers.dart';
 
+/// The single [Config]uration to use across the library.
+///
+/// A singleton pattern is used to keep one configuration across the [Namefully]
+/// setup. This is useful to avoid confusion when building other components such
+/// as [FirstName], [LastName], or [Name] of distinct types (or [Namon]) that
+/// may be of particular shapes.
+///
+/// For example, a person's [FullName] may appear by:
+/// [NameOrder.firstName]: `Jon Snow` or
+/// [NameOrder.lastName]: `Snow Jon`.
 class Config {
-  /// The order of appearance of a full name: by [firstName] or [lastName].
+  /// The order of appearance of a full name: by [NameOrder.firstName] or
+  /// [NameOrder.lastName].
   NameOrder orderedBy;
 
   /// For literal `String` input, this is the parameter used to indicate the
   /// token to utilize to split the string names.
-  final Separator separator;
+  Separator separator;
 
   /// Whether or not to add period to a prefix using the American or British way.
-  final AbbrTitle titling;
+  AbbrTitle titling;
 
   /// Indicates if the ending suffix should be separated with a comma or space.
-  final bool ending;
+  bool ending;
 
   /// Bypass the validation rules with this option. Since I only provide a
   /// handful of suffixes or prefixes in English, this parameter is ideal to
   /// avoid checking their validity.
-  final bool bypass;
+  bool bypass;
 
   /// Custom parser, a user-defined parser indicating how the name set is
   /// organized. [Namefully] cannot guess it.
-  final Parser<dynamic> parser;
+  Parser<dynamic> parser;
 
   /// how to format a surname:
   /// - 'father' (father name only)
@@ -36,11 +47,15 @@ class Config {
   /// the creation of a namefully instance. To avoid ambiguity, we prioritize as
   /// source of truth the value set as optional parameter when instantiating
   /// namefully.
-  final LastNameFormat lastNameFormat;
+  LastNameFormat lastNameFormat;
 
-  Config() : this._default();
+  /// Cache of an instance of this class (self instantiation with default props).
+  static final Config _config = Config._internal();
 
-  Config._default()
+  /// Returns a single [Config] with default values.
+  factory Config() => _config;
+
+  Config._internal()
       : orderedBy = NameOrder.firstName,
         separator = Separator.space,
         titling = AbbrTitle.uk,
@@ -49,38 +64,49 @@ class Config {
         parser = null,
         lastNameFormat = LastNameFormat.father;
 
-  Config.from(final Map<String, dynamic> other)
-      : orderedBy = other['orderedBy'] as NameOrder,
-        separator = other['separator'] as Separator,
-        titling = other['titling'] as AbbrTitle,
-        ending = other['ending'] as bool,
-        bypass = other['bypass'] as bool,
-        parser = other['parser'] as Parser<dynamic>,
-        lastNameFormat = other['lastNameFormat'] as LastNameFormat;
-
-  Config.inline(
+  /// Returns a unified version of default values of this [Config] and the
+  /// optional values to consider.
+  ///
+  /// This allows an override of some properties
+  factory Config.inline(
       {NameOrder orderedBy,
       Separator separator,
       AbbrTitle titling,
       bool ending,
       bool bypass,
       Parser<dynamic> parser,
-      LastNameFormat lastNameFormat})
-      : orderedBy = orderedBy ?? NameOrder.firstName,
-        separator = separator ?? Separator.space,
-        titling = titling ?? AbbrTitle.uk,
-        ending = ending ?? false,
-        bypass = bypass ?? false,
-        parser = parser,
-        lastNameFormat = lastNameFormat ?? LastNameFormat.father;
+      LastNameFormat lastNameFormat}) {
+    _config.orderedBy = orderedBy ?? NameOrder.firstName;
+    _config.separator = separator ?? Separator.space;
+    _config.titling = titling ?? AbbrTitle.uk;
+    _config.ending = ending ?? false;
+    _config.bypass = bypass ?? false;
+    _config.parser = parser;
+    _config.lastNameFormat = lastNameFormat ?? LastNameFormat.father;
+    return _config;
+  }
 
-  /// todo: make it singleton
-  Config.mergeWith(Config other)
-      : orderedBy = other?.orderedBy ?? NameOrder.firstName,
-        separator = other?.separator ?? Separator.space,
-        titling = other?.titling ?? AbbrTitle.uk,
-        ending = other?.ending ?? false,
-        bypass = other?.bypass ?? false,
-        parser = other?.parser,
-        lastNameFormat = other?.lastNameFormat ?? LastNameFormat.father;
+  factory Config.from(Map<String, dynamic> other) {
+    if (other == null) return _config;
+    return Config.inline(
+        orderedBy: other['orderedBy'] as NameOrder,
+        separator: other['separator'] as Separator,
+        titling: other['titling'] as AbbrTitle,
+        ending: other['ending'] as bool,
+        bypass: other['bypass'] as bool,
+        parser: other['parser'] as Parser<dynamic>,
+        lastNameFormat: other['lastNameFormat'] as LastNameFormat);
+  }
+
+  factory Config.mergeWith(Config other) {
+    if (other == null) return _config;
+    return Config.inline(
+        orderedBy: other.orderedBy,
+        separator: other.separator,
+        titling: other.titling,
+        ending: other.ending,
+        bypass: other.bypass,
+        parser: other.parser,
+        lastNameFormat: other.lastNameFormat);
+  }
 }
