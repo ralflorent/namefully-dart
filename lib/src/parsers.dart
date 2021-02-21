@@ -1,4 +1,6 @@
 /// Parsers
+
+import 'config.dart';
 import 'models/model.dart';
 import 'util.dart';
 
@@ -6,28 +8,27 @@ abstract class Parser<T> {
   /// raw data to be parsed
   T raw;
 
+  /// Configurations for parsing
+  Config config;
+
   /// Parses the raw data into a full name
-  FullName parse(
-      {NameOrder orderedBy,
-      Separator separator,
-      bool bypass,
-      LastNameFormat lastNameFormat});
+  FullName parse({Config options});
 }
 
 class StringParser implements Parser<String> {
   @override
   String raw;
 
+  @override
+  Config config;
+
   StringParser(this.raw);
 
   @override
-  FullName parse(
-      {NameOrder orderedBy,
-      Separator separator,
-      bool bypass,
-      LastNameFormat lastNameFormat}) {
-    final names = raw.split(SeparatorChar.extract(separator));
-    return ListStringParser(names).parse(orderedBy: orderedBy, bypass: bypass);
+  FullName parse({Config options}) {
+    config = Config.mergeWith(options);
+    final names = raw.split(SeparatorChar.extract(config.separator));
+    return ListStringParser(names).parse(options: options);
   }
 }
 
@@ -35,21 +36,22 @@ class ListStringParser implements Parser<List<String>> {
   @override
   List<String> raw;
 
+  @override
+  Config config;
+
+  @override
   ListStringParser(this.raw);
 
   @override
-  FullName parse(
-      {NameOrder orderedBy,
-      Separator separator,
-      bool bypass,
-      LastNameFormat lastNameFormat}) {
+  FullName parse({Config options}) {
+    config = Config.mergeWith(options);
     final raw = this.raw.map((n) => n.trim()).toList();
-    final index = organizeNameIndex(orderedBy, raw.length);
+    final index = organizeNameIndex(config.orderedBy, raw.length);
     return _distribute(raw, index);
   }
 
   FullName _distribute(List<String> raw, NameIndex index) {
-    final fullName = FullName();
+    final fullName = FullName(config: config);
     switch (raw.length) {
       case 2:
         fullName.firstName = FirstName(raw.elementAt(index.firstName));
@@ -85,15 +87,15 @@ class MapParser implements Parser<Map<String, String>> {
   @override
   Map<String, String> raw;
 
+  @override
+  Config config;
+
   MapParser(this.raw);
 
   @override
-  FullName parse(
-      {NameOrder orderedBy,
-      Separator separator,
-      bool bypass,
-      LastNameFormat lastNameFormat}) {
-    final fullName = FullName.fromMap(raw);
+  FullName parse({Config options}) {
+    config = Config.mergeWith(options);
+    final fullName = FullName.fromMap(raw, config: config);
     return fullName;
   }
 }
@@ -102,15 +104,15 @@ class ListNameParser implements Parser<List<Name>> {
   @override
   List<Name> raw;
 
+  @override
+  Config config;
+
   ListNameParser(this.raw);
 
   @override
-  FullName parse(
-      {NameOrder orderedBy,
-      Separator separator,
-      bool bypass,
-      LastNameFormat lastNameFormat}) {
-    final fullName = FullName();
+  FullName parse({Config options}) {
+    config = Config.mergeWith(options);
+    final fullName = FullName(config: config);
     for (final name in raw) {
       if (name.type == Namon.prefix) {
         fullName.prefix = name;

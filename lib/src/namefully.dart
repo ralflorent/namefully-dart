@@ -104,11 +104,10 @@ class Namefully {
   /// print(name.format('l f m')); // "Snow Jon Novak"
   /// ```
   String fullName([NameOrder orderedBy]) {
-    var pxSep = _config.titling == AbbrTitle.us ? '.' : '';
     var sxSep = _config.ending ? ',' : '';
     final nama = <String>[];
 
-    if (_fullName.prefix != null) nama.add(_fullName.prefix.toString() + pxSep);
+    if (_fullName.prefix != null) nama.add(_fullName.prefix.toString());
     if (orderedBy == NameOrder.firstName) {
       nama.add(firstName());
       nama.addAll(middleName());
@@ -169,10 +168,7 @@ class Namefully {
 
   /// Gets the [prefix] part of the [fullName].
   String prefix() {
-    return _fullName.prefix != null
-        ? _fullName.prefix.toString() +
-            (_config.titling == AbbrTitle.us ? '.' : '')
-        : null;
+    return _fullName.prefix?.toString();
   }
 
   /// Gets the [suffix] part of the [fullName].
@@ -523,11 +519,7 @@ class Namefully {
 
   void _build<T>(Parser<T> parser, [Config options]) {
     _config = Config.mergeWith(options);
-    _fullName = parser.parse(
-        orderedBy: _config.orderedBy,
-        separator: _config.separator,
-        bypass: _config.bypass,
-        lastNameFormat: _config.lastNameFormat);
+    _fullName = parser.parse(options: options);
     _summary = Summary(fullName());
   }
 }

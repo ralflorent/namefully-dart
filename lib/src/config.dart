@@ -1,7 +1,7 @@
 /// Config
 
-import './models/enums.dart';
-import './parsers.dart';
+import 'models/enums.dart';
+import 'parsers.dart';
 
 class Config {
   /// The order of appearance of a full name: by [firstName] or [lastName].
@@ -49,14 +49,14 @@ class Config {
         parser = null,
         lastNameFormat = LastNameFormat.father;
 
-  Config.from(final Map<String, dynamic> map)
-      : orderedBy = map['orderedBy'] as NameOrder,
-        separator = map['separator'] as Separator,
-        titling = map['titling'] as AbbrTitle,
-        ending = map['ending'] as bool,
-        bypass = map['bypass'] as bool,
-        parser = map['parser'] as Parser<dynamic>,
-        lastNameFormat = map['lastNameFormat'] as LastNameFormat;
+  Config.from(final Map<String, dynamic> other)
+      : orderedBy = other['orderedBy'] as NameOrder,
+        separator = other['separator'] as Separator,
+        titling = other['titling'] as AbbrTitle,
+        ending = other['ending'] as bool,
+        bypass = other['bypass'] as bool,
+        parser = other['parser'] as Parser<dynamic>,
+        lastNameFormat = other['lastNameFormat'] as LastNameFormat;
 
   Config.inline(
       {NameOrder orderedBy,
@@ -74,6 +74,7 @@ class Config {
         parser = parser,
         lastNameFormat = lastNameFormat ?? LastNameFormat.father;
 
+  /// todo: make it singleton
   Config.mergeWith(Config other)
       : orderedBy = other?.orderedBy ?? NameOrder.firstName,
         separator = other?.separator ?? Separator.space,

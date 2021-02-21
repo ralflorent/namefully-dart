@@ -1,5 +1,6 @@
 /// Full name
 
+import '../config.dart';
 import 'enums.dart';
 import 'first_name.dart';
 import 'name.dart';
@@ -8,13 +9,13 @@ import 'last_name.dart';
 class FullName {
   Name _prefix, _suffix;
   FirstName _firstName;
-  List<Name> _middleName;
+  List<Name> _middleName = [];
   LastName _lastName;
-  bool _bypass;
+  final Config _config;
 
-  FullName({bool bypass = false}) : _bypass = bypass;
-  FullName.fromMap(Map<String, String> map, {bool bypass = false})
-      : _bypass = bypass {
+  FullName({Config config}) : _config = config;
+  FullName.fromMap(Map<String, String> map, {Config config})
+      : _config = config {
     prefix = map['prefix'] != null ? Name(map['prefix'], Namon.prefix) : null;
     firstName = FirstName(map['firstName']);
     middleName = map['middleName'] != null
@@ -28,7 +29,9 @@ class FullName {
   }
 
   Name get prefix => _prefix;
-  set prefix(Name name) => _prefix = name;
+  set prefix(Name name) => _prefix = Name(
+      _config?.titling == AbbrTitle.us ? (name.namon + '.') : name.namon,
+      Namon.prefix);
 
   FirstName get firstName => _firstName;
   set firstName(FirstName name) => _firstName = name;
