@@ -1,6 +1,6 @@
 /// Welcome to namefully!
 ///
-/// namefully is a dart utility for handing person names.
+/// `namefully` is a Dart utility for handing person names.
 ///
 /// Sources
 /// - repo: https://github.com/ralflorent/namefully-dart
@@ -83,10 +83,10 @@ class Namefully {
     _fullName = fullName;
     _summary = Summary(this.fullName());
   }
-  Namefully.fromParser(dynamic names, {Config config}) {
-    if (config?.parser == null) throw ArgumentError.notNull('[Config.parser]');
+  Namefully.fromParser(Config config) {
+    if (config?.parser == null) throw ArgumentError.notNull('Config.parser');
     if (!(config?.parser is Parser)) {
-      throw ArgumentError('[Config.parser] is not a [Parser<T>]');
+      throw ArgumentError('Config.parser is not a Parser<T>');
     }
     _build(config.parser, config);
   }
@@ -185,7 +185,7 @@ class Namefully {
   /// Given the names:
   /// - `John Smith` => ['J', 'S']
   /// - `John Ben Smith` => ['J', 'S']
-  /// when `withMid` is set to true:
+  /// when [withMid] is set to true:
   /// - `John Ben Smith` => ['J', 'B', 'S']
   ///
   /// **NOTE**:
@@ -204,20 +204,12 @@ class Namefully {
 
     if (orderedBy == NameOrder.firstName) {
       initials.addAll(_fullName.firstName.initials());
-      if (withMid) {
-        midInits.forEach((m) {
-          initials.addAll(m);
-        });
-      }
+      if (withMid) midInits.forEach(initials.addAll);
       initials.addAll(_fullName.lastName.initials());
     } else {
       initials.addAll(_fullName.lastName.initials());
       initials.addAll(_fullName.firstName.initials());
-      if (withMid) {
-        midInits.forEach((m) {
-          initials.addAll(m);
-        });
-      }
+      if (withMid) midInits.forEach(initials.addAll);
     }
     return initials;
   }

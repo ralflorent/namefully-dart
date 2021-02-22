@@ -86,18 +86,8 @@ class Config {
     return _config;
   }
 
-  factory Config.from(Map<String, dynamic> other) {
-    if (other == null) return _config;
-    return Config.inline(
-        orderedBy: other['orderedBy'] as NameOrder,
-        separator: other['separator'] as Separator,
-        titling: other['titling'] as AbbrTitle,
-        ending: other['ending'] as bool,
-        bypass: other['bypass'] as bool,
-        parser: other['parser'] as Parser<dynamic>,
-        lastNameFormat: other['lastNameFormat'] as LastNameFormat);
-  }
-
+  /// Returns a unified version of prexisting values of [Config] and the [other]
+  /// provided values.
   factory Config.mergeWith(Config other) {
     if (other == null) return _config;
     return Config.inline(

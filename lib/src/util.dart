@@ -1,7 +1,6 @@
 /// Utils
 
-import 'dart:math';
-
+import 'extensions.dart';
 import 'models/enums.dart';
 
 class NameIndex {
@@ -83,12 +82,6 @@ String toggleCase(String string) {
     }
   }
   return chars.join();
-}
-
-extension CharSet<T> on Set<T> {
-  T random() {
-    return List.from(this).elementAt(Random().nextInt(length)) as T;
-  }
 }
 
 final _passwordMapper = Map.fromIterables([
