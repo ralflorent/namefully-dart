@@ -132,3 +132,45 @@ class SeparatorChar {
     }
   }
 }
+
+class NamonKey {
+  static final prefix = 'prefix';
+  static final firstName = 'firstName';
+  static final middleName = 'middleName';
+  static final lastName = 'lastName';
+  static final suffix = 'suffix';
+
+  static String castFrom(Namon namon) {
+    switch (namon) {
+      case Namon.prefix:
+        return NamonKey.prefix;
+      case Namon.firstName:
+        return NamonKey.firstName;
+      case Namon.middleName:
+        return NamonKey.middleName;
+      case Namon.lastName:
+        return NamonKey.lastName;
+      case Namon.suffix:
+        return NamonKey.suffix;
+      default:
+        return null;
+    }
+  }
+
+  static Namon castTo(String str) {
+    switch (str) {
+      case 'prefix':
+        return Namon.prefix;
+      case 'firstName':
+        return Namon.firstName;
+      case 'middleName':
+        return Namon.middleName;
+      case 'lastName':
+        return Namon.lastName;
+      case 'suffix':
+        return Namon.suffix;
+      default:
+        return null;
+    }
+  }
+}

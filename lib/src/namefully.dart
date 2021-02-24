@@ -14,6 +14,7 @@ import 'contants.dart';
 import 'models/model.dart';
 import 'parsers.dart';
 import 'util.dart';
+import 'validators.dart';
 
 /// [Namefully] is a utility for handling person names.
 ///
@@ -72,14 +73,15 @@ class Namefully {
   Namefully.fromList(List<String> names, {Config config}) {
     _build(ListStringParser(names), config);
   }
-  Namefully.fromMap(Map<String, String> names, {Config config}) {
-    _build(MapParser(names), config);
+  Namefully.fromJson(Map<String, String> names, {Config config}) {
+    _build(JsonNameParser(names), config);
   }
   Namefully.fromNames(List<Name> names, {Config config}) {
     _build(ListNameParser(names), config);
   }
-  Namefully.fromBuilder(FullName fullName, {Config config}) {
+  Namefully.fromPrebuilt(FullName fullName, {Config config}) {
     _config = Config.mergeWith(config);
+    FullNameValidator().validate(fullName);
     _fullName = fullName;
     _summary = Summary(this.fullName());
   }
@@ -91,7 +93,8 @@ class Namefully {
     _build(config.parser, config);
   }
 
-  /// Gets the [fullName] ordered as configured
+  /// Gets the [fullName] ordered as configured.
+  ///
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
   ///
@@ -104,25 +107,26 @@ class Namefully {
   /// print(name.format('l f m')); // "Snow Jon Novak"
   /// ```
   String fullName([NameOrder orderedBy]) {
-    var sxSep = _config.ending ? ',' : '';
+    final sep = _config.ending ? ',' : '';
     final nama = <String>[];
 
     if (_fullName.prefix != null) nama.add(_fullName.prefix.toString());
     if (orderedBy == NameOrder.firstName) {
       nama.add(firstName());
       nama.addAll(middleName());
-      nama.add(lastName() + sxSep);
+      nama.add(lastName() + sep);
     } else {
       nama.add(lastName());
       nama.add(firstName());
-      nama.add(middleName().join(' ') + sxSep);
+      nama.add(middleName().join(' ') + sep);
     }
     if (_fullName.suffix != null) nama.add(_fullName.suffix.toString());
 
     return nama.join(' ');
   }
 
-  /// Gets the [birthName] ordered as configured, no [prefix] or [suffix]
+  /// Gets the [birthName] ordered as configured, no [prefix] or [suffix].
+  ///
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
   String birthName([NameOrder orderedBy]) {
@@ -143,6 +147,7 @@ class Namefully {
   }
 
   /// Gets the [firstName] part of the [fullName].
+  ///
   /// The [includeAll] param determines whether to include other pieces of the
   /// [FirstName].
   String firstName({bool includeAll = true}) {
@@ -150,6 +155,7 @@ class Namefully {
   }
 
   /// Gets the [lastName] part of the [fullName].
+  ///
   /// the last name [format] overrides the how-to formatting of a surname
   /// output, considering its subparts.
   String lastName([LastNameFormat format]) {
@@ -161,9 +167,9 @@ class Namefully {
     return _fullName.middleName.map((n) => n.namon).toList();
   }
 
-  /// Returns true if any middle name's set.
+  /// Returns true if any [middleName]'s set.
   bool hasMiddleName() {
-    return _fullName.middleName.isNotEmpty;
+    return has(Namon.middleName);
   }
 
   /// Gets the [prefix] part of the [fullName].
@@ -177,6 +183,7 @@ class Namefully {
   }
 
   /// Gets the [initials] of the [fullName].
+  ///
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
   /// [withMid] determines whether to include the initials of [middleName]
@@ -216,6 +223,7 @@ class Namefully {
 
   /// Gives some descriptive statistics that summarize the central tendency,
   /// dispersion and shape of the characters' distribution.
+  ///
   /// [what] indicates which variant to use when describing a name part
   ///
   /// Treated as a categorical dataset, the summary contains the following info:
@@ -512,6 +520,7 @@ class Namefully {
   void _build<T>(Parser<T> parser, [Config options]) {
     _config = Config.mergeWith(options);
     _fullName = parser.parse(options: options);
+    FullNameValidator().validate(_fullName);
     _summary = Summary(fullName());
   }
 }

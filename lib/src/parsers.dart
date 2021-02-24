@@ -3,6 +3,7 @@
 import 'config.dart';
 import 'models/model.dart';
 import 'util.dart';
+import 'validators.dart';
 
 abstract class Parser<T> {
   /// raw data to be parsed
@@ -44,9 +45,15 @@ class ListStringParser implements Parser<List<String>> {
 
   @override
   FullName parse({Config options}) {
+    /// Given this setting;
     config = Config.mergeWith(options);
+
+    /// Try to validate first (if enabled);
     final raw = this.raw.map((n) => n.trim()).toList();
     final index = organizeNameIndex(config.orderedBy, raw.length);
+    if (!config.bypass) ListStringValidator(index).validate(raw);
+
+    /// Then distribute all the elements accordingly to set [FullName].
     return _distribute(raw, index);
   }
 
@@ -83,20 +90,36 @@ class ListStringParser implements Parser<List<String>> {
   }
 }
 
-class MapParser implements Parser<Map<String, String>> {
+class JsonNameParser implements Parser<Map<String, String>> {
   @override
   Map<String, String> raw;
 
   @override
   Config config;
 
-  MapParser(this.raw);
+  Map<Namon, String> _nama;
+
+  JsonNameParser(this.raw) {
+    _asNama();
+  }
 
   @override
   FullName parse({Config options}) {
+    /// Given this setting;
     config = Config.mergeWith(options);
-    final fullName = FullName.fromMap(raw, config: config);
-    return fullName;
+
+    /// Try to validate first;
+    if (!config.bypass) NamaValidator().validate(_nama);
+
+    /// Then create a [FullName] from json.
+    return FullName.fromMap(raw, config: config);
+  }
+
+  void _asNama() {
+    raw.forEach((key, value) {
+      var namon = NamonKey.castTo(key);
+      if (namon != null) _nama[namon] = value;
+    });
   }
 }
 
@@ -111,8 +134,14 @@ class ListNameParser implements Parser<List<Name>> {
 
   @override
   FullName parse({Config options}) {
+    /// Given this setting;
     config = Config.mergeWith(options);
+
+    /// Try to validate first;
+    /// todo: validator's missing
     final fullName = FullName(config: config);
+
+    /// Then distribute all the elements accordingly to set [FullName].
     for (final name in raw) {
       if (name.type == Namon.prefix) {
         fullName.prefix = name;
@@ -126,9 +155,10 @@ class ListNameParser implements Parser<List<Name>> {
         fullName.middleName.add(name);
       } else if (name.type == Namon.lastName) {
         if (name is LastName) {
-          fullName.lastName = LastName(name.father, name.mother);
+          fullName.lastName =
+              LastName(name.father, name.mother, config.lastNameFormat);
         } else {
-          fullName.lastName = LastName(name.namon);
+          fullName.lastName = LastName(name.namon, null, config.lastNameFormat);
         }
       } else if (name.type == Namon.suffix) {
         fullName.suffix = name;
