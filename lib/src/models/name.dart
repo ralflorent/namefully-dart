@@ -18,7 +18,7 @@ class Name {
   /// Constructs a [Name] from a [Namon] by indicating which name [type] to use.
   ///
   /// [cap] determines how a [Name] should be capitalized.
-  Name(this.namon, this.type, [Capitalization cap])
+  Name(this.namon, this.type, [Uppercase cap])
       : isEmpty = namon.isEmpty,
         isNotEmpty = namon.isNotEmpty,
         _initial = namon[0],
@@ -48,9 +48,9 @@ class Name {
   }
 
   /// Capitalizes a [Name].
-  Name cap([Capitalization option]) {
+  Name cap([Uppercase option]) {
     final initial = _initial.toUpperCase();
-    if (option == Capitalization.initial) {
+    if (option == Uppercase.initial) {
       namon = '$initial$_body';
     } else {
       namon = '$initial${_body.toUpperCase()}';
@@ -59,9 +59,9 @@ class Name {
   }
 
   /// De-capitalizes a [Name].
-  Name decap([Capitalization option]) {
+  Name decap([Uppercase option]) {
     final initial = _initial.toLowerCase();
-    if (option == Capitalization.initial) {
+    if (option == Uppercase.initial) {
       namon = '$initial$_body';
     } else {
       namon = '$initial${_body.toLowerCase()}';

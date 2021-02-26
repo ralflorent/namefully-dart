@@ -73,9 +73,9 @@ class LastName extends Name {
 
   /// Capitalizes a [LastName].
   @override
-  LastName cap([Capitalization option]) {
+  LastName cap([Uppercase option]) {
     super.cap(option);
-    if (option == Capitalization.initial) {
+    if (option == Uppercase.initial) {
       father = father[0].toUpperCase() + father.substring(1);
       if (hasMother()) mother = mother[0].toUpperCase() + mother.substring(1);
     } else {
@@ -87,9 +87,9 @@ class LastName extends Name {
 
   /// De-capitalizes a [LastName].
   @override
-  LastName decap([Capitalization option]) {
+  LastName decap([Uppercase option]) {
     super.decap(option);
-    if (option == Capitalization.initial) {
+    if (option == Uppercase.initial) {
       father = father[0].toLowerCase() + father.substring(1);
       if (hasMother()) mother = mother[0].toLowerCase() + mother.substring(1);
     } else {

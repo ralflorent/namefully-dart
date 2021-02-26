@@ -324,10 +324,84 @@ class Namefully {
       {int limit = 20,
       FlattenedBy by = FlattenedBy.middleName,
       bool warning = true}) {
-    throw UnimplementedError();
+    if (fullName().length <= limit) return fullName();
+
+    var sep = '.',
+        fn = _fullName.firstName,
+        mn = middleName().join(' '),
+        ln = _fullName.lastName,
+        hasMid = hasMiddleName(),
+        firsts = fn.initials().join(sep) + sep,
+        lasts = ln.initials().join(sep) + sep,
+        mids = hasMiddleName()
+            ? _fullName.middleName.map((n) => n.initials()).join(sep) + sep
+            : '',
+        gname = <String>[];
+
+    if (_config.orderedBy == NameOrder.firstName) {
+      switch (by) {
+        case FlattenedBy.firstName:
+          gname =
+              hasMid ? [firsts, mn, ln.toString()] : [firsts, ln.toString()];
+          break;
+        case FlattenedBy.lastName:
+          gname = hasMid ? [fn.toString(), mn, lasts] : [fn.toString(), lasts];
+          break;
+        case FlattenedBy.middleName:
+          gname = hasMid
+              ? [fn.toString(), mids, ln.toString()]
+              : [fn.toString(), ln.toString()];
+          break;
+        case FlattenedBy.firstMid:
+          gname =
+              hasMid ? [firsts, mids, ln.toString()] : [firsts, ln.toString()];
+          break;
+        case FlattenedBy.midLast:
+          gname =
+              hasMid ? [fn.toString(), mids, lasts] : [fn.toString(), lasts];
+          break;
+        case FlattenedBy.all:
+          gname = hasMid ? [firsts, mids, lasts] : [firsts, lasts];
+          break;
+      }
+    } else {
+      switch (by) {
+        case FlattenedBy.firstName:
+          gname =
+              hasMid ? [ln.toString(), firsts, mn] : [ln.toString(), firsts];
+          break;
+        case FlattenedBy.lastName:
+          gname = hasMid ? [lasts, fn.toString(), mn] : [lasts, fn.toString()];
+          break;
+        case FlattenedBy.middleName:
+          gname = hasMid
+              ? [ln.toString(), fn.toString(), mids]
+              : [ln.toString(), fn.toString()];
+          break;
+        case FlattenedBy.firstMid:
+          gname =
+              hasMid ? [ln.toString(), firsts, mids] : [ln.toString(), firsts];
+          break;
+        case FlattenedBy.midLast:
+          gname =
+              hasMid ? [lasts, fn.toString(), mids] : [lasts, fn.toString()];
+          break;
+        case FlattenedBy.all:
+          gname = hasMid ? [firsts, mids, lasts] : [firsts, lasts];
+          break;
+      }
+    }
+
+    var flat = by == FlattenedBy.all ? gname.join() : gname.join(' ');
+    if (warning && flat.length > limit) {
+      print('The flattened name <$flat> still surpasses the set limit $limit');
+    }
+    return flat;
   }
 
   /// Zips or compacts a name using different forms of variants.
+  ///
+  /// See [flatten()] for more details.
   String zip({FlattenedBy by = FlattenedBy.midLast}) {
     return flatten(limit: 0, by: by, warning: false);
   }
@@ -433,24 +507,24 @@ class Namefully {
   }
 
   /// Transforms a [birthName] to a specific title [case].
-  String to([TitleCase _case]) {
+  String to([Capitalization _case]) {
     switch (_case) {
-      case TitleCase.camel:
+      case Capitalization.camel:
         return camel();
-      case TitleCase.dot:
+      case Capitalization.dot:
         return dot();
-      case TitleCase.hyphen:
-      case TitleCase.kebab:
+      case Capitalization.hyphen:
+      case Capitalization.kebab:
         return hyphen();
-      case TitleCase.lower:
+      case Capitalization.lower:
         return lower();
-      case TitleCase.pascal:
+      case Capitalization.pascal:
         return pascal();
-      case TitleCase.snake:
+      case Capitalization.snake:
         return snake();
-      case TitleCase.toggle:
+      case Capitalization.toggle:
         return toggle();
-      case TitleCase.upper:
+      case Capitalization.upper:
         return upper();
       default:
         return null;
@@ -500,11 +574,6 @@ class Namefully {
   /// Confirms that a name part was set.
   bool has(Namon namon) {
     return _fullName.has(namon);
-  }
-
-  /// Gets an exact copy of the core instance.
-  Namefully clone() {
-    throw UnimplementedError();
   }
 
   /// Gets a Map(json-like) representation of the [fullName].

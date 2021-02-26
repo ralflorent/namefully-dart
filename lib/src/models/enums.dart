@@ -10,9 +10,9 @@ enum NameType { firstName, middleName, lastName }
 
 enum FlattenedBy { firstName, middleName, lastName, firstMid, midLast, all }
 
-enum Capitalization { none, initial, all }
+enum Uppercase { none, initial, all }
 
-enum TitleCase {
+enum Capitalization {
   camel,
   dot,
   hyphen,

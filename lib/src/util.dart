@@ -51,25 +51,19 @@ NameIndex organizeNameIndex(NameOrder orderedBy, int argLength,
 }
 
 /// Capitalizes a [string] via a [Capitalization] option.
-String capitalize(String string,
-    [Capitalization option = Capitalization.initial]) {
-  if (string.isEmpty || option == Capitalization.none) return string;
+String capitalize(String string, [Uppercase option = Uppercase.initial]) {
+  if (string.isEmpty || option == Uppercase.none) return string;
   final initial = string[0].toUpperCase();
   final rest = string.substring(1).toLowerCase();
-  return option == Capitalization.initial
-      ? (initial + rest)
-      : string.toUpperCase();
+  return option == Uppercase.initial ? (initial + rest) : string.toUpperCase();
 }
 
 /// De-capitalizes a [string] via a [Capitalization] option.
-String decapitalize(String string,
-    [Capitalization option = Capitalization.initial]) {
-  if (string.isEmpty || option == Capitalization.none) return string;
+String decapitalize(String string, [Uppercase option = Uppercase.initial]) {
+  if (string.isEmpty || option == Uppercase.none) return string;
   final initial = string[0].toLowerCase();
   final rest = string.substring(1);
-  return option == Capitalization.initial
-      ? (initial + rest)
-      : string.toLowerCase();
+  return option == Uppercase.initial ? (initial + rest) : string.toLowerCase();
 }
 
 /// Toggles a [string] representation.

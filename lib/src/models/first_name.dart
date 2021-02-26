@@ -47,8 +47,8 @@ class FirstName extends Name {
 
   /// Capitalizes a [FirstName].
   @override
-  FirstName cap([Capitalization option]) {
-    if (option == Capitalization.initial) {
+  FirstName cap([Uppercase option]) {
+    if (option == Uppercase.initial) {
       namon = namon[0].toUpperCase() + namon.substring(1);
       if (hasMore()) {
         more = more.map((n) => n[0].toUpperCase() + n.substring(1)).toList();
@@ -62,8 +62,8 @@ class FirstName extends Name {
 
   /// De-capitalizes a [FirstName].
   @override
-  FirstName decap([Capitalization option]) {
-    if (option == Capitalization.initial) {
+  FirstName decap([Uppercase option]) {
+    if (option == Uppercase.initial) {
       namon = namon[0].toLowerCase() + namon.substring(1);
       if (hasMore()) {
         more = more.map((n) => n[0].toLowerCase() + n.substring(1)).toList();
