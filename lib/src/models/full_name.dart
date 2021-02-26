@@ -5,17 +5,19 @@ import 'enums.dart';
 import 'first_name.dart';
 import 'name.dart';
 import 'last_name.dart';
+import '../validators.dart';
 
 class FullName {
-  Name _prefix, _suffix;
+  Name _prefix;
   FirstName _firstName;
   List<Name> _middleName = [];
   LastName _lastName;
+  Name _suffix;
   final Config _config;
 
-  FullName({Config config}) : _config = config;
-  FullName.fromMap(Map<String, String> map, {Config config})
-      : _config = config {
+  FullName({Config config}) : _config = config ?? Config();
+  FullName.fromJson(Map<String, String> map, {Config config})
+      : _config = config ?? Config() {
     prefix = map['prefix'] != null ? Name(map['prefix'], Namon.prefix) : null;
     firstName = FirstName(map['firstName']);
     middleName = map['middleName'] != null
@@ -29,35 +31,70 @@ class FullName {
   }
 
   Name get prefix => _prefix;
-  set prefix(Name name) => _prefix = Name(
-      _config?.titling == AbbrTitle.us ? (name.namon + '.') : name.namon,
-      Namon.prefix);
+  set prefix(Name name) {
+    if (!_config.bypass) Validators.prefix.validate(name);
+    _prefix = Name(
+        _config.titling == AbbrTitle.us ? (name.namon + '.') : name.namon,
+        Namon.prefix);
+  }
 
   FirstName get firstName => _firstName;
-  set firstName(FirstName name) => _firstName = name;
+  set firstName(FirstName name) {
+    if (!_config.bypass) Validators.firstName.validate(name);
+    _firstName = name;
+  }
 
   List<Name> get middleName => _middleName;
-  set middleName(List<Name> names) => _middleName = names;
+  set middleName(List<Name> names) {
+    if (!_config.bypass) names?.forEach(Validators.middleName.validate);
+    _middleName = names ?? [];
+  }
 
   LastName get lastName => _lastName;
-  set lastName(LastName name) => _lastName = name;
+  set lastName(LastName name) {
+    if (!_config.bypass) Validators.lastName.validate(name);
+    _lastName = name;
+  }
 
   Name get suffix => _suffix;
-  set suffix(Name name) => _suffix = name;
+  set suffix(Name name) {
+    if (!_config.bypass) Validators.suffix.validate(name);
+    _suffix = name;
+  }
 
   bool has(Namon namon) {
-    if (namon == Namon.prefix) return _hasPrefix();
-    if (namon == Namon.firstName) return _hasFirstName();
-    if (namon == Namon.middleName) return _hasMiddleName();
-    if (namon == Namon.lastName) return _hasLastName();
-    if (namon == Namon.suffix) return _hasSuffix();
+    if (namon == Namon.prefix) return prefix?.isNotEmpty == true;
+    if (namon == Namon.firstName) return firstName?.isNotEmpty == true;
+    if (namon == Namon.lastName) return lastName?.isNotEmpty == true;
+    if (namon == Namon.suffix) return suffix?.isNotEmpty == true;
+    if (namon == Namon.middleName) {
+      return middleName.isNotEmpty && middleName.every((n) => n.isNotEmpty);
+    }
     return false;
   }
 
-  bool _hasPrefix() => prefix?.isNotEmpty;
-  bool _hasFirstName() => firstName?.isNotEmpty;
-  bool _hasMiddleName() =>
-      middleName.isNotEmpty && middleName.every((n) => n.isNotEmpty);
-  bool _hasLastName() => lastName?.isNotEmpty;
-  bool _hasSuffix() => suffix?.isNotEmpty;
+  FullName withPrefix(String namon) {
+    prefix = Name(namon, Namon.prefix);
+    return this;
+  }
+
+  FullName withFirstName(String namon, {List<String> more}) {
+    firstName = FirstName(namon, more);
+    return this;
+  }
+
+  FullName withMiddleName(List<String> names) {
+    middleName = names?.map((n) => Name(n, Namon.middleName))?.toList();
+    return this;
+  }
+
+  FullName withLastName(String father, {String mother, LastNameFormat format}) {
+    lastName = LastName(father, mother, format);
+    return this;
+  }
+
+  FullName withSuffix(String namon) {
+    suffix = Name(namon, Namon.suffix);
+    return this;
+  }
 }

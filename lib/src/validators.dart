@@ -103,12 +103,24 @@ class NamonValidator implements Validator<String> {
   }
 }
 
-class FirstNameValidator implements Validator<String> {
+class FirstNameValidator implements Validator<dynamic> {
   /// Validates the name content [value].
   @override
-  void validate(String value) {
-    if (!ValidationRule.firstName.hasMatch(value)) {
-      throw ValidationError.name('firstName', 'invalid content: "$value"');
+  void validate(dynamic /** String | FirstName */ value) {
+    if (value == null) {
+      throw ValidationError.name('firstName', 'field required');
+    }
+    if (value is String) {
+      if (!ValidationRule.firstName.hasMatch(value)) {
+        throw ValidationError.name('firstName', 'invalid content: "$value"');
+      }
+    } else if (value is FirstName) {
+      Validators.firstName.validate(value.namon);
+      if (value.more != null && value.more.isNotEmpty) {
+        value.more.forEach(Validators.firstName.validate);
+      }
+    } else {
+      throw ArgumentError('expecting String | FirstName');
     }
   }
 }
@@ -116,30 +128,51 @@ class FirstNameValidator implements Validator<String> {
 class MiddleNameValidator implements Validator<dynamic> {
   /// Validates the name content [value].
   @override
-  void validate(dynamic /** String | List<String> */ value) {
+  void validate(dynamic /** String | List<String> | List<Name> */ value) {
+    var namonValidator = NamonValidator();
     if (value is String) {
-      if (!ValidationRule.lastName.hasMatch(value)) {
+      if (!ValidationRule.middleName.hasMatch(value)) {
         throw ValidationError.name('middleName', 'invalid content: "$value"');
       }
     } else if (value is List<String>) {
       try {
-        var namonValidator = NamonValidator();
         value.forEach(namonValidator.validate);
       } on ValidationError {
         throw ValidationError.name('middleName', 'invalid content');
       }
+    } else if (value is List<Name>) {
+      try {
+        value.forEach((n) {
+          namonValidator.validate(n.namon);
+          if (n.type != Namon.middleName) throw ValidationError();
+        });
+      } on ValidationError {
+        throw ValidationError.name('middleName', 'invalid content');
+      }
     } else {
-      throw ArgumentError('expecting String | List<String>');
+      throw ArgumentError('expecting String | List<String> | List<Name>');
     }
   }
 }
 
-class LastNameValidator implements Validator<String> {
+class LastNameValidator implements Validator<dynamic> {
   /// Validates the name content [value].
   @override
-  void validate(String value) {
-    if (!ValidationRule.lastName.hasMatch(value)) {
-      throw ValidationError.name('lastName', 'invalid content: "$value"');
+  void validate(dynamic /** String | LastName */ value) {
+    if (value == null) {
+      throw ValidationError.name('lastName', 'field required');
+    }
+    if (value is String) {
+      if (!ValidationRule.lastName.hasMatch(value)) {
+        throw ValidationError.name('lastName', 'invalid content: "$value"');
+      }
+    } else if (value is LastName) {
+      Validators.lastName.validate(value.father);
+      if (value.mother?.isNotEmpty == true) {
+        Validators.firstName.validate(value.mother);
+      }
+    } else {
+      throw ArgumentError('expecting String | LastName');
     }
   }
 }
@@ -183,6 +216,7 @@ class FullNameValidator implements Validator<FullName> {
 }
 
 class Validators {
+  static final namon = NamonValidator();
   static final prefix = NameValidator();
   static final firstName = FirstNameValidator();
   static final middleName = MiddleNameValidator();

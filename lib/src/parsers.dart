@@ -112,7 +112,7 @@ class JsonNameParser implements Parser<Map<String, String>> {
     if (!config.bypass) NamaValidator().validate(_nama);
 
     /// Then create a [FullName] from json.
-    return FullName.fromMap(raw, config: config);
+    return FullName.fromJson(raw, config: config);
   }
 
   void _asNama() {
