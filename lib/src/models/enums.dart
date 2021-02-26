@@ -6,7 +6,7 @@ enum LastNameFormat { father, mother, hyphenated, all }
 
 enum NameOrder { firstName, lastName }
 
-enum NameType { firstName, middleName, lastName }
+enum NameType { firstName, middleName, lastName, birthName }
 
 enum FlattenedBy { firstName, middleName, lastName, firstMid, midLast, all }
 

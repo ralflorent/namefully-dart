@@ -58,10 +58,10 @@ import 'validators.dart';
 ///
 /// Happy name handling!
 class Namefully {
-  /// A copy of high-quality name data
+  /// A copy of high-quality name data.
   FullName _fullName;
 
-  /// Statistical info on the name data
+  /// Statistical info on the birth name.
   Summary _summary;
 
   /// A copy of the default configuration combined with a customized one.
@@ -76,14 +76,14 @@ class Namefully {
   Namefully.fromJson(Map<String, String> names, {Config config}) {
     _build(JsonNameParser(names), config);
   }
-  Namefully.fromNames(List<Name> names, {Config config}) {
+  Namefully.of(List<Name> names, {Config config}) {
     _build(ListNameParser(names), config);
   }
-  Namefully.fromPrebuilt(FullName fullName, {Config config}) {
+  Namefully.from(FullName fullName, {Config config}) {
     _config = Config.mergeWith(config);
     FullNameValidator().validate(fullName);
     _fullName = fullName;
-    _summary = Summary(this.fullName());
+    _summary = Summary(birthName());
   }
   Namefully.fromParser(Config config) {
     if (config?.parser == null) throw ArgumentError.notNull('Config.parser');
@@ -92,6 +92,12 @@ class Namefully {
     }
     _build(config.parser, config);
   }
+
+  /// The [count] of characters of the [birthName] without spaces.
+  int get count => _summary.count;
+
+  /// The number of characters of the [birthName], including spaces.
+  int get length => _summary.length;
 
   /// Gets the [fullName] ordered as configured.
   ///
@@ -109,7 +115,6 @@ class Namefully {
   String fullName([NameOrder orderedBy]) {
     final sep = _config.ending ? ',' : '';
     final nama = <String>[];
-
     if (_fullName.prefix != null) nama.add(_fullName.prefix.toString());
     if (orderedBy == NameOrder.firstName) {
       nama.add(firstName());
@@ -121,7 +126,6 @@ class Namefully {
       nama.add(middleName().join(' ') + sep);
     }
     if (_fullName.suffix != null) nama.add(_fullName.suffix.toString());
-
     return nama.join(' ');
   }
 
@@ -131,19 +135,17 @@ class Namefully {
   /// by overriding the preset configuration.
   String birthName([NameOrder orderedBy]) {
     orderedBy ??= _config.orderedBy;
-    List<String> nama;
-    if (orderedBy == NameOrder.firstName) {
-      nama = <String>[]
-        ..add(firstName())
-        ..addAll(middleName())
-        ..add(lastName());
-    } else {
-      nama = <String>[]
-        ..add(lastName())
-        ..add(firstName())
-        ..addAll(middleName());
-    }
-    return nama.join(' ');
+    return orderedBy == NameOrder.firstName
+        ? (<String>[]
+              ..add(firstName())
+              ..addAll(middleName())
+              ..add(lastName()))
+            .join(' ')
+        : (<String>[]
+              ..add(lastName())
+              ..add(firstName())
+              ..addAll(middleName()))
+            .join(' ');
   }
 
   /// Gets the [firstName] part of the [fullName].
@@ -266,8 +268,10 @@ class Namefully {
       case NameType.lastName:
         return _fullName.lastName
             .stats(format: _config.lastNameFormat, restrictions: restrictions);
-      default:
+      case NameType.birthName:
         return _summary;
+      default:
+        return Summary(fullName());
     }
   }
 
@@ -461,11 +465,6 @@ class Namefully {
     return formatted.join().trim();
   }
 
-  /// Gets the [count] of characters of the [birthName], excluding punctuations.
-  int size() {
-    return Summary(birthName(), restrictions: restrictedChars).count;
-  }
-
   /// Transforms a [birthName] to UPPERCASE.
   String upper() {
     return birthName().toUpperCase();
@@ -602,7 +601,7 @@ class Namefully {
     _config = Config.mergeWith(options);
     _fullName = parser.parse(options: options);
     FullNameValidator().validate(_fullName);
-    _summary = Summary(fullName());
+    _summary = Summary(birthName());
   }
 
   String _map(String char) {
