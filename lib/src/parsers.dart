@@ -138,7 +138,7 @@ class ListNameParser implements Parser<List<Name>> {
     config = Config.mergeWith(options);
 
     /// Try to validate first;
-    /// todo: validator's missing
+    if (!config.bypass) ListNameValidator().validate(raw);
     final fullName = FullName(config: config);
 
     /// Then distribute all the elements accordingly to set [FullName].

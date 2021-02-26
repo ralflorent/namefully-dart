@@ -258,6 +258,9 @@ class ListStringValidator implements Validator<List<String>> {
 
   @override
   void validate(List<String> values) {
+    if (values == null) {
+      throw ArgumentError.notNull();
+    }
     if (values.isEmpty ||
         values.length < minNumberOfNameParts &&
             values.length > maxNumberOfNameParts) {
@@ -289,6 +292,22 @@ class ListStringValidator implements Validator<List<String>> {
         Validators.lastName.validate(values[_index.lastName]);
         NamonValidator().validate(values[_index.suffix]);
         break;
+    }
+  }
+}
+
+class ListNameValidator implements Validator<List<Name>> {
+  @override
+  void validate(List<Name> values) {
+    if (values == null) {
+      throw ArgumentError.notNull();
+    }
+    if (values.isEmpty ||
+        values.length < minNumberOfNameParts &&
+            values.length > maxNumberOfNameParts) {
+      throw ValidationError(
+          'expecting a list of $minNumberOfNameParts-$maxNumberOfNameParts '
+          'elements');
     }
   }
 }

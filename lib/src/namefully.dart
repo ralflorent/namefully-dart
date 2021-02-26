@@ -328,8 +328,8 @@ class Namefully {
   }
 
   /// Zips or compacts a name using different forms of variants.
-  String zip([FlattenedBy by = FlattenedBy.midLast]) {
-    throw UnimplementedError();
+  String zip({FlattenedBy by = FlattenedBy.midLast}) {
+    return flatten(limit: 0, by: by, warning: false);
   }
 
   /// Formats the [fullName] as desired.
@@ -371,13 +371,25 @@ class Namefully {
   /// - format('L, f') => 'SMITH, Joe'
   /// - format('short') => 'Joe Smith'
   /// - format() => 'SMITH, Joe Jim'
-  String format({String how = 'official'}) {
-    throw UnimplementedError();
+  String format([String how = 'official']) {
+    if (how == 'short') return shorten();
+    if (how == 'long') return birthName();
+    if (how == 'official') how = 'o';
+
+    final formatted = <String>[];
+    final tokens = allowedTokens;
+    for (var c in how.split('')) {
+      if (!tokens.contains(c)) {
+        throw ArgumentError('<$c> is an invalid character for the formatting.');
+      }
+      formatted.add(_map(c) ?? '');
+    }
+    return formatted.join().trim();
   }
 
   /// Gets the [count] of characters of the [birthName], excluding punctuations.
   int size() {
-    return Summary(birthName(), restrictions: RestrictedChars).count;
+    return Summary(birthName(), restrictions: restrictedChars).count;
   }
 
   /// Transforms a [birthName] to UPPERCASE.
@@ -522,5 +534,70 @@ class Namefully {
     _fullName = parser.parse(options: options);
     FullNameValidator().validate(_fullName);
     _summary = Summary(fullName());
+  }
+
+  String _map(String char) {
+    switch (char) {
+      case '.':
+        return '.';
+      case ',':
+        return ',';
+      case ' ':
+        return ' ';
+      case '-':
+        return '-';
+      case '_':
+        return '_';
+      case 'b':
+        return birthName();
+      case 'B':
+        return birthName().toUpperCase();
+      case 'f':
+        return _fullName.firstName.toString();
+      case 'F':
+        return _fullName.firstName.toString().toUpperCase();
+      case 'l':
+        return _fullName.lastName.toString();
+      case 'L':
+        return _fullName.lastName.toString().toUpperCase();
+      case 'm':
+      case 'M':
+        if (!hasMiddleName()) {
+          print('No formatting for middle names since none was set.');
+          return null;
+        }
+        return char == 'm'
+            ? _fullName.middleName.map((n) => n.namon).join(' ')
+            : _fullName.middleName.map((n) => n.namon.toUpperCase()).join(' ');
+      case 'o':
+      case 'O':
+        var sxSep = _config.ending ? ',' : '';
+        const nama = <String>[];
+
+        if (_fullName.prefix != null) {
+          nama.add(_fullName.prefix.toString());
+        }
+        nama.add('${_fullName.lastName.toString()},'.toUpperCase());
+        if (hasMiddleName()) {
+          nama.add(_fullName.firstName.toString());
+          nama.add(_fullName.middleName.map((n) => n.namon).join(' ') + sxSep);
+        } else {
+          nama.add(_fullName.firstName.toString() + sxSep);
+        }
+        if (_fullName.suffix != null) nama.add(_fullName.suffix.toString());
+
+        var official = nama.join(' ').trim();
+        return char == 'o' ? official : official.toUpperCase();
+      case 'p':
+        return _fullName.prefix?.toString();
+      case 'P':
+        return _fullName.prefix?.toString()?.toUpperCase();
+      case 's':
+        return _fullName.suffix?.toString();
+      case 'S':
+        return _fullName.suffix?.toString()?.toUpperCase();
+      default:
+        return null;
+    }
   }
 }

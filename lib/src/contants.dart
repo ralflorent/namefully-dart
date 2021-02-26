@@ -1,8 +1,31 @@
 /// Constants
 
+final allowedTokens = const <String>[
+  '.',
+  ',',
+  ' ',
+  '-',
+  '_',
+  'b',
+  'B',
+  'f',
+  'F',
+  'l',
+  'L',
+  'm',
+  'M',
+  'n',
+  'N',
+  'o',
+  'O',
+  'p',
+  'P',
+  's',
+  'S'
+];
 final minNumberOfNameParts = 2;
 final maxNumberOfNameParts = 5;
-final RestrictedChars = const <String>[' ', "'", '-', '.', ','];
+final restrictedChars = const <String>[' ', "'", '-', '.', ','];
 final passwordMapper = Map.fromIterables([
   'a',
   'b',
