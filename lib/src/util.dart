@@ -70,11 +70,7 @@ String decapitalize(String string, [Uppercase option = Uppercase.initial]) {
 String toggleCase(String string) {
   var chars = [];
   for (final c in string.split('')) {
-    if (c == c.toUpperCase()) {
-      chars.add(c.toLowerCase());
-    } else {
-      chars.add(c.toUpperCase());
-    }
+    chars.add(c == c.toUpperCase() ? c.toLowerCase() : c.toUpperCase());
   }
   return chars.join();
 }

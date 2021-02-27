@@ -5,84 +5,83 @@ import 'name.dart';
 import 'summary.dart';
 import '../util.dart';
 
-/// Represents a first name with some extra functionalities.
-///
-/// It helps to define and understand the concept of namon/nama.
+/// Representation of a first name with some extra functionalities.
 class FirstName extends Name {
   /// The additional name parts of a [this].
-  List<String> more = [];
+  List<String> _more = [];
 
   /// Creates an extended version of [Name] flags it as a first name [type].
   ///
   /// Some may consider [more] additional name parts of a given name as their
   /// first names, but not as a middle name. Though, it may mean the same,
   /// [more] provides the liberty to name as-is.
-  FirstName(String namon, [this.more]) : super(namon, Namon.firstName);
+  FirstName(String namon, [this._more]) : super(namon, Namon.firstName);
+
+  List<String> get more => _more;
 
   @override
   String toString({bool includeAll = false}) =>
-      includeAll && hasMore() ? namon + ' ' + more.join(' ') : namon;
+      includeAll && hasMore() ? '$namon ${_more.join(" ")}' : namon;
 
   /// Determines whether a [FirstName] has [more] name parts.
-  bool hasMore() => more != null && more.isNotEmpty;
+  bool hasMore() => _more != null && _more.isNotEmpty;
 
-  /// Gives some descriptive statistics that summarize the central tendency,
-  /// dispersion and shape of the characters' distribution.
+  /// Returns a combined version of [this] and [more] if any.
+  List<Name> asNames() {
+    return [
+      Name(namon, Namon.firstName),
+      if (hasMore()) ..._more.map((n) => Name(n, Namon.firstName))
+    ];
+  }
+
+  /// Gives some descriptive statistics.
+  ///
+  /// The statistical description summarizes the central tendency, dispersion
+  /// and shape of the characters' distribution. See [Summary] for more details.
   @override
   Summary stats(
           {bool includeAll = false, List<String> restrictions = const [' ']}) =>
       Summary(toString(includeAll: includeAll), restrictions: restrictions);
 
-  /// Gets the initials of the [FirstName].
+  /// Gets the initials of [this].
   @override
-  List<String> initials({bool includeAll = false}) {
-    final initials = [namon[0]];
-    if (includeAll && hasMore()) {
-      initials.addAll(more.map((n) => n[0]).toList());
-    }
-    return initials;
-  }
+  List<String> initials({bool includeAll = false}) =>
+      [namon[0], if (includeAll && hasMore()) ..._more.map((n) => n[0])];
 
-  /// Capitalizes a [FirstName].
+  /// Capitalizes [this].
   @override
   void caps([Uppercase option]) {
+    option ??= capitalized;
     if (option == Uppercase.initial) {
-      namon = namon[0].toUpperCase() + namon.substring(1);
-      if (hasMore()) {
-        more = more.map((n) => n[0].toUpperCase() + n.substring(1)).toList();
-      }
-    } else {
+      namon = capitalize(namon);
+      if (hasMore()) _more = _more.map(capitalize).toList();
+    } else if (option == Uppercase.all) {
       namon = namon.toUpperCase();
-      if (hasMore()) more = more.map((n) => n.toUpperCase()).toList();
+      if (hasMore()) _more = _more.map((n) => n.toUpperCase()).toList();
     }
   }
 
-  /// De-capitalizes a [FirstName].
+  /// De-capitalizes [this].
   @override
   void decaps([Uppercase option]) {
+    option ??= capitalized;
     if (option == Uppercase.initial) {
-      namon = namon[0].toLowerCase() + namon.substring(1);
-      if (hasMore()) {
-        more = more.map((n) => n[0].toLowerCase() + n.substring(1)).toList();
-      }
-    } else {
+      namon = decapitalize(namon);
+      if (hasMore()) _more = _more.map(decapitalize).toList();
+    } else if (option == Uppercase.all) {
       namon = namon.toUpperCase();
-      if (hasMore()) more = more.map((n) => n.toLowerCase()).toList();
+      if (hasMore()) _more = _more.map((n) => n.toLowerCase()).toList();
     }
   }
 
-  /// Normalizes the [FirstName] as it should be.
+  /// Normalizes [this] as it should be.
   @override
   void normalize() {
-    namon = namon[0].toUpperCase() + namon.substring(1).toLowerCase();
-    if (hasMore()) {
-      more = more
-          .map((n) => n[0].toUpperCase() + n.substring(1).toLowerCase())
-          .toList();
-    }
+    namon = capitalize(namon);
+    if (hasMore()) _more = _more.map(capitalize).toList();
   }
 
-  /// Creates a password-like representation of a [FirstName].
+  /// Creates a password-like representation of [this].
   @override
   String passwd() => generatePassword(toString(includeAll: true));
 }

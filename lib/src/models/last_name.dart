@@ -5,104 +5,112 @@ import 'name.dart';
 import 'summary.dart';
 import '../util.dart';
 
-/// Represents a last name with some extra functionalities.
+/// Representation of a last name with some extra functionalities.
 class LastName extends Name {
-  String father;
-  String mother;
+  String _mother;
   LastNameFormat format;
 
-  /// Creates a [LastName] from a [Namon] by indicating a first name [type]
-  /// while considering [more] additional pieces of a given name.
-  LastName(this.father, [this.mother, this.format = LastNameFormat.father])
+  /// Creates an extended version of [Name] flags it as a last name [type].
+  ///
+  /// Some people may keep their [mother]'s surname and want to keep a clear cut
+  /// between it and their [father]'s surname. However, there are no clear rules
+  /// about it.
+  LastName(String father, [this._mother, this.format = LastNameFormat.father])
       : super(father, Namon.lastName);
 
-  /// Returns a string representation of the namon.
+  /// The surname inherited from a father side.
+  String get father => namon;
+
+  /// The surname inherited from a mother side.
+  String get mother => _mother;
+
+  /// Returns a string representation of [this].
   @override
   String toString({LastNameFormat format}) {
     format = format ?? this.format;
     switch (format) {
       case LastNameFormat.father:
-        return father;
+        return namon;
       case LastNameFormat.mother:
-        return mother ?? '';
+        return _mother;
       case LastNameFormat.hyphenated:
-        return hasMother() ? '$father-$mother' : father;
+        return hasMother() ? '$namon-$_mother' : namon;
       case LastNameFormat.all:
-        return hasMother() ? '$father $mother' : father;
+        return hasMother() ? '$namon $_mother' : namon;
       default:
         return null;
     }
   }
 
-  /// Determines whether a [LastName] has more name parts.
-  bool hasMother() => mother != null && mother.isNotEmpty;
+  /// Returns `true` if the [mother]'s surname is defined.
+  bool hasMother() => _mother != null && _mother.isNotEmpty;
 
-  /// Gives some descriptive statistics that summarize the central tendency,
-  /// dispersion and shape of the characters' distribution.
+  /// Gives some descriptive statistics.
+  ///
+  /// The statistical description summarizes the central tendency, dispersion
+  /// and shape of the characters' distribution. See [Summary] for more details.
   @override
   Summary stats(
           {LastNameFormat format, List<String> restrictions = const [' ']}) =>
       Summary(toString(format: format), restrictions: restrictions);
 
-  /// Gets the initials of the [LastName].
+  /// Gets the initials of [this].
   @override
   List<String> initials({LastNameFormat format}) {
     format ??= this.format;
     final initials = <String>[];
     switch (format) {
       case LastNameFormat.father:
-        initials.add(father[0]);
+        initials.add(namon[0]);
         break;
       case LastNameFormat.mother:
-        if (hasMother()) initials.add(mother[0]);
+        if (hasMother()) initials.add(_mother[0]);
         break;
       case LastNameFormat.hyphenated:
       case LastNameFormat.all:
-        initials.add(father[0]);
-        if (hasMother()) initials.add(mother[0]);
+        initials.add(namon[0]);
+        if (hasMother()) initials.add(_mother[0]);
         break;
       default:
-        initials.add(father[0]);
+        initials.add(namon[0]);
     }
     return initials;
   }
 
-  /// Capitalizes a [LastName].
+  /// Capitalizes [this].
   @override
   void caps([Uppercase option]) {
-    super.caps(option);
+    option ??= capitalized;
     if (option == Uppercase.initial) {
-      father = father[0].toUpperCase() + father.substring(1);
-      if (hasMother()) mother = mother[0].toUpperCase() + mother.substring(1);
-    } else {
-      father = father.toUpperCase();
-      if (hasMother()) mother = mother.toUpperCase();
+      namon = capitalize(namon);
+      if (hasMother()) _mother = capitalize(_mother);
+    } else if (option == Uppercase.all) {
+      namon = namon.toUpperCase();
+      if (hasMother()) _mother = _mother.toUpperCase();
     }
   }
 
-  /// De-capitalizes a [LastName].
+  /// De-capitalizes [this].
   @override
   void decaps([Uppercase option]) {
-    super.decaps(option);
+    option ??= capitalized;
     if (option == Uppercase.initial) {
-      father = father[0].toLowerCase() + father.substring(1);
-      if (hasMother()) mother = mother[0].toLowerCase() + mother.substring(1);
-    } else {
-      father = father.toLowerCase();
-      if (hasMother()) mother = mother.toLowerCase();
+      namon = decapitalize(namon);
+      if (hasMother()) _mother = decapitalize(_mother);
+    } else if (option == Uppercase.all) {
+      namon = namon.toLowerCase();
+      if (hasMother()) _mother = _mother.toLowerCase();
     }
   }
 
-  /// Normalizes the [LastName] as it should be.
+  /// Normalizes [this] as it should be.
   @override
   void normalize() {
-    father = father[0].toUpperCase() + father.substring(1).toLowerCase();
-    if (hasMother()) {
-      mother = mother[0].toUpperCase() + mother.substring(1).toLowerCase();
-    }
+    namon = capitalize(namon);
+    if (hasMother()) _mother = _mother.toLowerCase();
   }
 
-  /// Creates a password-like representation of a [LastName].
+  /// Creates a password-like representation of [this].
   @override
   String passwd() => generatePassword(toString());
 }

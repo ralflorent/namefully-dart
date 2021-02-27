@@ -40,6 +40,8 @@ class Name {
     caps(_cap);
   }
 
+  Uppercase get capitalized => _cap;
+
   @override
   String toString() => _namon;
 
