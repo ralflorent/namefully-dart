@@ -1,10 +1,9 @@
-import 'package:namefully/src/util.dart';
-
 /// [LastName] class definition
 
-import './enums.dart';
-import './name.dart';
-import './summary.dart';
+import 'enums.dart';
+import 'name.dart';
+import 'summary.dart';
+import '../util.dart';
 
 /// Represents a last name with some extra functionalities.
 class LastName extends Name {
@@ -12,7 +11,7 @@ class LastName extends Name {
   String mother;
   LastNameFormat format;
 
-  /// Constructs a [LastName] from a [Namon] by indicating a first name [type]
+  /// Creates a [LastName] from a [Namon] by indicating a first name [type]
   /// while considering [more] additional pieces of a given name.
   LastName(this.father, [this.mother, this.format = LastNameFormat.father])
       : super(father, Namon.lastName);
@@ -36,17 +35,14 @@ class LastName extends Name {
   }
 
   /// Determines whether a [LastName] has more name parts.
-  bool hasMother() {
-    return mother != null && mother.isNotEmpty;
-  }
+  bool hasMother() => mother != null && mother.isNotEmpty;
 
   /// Gives some descriptive statistics that summarize the central tendency,
   /// dispersion and shape of the characters' distribution.
   @override
   Summary stats(
-      {LastNameFormat format, List<String> restrictions = const [' ']}) {
-    return Summary(toString(format: format), restrictions: restrictions);
-  }
+          {LastNameFormat format, List<String> restrictions = const [' ']}) =>
+      Summary(toString(format: format), restrictions: restrictions);
 
   /// Gets the initials of the [LastName].
   @override
@@ -73,8 +69,8 @@ class LastName extends Name {
 
   /// Capitalizes a [LastName].
   @override
-  LastName cap([Uppercase option]) {
-    super.cap(option);
+  void caps([Uppercase option]) {
+    super.caps(option);
     if (option == Uppercase.initial) {
       father = father[0].toUpperCase() + father.substring(1);
       if (hasMother()) mother = mother[0].toUpperCase() + mother.substring(1);
@@ -82,13 +78,12 @@ class LastName extends Name {
       father = father.toUpperCase();
       if (hasMother()) mother = mother.toUpperCase();
     }
-    return this;
   }
 
   /// De-capitalizes a [LastName].
   @override
-  LastName decap([Uppercase option]) {
-    super.decap(option);
+  void decaps([Uppercase option]) {
+    super.decaps(option);
     if (option == Uppercase.initial) {
       father = father[0].toLowerCase() + father.substring(1);
       if (hasMother()) mother = mother[0].toLowerCase() + mother.substring(1);
@@ -96,22 +91,18 @@ class LastName extends Name {
       father = father.toLowerCase();
       if (hasMother()) mother = mother.toLowerCase();
     }
-    return this;
   }
 
   /// Normalizes the [LastName] as it should be.
   @override
-  LastName norm() {
+  void normalize() {
     father = father[0].toUpperCase() + father.substring(1).toLowerCase();
     if (hasMother()) {
       mother = mother[0].toUpperCase() + mother.substring(1).toLowerCase();
     }
-    return this;
   }
 
   /// Creates a password-like representation of a [LastName].
   @override
-  String passwd() {
-    return generatePassword(toString());
-  }
+  String passwd() => generatePassword(toString());
 }

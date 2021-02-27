@@ -1,88 +1,90 @@
-import 'package:namefully/src/util.dart';
-
 /// Name class definition
 
-import './enums.dart';
-import './summary.dart';
+import 'enums.dart';
+import 'summary.dart';
+import '../util.dart';
 
-/// Represents a namon with some extra functionalities.
+/// Representation of a string type name with some extra functionalities.
 ///
 /// It helps to define and understand the concept of namon/nama.
 class Name {
-  final String _initial;
-  final String _body;
-  final Namon type;
-  String namon;
-  bool isEmpty, isNotEmpty;
+  String _namon;
+  String _initial;
+  String _body;
+  final Uppercase _cap;
+  Namon type;
+  bool isEmpty;
+  bool isNotEmpty;
 
-  /// Constructs a [Name] from a [Namon] by indicating which name [type] to use.
+  /// Creates augmented names by adding extra functionalities to a string name.
   ///
-  /// [cap] determines how a [Name] should be capitalized.
-  Name(this.namon, this.type, [Uppercase cap])
-      : isEmpty = namon.isEmpty,
-        isNotEmpty = namon.isNotEmpty,
-        _initial = namon[0],
-        _body = namon.substring(1) {
-    if (cap != null) this.cap(cap);
+  /// A name [type] must be indicated to categorize [this] name so it can
+  /// be treated accordingly. [cap] determines how a [this] name should be
+  /// capitalized.
+  Name(this._namon, this.type, [Uppercase cap])
+      : isEmpty = _namon.isEmpty,
+        isNotEmpty = _namon.isNotEmpty,
+        _initial = _namon[0],
+        _body = _namon.substring(1),
+        _cap = cap ?? Uppercase.initial {
+    if (cap != null) caps(cap);
   }
 
-  /// Returns a [String] representation of the namon.
+  String get namon => _namon;
+  set namon(String namon) {
+    _namon = namon;
+    isEmpty = _namon.isEmpty;
+    isNotEmpty = _namon.isNotEmpty;
+    _initial = _namon[0];
+    _body = _namon.substring(1);
+    caps(_cap);
+  }
+
   @override
-  String toString() {
-    return namon;
-  }
+  String toString() => _namon;
 
-  /// Returns true if [other] is equal to this [Name].
+  /// Returns true if [other] is equal to [this].
   @override
-  bool operator ==(other) => other.namon == namon && other.type == type;
+  bool operator ==(other) =>
+      other is Name && other.namon == namon && other.type == type;
 
-  /// Gives some descriptive statistics that summarize the central tendency,
-  /// dispersion and shape of the characters' distribution.
-  Summary stats() {
-    return Summary(namon);
-  }
+  /// Gives some descriptive statistics.
+  ///
+  /// The statistical description summarizes the central tendency, dispersion
+  /// and shape of the characters' distribution. See [Summary] for more details.
+  Summary stats() => Summary(_namon);
 
-  /// Gets the initials of the [Name].
-  List<String> initials() {
-    return [_initial];
-  }
+  /// Gets the initials (first character) of [this].
+  List<String> initials() => [_initial];
 
-  /// Capitalizes a [Name].
-  Name cap([Uppercase option]) {
-    final initial = _initial.toUpperCase();
+  /// Capitalizes [this].
+  void caps([Uppercase option]) {
+    option ??= _cap;
     if (option == Uppercase.initial) {
-      namon = '$initial$_body';
+      namon = '${_initial.toUpperCase()}$_body';
+    } else if (option == Uppercase.all) {
+      namon = '${_initial.toUpperCase()}${_body.toUpperCase()}';
     } else {
-      namon = '$initial${_body.toUpperCase()}';
+      namon = _namon.toLowerCase();
     }
-    return this;
   }
 
-  /// De-capitalizes a [Name].
-  Name decap([Uppercase option]) {
-    final initial = _initial.toLowerCase();
+  /// De-capitalizes [this].
+  void decaps([Uppercase option]) {
+    option ??= _cap;
     if (option == Uppercase.initial) {
-      namon = '$initial$_body';
+      namon = '${_initial.toLowerCase()}$_body';
+    } else if (option == Uppercase.all) {
+      namon = '${_initial.toLowerCase()}${_body.toLowerCase()}';
     } else {
-      namon = '$initial${_body.toLowerCase()}';
+      namon = _namon.toUpperCase();
     }
-    return this;
   }
 
-  /// Normalizes the [Name] as it should be.
-  Name norm() {
-    namon = '${_initial.toUpperCase()}${_body.toLowerCase()}';
-    return this;
-  }
+  /// Normalizes [this] as it should be.
+  void normalize() =>
+      _namon = '${_initial.toUpperCase()}${_body.toLowerCase()}';
 
-  /// Resets to the initial namon.
-  Name reset() {
-    namon = '$_initial${_body}';
-    return this;
-  }
-
-  /// Creates a password-like representation of a [Name].
-  String passwd() {
-    return generatePassword(namon);
-  }
+  /// Creates a password-like representation of [this].
+  String passwd() => generatePassword(namon);
 }

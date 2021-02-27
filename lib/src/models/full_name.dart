@@ -73,28 +73,16 @@ class FullName {
     return false;
   }
 
-  FullName withPrefix(String namon) {
-    prefix = Name(namon, Namon.prefix);
-    return this;
-  }
+  void withPrefix(String namon) => prefix = Name(namon, Namon.prefix);
 
-  FullName withFirstName(String namon, {List<String> more}) {
-    firstName = FirstName(namon, more);
-    return this;
-  }
+  void withFirstName(String namon, {List<String> more}) =>
+      firstName = FirstName(namon, more);
 
-  FullName withMiddleName(List<String> names) {
-    middleName = names?.map((n) => Name(n, Namon.middleName))?.toList();
-    return this;
-  }
+  void withMiddleName(List<String> names) =>
+      middleName = names?.map((n) => Name(n, Namon.middleName))?.toList();
 
-  FullName withLastName(String father, {String mother, LastNameFormat format}) {
-    lastName = LastName(father, mother, format);
-    return this;
-  }
+  void withLastName(String father, {String mother, LastNameFormat format}) =>
+      lastName = LastName(father, mother, format);
 
-  FullName withSuffix(String namon) {
-    suffix = Name(namon, Namon.suffix);
-    return this;
-  }
+  void withSuffix(String namon) => suffix = Name(namon, Namon.suffix);
 }

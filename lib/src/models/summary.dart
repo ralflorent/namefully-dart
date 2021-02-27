@@ -1,19 +1,14 @@
 /// Summary of descriptive stats of the name
 class Summary {
-  Map<String, int> _distribution;
-  int _count;
-  int _frequency;
-  String _top;
-  int _unique;
+  Map<String, int> _distribution = {};
+  int _count = 0;
+  int _frequency = 0;
+  String _top = '';
+  int _unique = 0;
   final String _namon;
 
   /// Creates a [Summary] of a given string of alphabetical characters
-  Summary(this._namon, {List<String> restrictions = const [' ']})
-      : _distribution = {},
-        _count = 0,
-        _frequency = 0,
-        _top = '',
-        _unique = 0 {
+  Summary(this._namon, {List<String> restrictions = const [' ']}) {
     _compute(restrictions);
   }
 
@@ -40,13 +35,13 @@ class Summary {
 
   Map<String, int> _groupByChar() {
     final frequencies = <String, int>{};
-    _namon.split('').forEach((char) {
+    for (var char in _namon.split('')) {
       if (frequencies.containsKey(char)) {
         frequencies[char] += 1;
       } else {
         frequencies[char] = 1;
       }
-    });
+    }
     return frequencies;
   }
 }

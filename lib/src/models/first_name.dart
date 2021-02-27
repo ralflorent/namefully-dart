@@ -9,31 +9,29 @@ import '../util.dart';
 ///
 /// It helps to define and understand the concept of namon/nama.
 class FirstName extends Name {
-  List<String> more;
+  /// The additional name parts of a [this].
+  List<String> more = [];
 
-  /// Constructs a [FirstName] from a [Namon] by indicating a first name [type]
-  /// while considering [more] additional pieces of a given name.
+  /// Creates an extended version of [Name] flags it as a first name [type].
+  ///
+  /// Some may consider [more] additional name parts of a given name as their
+  /// first names, but not as a middle name. Though, it may mean the same,
+  /// [more] provides the liberty to name as-is.
   FirstName(String namon, [this.more]) : super(namon, Namon.firstName);
 
-  /// Returns a string representation of the namon.
   @override
-  String toString({bool includeAll = false}) {
-    return includeAll && hasMore() ? namon + ' ' + more.join(' ') : namon;
-  }
+  String toString({bool includeAll = false}) =>
+      includeAll && hasMore() ? namon + ' ' + more.join(' ') : namon;
 
   /// Determines whether a [FirstName] has [more] name parts.
-  bool hasMore() {
-    return more != null && more.isNotEmpty;
-  }
+  bool hasMore() => more != null && more.isNotEmpty;
 
   /// Gives some descriptive statistics that summarize the central tendency,
   /// dispersion and shape of the characters' distribution.
   @override
   Summary stats(
-      {bool includeAll = false, List<String> restrictions = const [' ']}) {
-    return Summary(toString(includeAll: includeAll),
-        restrictions: restrictions);
-  }
+          {bool includeAll = false, List<String> restrictions = const [' ']}) =>
+      Summary(toString(includeAll: includeAll), restrictions: restrictions);
 
   /// Gets the initials of the [FirstName].
   @override
@@ -47,7 +45,7 @@ class FirstName extends Name {
 
   /// Capitalizes a [FirstName].
   @override
-  FirstName cap([Uppercase option]) {
+  void caps([Uppercase option]) {
     if (option == Uppercase.initial) {
       namon = namon[0].toUpperCase() + namon.substring(1);
       if (hasMore()) {
@@ -57,12 +55,11 @@ class FirstName extends Name {
       namon = namon.toUpperCase();
       if (hasMore()) more = more.map((n) => n.toUpperCase()).toList();
     }
-    return this;
   }
 
   /// De-capitalizes a [FirstName].
   @override
-  FirstName decap([Uppercase option]) {
+  void decaps([Uppercase option]) {
     if (option == Uppercase.initial) {
       namon = namon[0].toLowerCase() + namon.substring(1);
       if (hasMore()) {
@@ -72,24 +69,20 @@ class FirstName extends Name {
       namon = namon.toUpperCase();
       if (hasMore()) more = more.map((n) => n.toLowerCase()).toList();
     }
-    return this;
   }
 
   /// Normalizes the [FirstName] as it should be.
   @override
-  FirstName norm() {
+  void normalize() {
     namon = namon[0].toUpperCase() + namon.substring(1).toLowerCase();
     if (hasMore()) {
       more = more
           .map((n) => n[0].toUpperCase() + n.substring(1).toLowerCase())
           .toList();
     }
-    return this;
   }
 
   /// Creates a password-like representation of a [FirstName].
   @override
-  String passwd() {
-    return generatePassword(toString(includeAll: true));
-  }
+  String passwd() => generatePassword(toString(includeAll: true));
 }
