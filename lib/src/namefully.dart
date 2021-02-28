@@ -16,7 +16,7 @@ import 'full_name.dart';
 import 'models.dart';
 import 'parsers.dart';
 import 'validators.dart';
-import 'util.dart';
+import 'utils.dart';
 
 /// [Namefully] is a utility for handling person names.
 ///

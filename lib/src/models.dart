@@ -1,6 +1,6 @@
 /// Name class definition
 import 'enums.dart';
-import 'util.dart';
+import 'utils.dart';
 
 /// Representation of a string type name with some extra functionalities.
 ///
