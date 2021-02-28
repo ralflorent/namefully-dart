@@ -159,37 +159,28 @@ class Namefully {
   ///
   /// The [includeAll] param determines whether to include other pieces of the
   /// [FirstName].
-  String firstName({bool includeAll = true}) {
-    return _fullName.firstName.toString(includeAll: includeAll);
-  }
+  String firstName({bool includeAll = true}) =>
+      _fullName.firstName.toString(includeAll: includeAll);
 
   /// Gets the [lastName] part of the [fullName].
   ///
   /// the last name [format] overrides the how-to formatting of a surname
   /// output, considering its subparts.
-  String lastName([LastNameFormat format]) {
-    return _fullName.lastName.toString(format: format);
-  }
+  String lastName([LastNameFormat format]) =>
+      _fullName.lastName.toString(format: format);
 
   /// Gets the [middleName] part of the [fullName].
-  List<String> middleName() {
-    return _fullName.middleName.map((n) => n.namon).toList();
-  }
+  List<String> middleName() =>
+      _fullName.middleName.map((n) => n.namon).toList();
 
   /// Returns true if any [middleName]'s set.
-  bool hasMiddleName() {
-    return has(Namon.middleName);
-  }
+  bool hasMiddleName() => has(Namon.middleName);
 
   /// Gets the [prefix] part of the [fullName].
-  String prefix() {
-    return _fullName.prefix?.toString();
-  }
+  String prefix() => _fullName.prefix?.toString();
 
   /// Gets the [suffix] part of the [fullName].
-  String suffix() {
-    return _fullName.suffix?.toString();
-  }
+  String suffix() => _fullName.suffix?.toString();
 
   /// Gets the [initials] of the [fullName].
   ///
@@ -413,9 +404,8 @@ class Namefully {
   /// Zips or compacts a name using different forms of variants.
   ///
   /// See [flatten()] for more details.
-  String zip({FlattenedBy by = FlattenedBy.midLast}) {
-    return flatten(limit: 0, by: by, warning: false);
-  }
+  String zip({FlattenedBy by = FlattenedBy.midLast}) =>
+      flatten(limit: 0, by: by, warning: false);
 
   /// Formats the [fullName] as desired.
   ///
@@ -462,9 +452,8 @@ class Namefully {
     if (how == 'official') how = 'o';
 
     final formatted = <String>[];
-    final tokens = allowedTokens;
     for (var c in how.split('')) {
-      if (!tokens.contains(c)) {
+      if (!allowedTokens.contains(c)) {
         throw ArgumentError('<$c> is an invalid character for the formatting.');
       }
       formatted.add(_map(c) ?? '');
@@ -473,44 +462,28 @@ class Namefully {
   }
 
   /// Transforms a [birthName] to UPPERCASE.
-  String upper() {
-    return birthName().toUpperCase();
-  }
+  String upper() => birthName().toUpperCase();
 
   /// Transforms a [birthName]  to lowercase.
-  String lower() {
-    return birthName().toLowerCase();
-  }
+  String lower() => birthName().toLowerCase();
 
   /// Transforms a [birthName]  to camelCase.
-  String camel() {
-    return decapitalize(pascal());
-  }
+  String camel() => decapitalize(pascal());
 
   /// Transforms a [birthName]  to PascalCase.
-  String pascal() {
-    return split().map((n) => capitalize(n)).join();
-  }
+  String pascal() => split().map((n) => capitalize(n)).join();
 
   /// Transforms a [birthName]  to snake_case.
-  String snake() {
-    return split().map((n) => n.toLowerCase()).join('_');
-  }
+  String snake() => split().map((n) => n.toLowerCase()).join('_');
 
   /// Transforms a [birthName] to hyphen-case (or kebab-case).
-  String hyphen() {
-    return split().map((n) => n.toLowerCase()).join('-');
-  }
+  String hyphen() => split().map((n) => n.toLowerCase()).join('-');
 
   /// Transforms a [birthName]  to dot.case.
-  String dot() {
-    return split().map((n) => n.toLowerCase()).join('.');
-  }
+  String dot() => split().map((n) => n.toLowerCase()).join('.');
 
   /// Transforms a [birthName]  to ToGgLe CaSe.
-  String toggle() {
-    return toggleCase(birthName());
-  }
+  String toggle() => toggleCase(birthName());
 
   /// Transforms a [birthName] to a specific title [case].
   String to([Capitalization _case]) {
@@ -544,9 +517,7 @@ class Namefully {
   }
 
   /// Joins the name parts of a [birthName] using a [separator].
-  String join([String separator = '']) {
-    return split().join(separator);
-  }
+  String join([String separator = '']) => split().join(separator);
 
   /// Returns a password-like representation of a name.
   String passwd([NameType what]) {
@@ -578,31 +549,20 @@ class Namefully {
   }
 
   /// Confirms that a name part was set.
-  bool has(Namon namon) {
-    return _fullName.has(namon);
-  }
+  bool has(Namon namon) => _fullName.has(namon);
 
   /// Gets a Map(json-like) representation of the [fullName].
-  Map<String, String> toMap() {
-    return {
-      'prefix': prefix(),
-      'firstName': firstName(),
-      'middleName': middleName().join(' '),
-      'lastName': lastName(),
-      'suffix': suffix()
-    };
-  }
+  Map<String, String> toMap() => {
+        'prefix': prefix(),
+        'firstName': firstName(),
+        'middleName': middleName().join(' '),
+        'lastName': lastName(),
+        'suffix': suffix()
+      };
 
   /// Gets an array-like representation of the [fullName].
-  List<String> toList() {
-    return [
-      prefix(),
-      firstName(),
-      middleName().join(' '),
-      lastName(),
-      suffix()
-    ];
-  }
+  List<String> toList() =>
+      [prefix(), firstName(), middleName().join(' '), lastName(), suffix()];
 
   void _build<T>(Parser<T> parser, [Config options]) {
     _config = Config.mergeWith(options);
