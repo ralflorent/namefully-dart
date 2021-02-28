@@ -10,11 +10,18 @@
 /// @license MIT
 
 import 'config.dart';
-import 'contants.dart';
-import 'models/model.dart';
-import 'parsers.dart';
+import 'constants.dart';
+import 'models/enums.dart';
+import 'models/full_name.dart';
+import 'models/name.dart';
+import 'models/summary.dart';
+import 'parsers/json_name_parser.dart';
+import 'parsers/list_name_parser.dart';
+import 'parsers/list_string_parser.dart';
+import 'parsers/string_parser.dart';
+import 'parsers/parser.dart';
 import 'util.dart';
-import 'validators.dart';
+import 'validators/full_name_validator.dart';
 
 /// [Namefully] is a utility for handling person names.
 ///

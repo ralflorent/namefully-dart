@@ -1,6 +1,6 @@
 /// Utils
 
-import 'contants.dart';
+import 'constants.dart';
 import 'extensions.dart';
 import 'models/enums.dart';
 

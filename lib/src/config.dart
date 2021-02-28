@@ -1,7 +1,7 @@
 /// Config
 
 import 'models/enums.dart';
-import 'parsers.dart';
+import 'parsers/parser.dart';
 
 /// The single [Config]uration to use across the library.
 ///

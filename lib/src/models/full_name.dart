@@ -5,7 +5,7 @@ import 'enums.dart';
 import 'first_name.dart';
 import 'name.dart';
 import 'last_name.dart';
-import '../validators.dart';
+import '../validators/validators.dart';
 
 class FullName {
   Name _prefix;
