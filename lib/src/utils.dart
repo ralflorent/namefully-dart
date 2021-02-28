@@ -1,8 +1,8 @@
 /// Utils
 
-import 'contants.dart';
+import 'constants.dart';
 import 'extensions.dart';
-import 'models/enums.dart';
+import 'enums.dart';
 
 class NameIndex {
   final int prefix, firstName, middleName, lastName, suffix;

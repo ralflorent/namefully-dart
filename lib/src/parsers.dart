@@ -1,7 +1,9 @@
 /// Parsers
 
 import 'config.dart';
-import 'models/model.dart';
+import 'enums.dart';
+import 'full_name.dart';
+import 'models.dart';
 import 'util.dart';
 import 'validators.dart';
 

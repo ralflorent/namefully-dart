@@ -3,5 +3,7 @@
 library namefully;
 
 export 'src/config.dart';
-export 'src/models/model.dart';
+export 'src/enums.dart';
+export 'src/full_name.dart';
+export 'src/models.dart';
 export 'src/namefully.dart';

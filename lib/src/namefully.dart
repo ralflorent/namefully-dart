@@ -10,11 +10,10 @@
 /// @license MIT
 
 import 'config.dart';
-import 'contants.dart';
-import 'models/enums.dart';
-import 'models/full_name.dart';
-import 'models/name.dart';
-import 'models/summary.dart';
+import 'constants.dart';
+import 'enums.dart';
+import 'full_name.dart';
+import 'models.dart';
 import 'parsers.dart';
 import 'validators.dart';
 import 'util.dart';
