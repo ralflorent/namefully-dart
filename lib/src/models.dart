@@ -35,7 +35,6 @@ class Name {
     isNotEmpty = _namon.isNotEmpty;
     _initial = _namon[0];
     _body = _namon.substring(1);
-    caps(_cap);
   }
 
   Uppercase get capitalized => _cap;

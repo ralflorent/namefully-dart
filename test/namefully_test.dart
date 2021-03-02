@@ -6,11 +6,11 @@ void main() {
     Namefully namefully;
 
     setUp(() {
-      namefully = Namefully('');
+      namefully = Namefully('John Snow');
     });
 
     test('First Test', () {
-      expect(namefully.fullName(), 'namefully');
+      expect(namefully.firstName(), 'John');
     });
   });
 }
