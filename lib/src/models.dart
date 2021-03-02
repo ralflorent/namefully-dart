@@ -19,11 +19,12 @@ class Name {
   /// A name [type] must be indicated to categorize [this] name so it can
   /// be treated accordingly. [cap] determines how a [this] name should be
   /// capitalized.
-  Name(this._namon, this.type, [Uppercase cap])
-      : isEmpty = _namon.isEmpty,
-        isNotEmpty = _namon.isNotEmpty,
-        _initial = _namon[0],
-        _body = _namon.substring(1),
+  Name(String namon, this.type, [Uppercase cap])
+      : _namon = namon,
+        isEmpty = namon.isEmpty,
+        isNotEmpty = namon.isNotEmpty,
+        _initial = namon[0],
+        _body = namon.substring(1),
         _cap = cap ?? Uppercase.initial {
     if (cap != null) caps(cap);
   }
@@ -98,13 +99,15 @@ class FirstName extends Name {
   /// Some may consider [more] additional name parts of a given name as their
   /// first names, but not as a middle name. Though, it may mean the same,
   /// [more] provides the liberty to name as-is.
-  FirstName(String namon, [this._more]) : super(namon, Namon.firstName);
+  FirstName(String namon, [List<String> more])
+      : _more = more ?? [],
+        super(namon, Namon.firstName);
 
   List<String> get more => _more;
 
   @override
   String toString({bool includeAll = false}) =>
-      includeAll && hasMore() ? '$namon ${_more.join(" ")}' : namon;
+      includeAll && hasMore() ? '$namon ${_more.join(" ")}'.trim() : namon;
 
   /// Determines whether a [FirstName] has [more] name parts.
   bool hasMore() => _more != null && _more.isNotEmpty;
@@ -152,7 +155,7 @@ class FirstName extends Name {
       namon = decapitalize(namon);
       if (hasMore()) _more = _more.map(decapitalize).toList();
     } else if (option == Uppercase.all) {
-      namon = namon.toUpperCase();
+      namon = namon.toLowerCase();
       if (hasMore()) _more = _more.map((n) => n.toLowerCase()).toList();
     }
   }
@@ -166,7 +169,8 @@ class FirstName extends Name {
 
   /// Creates a password-like representation of [this].
   @override
-  String passwd() => generatePassword(toString(includeAll: true));
+  String passwd({bool includeAll = false}) =>
+      generatePassword(toString(includeAll: true));
 }
 
 /// Representation of a last name with some extra functionalities.
@@ -287,10 +291,12 @@ class Summary {
   String _top = '';
   int _unique = 0;
   final String _namon;
+  final List<String> _restrictions;
 
   /// Creates a [Summary] of a given string of alphabetical characters
-  Summary(this._namon, {List<String> restrictions = const [' ']}) {
-    _compute(restrictions);
+  Summary(this._namon, {List<String> restrictions})
+      : _restrictions = restrictions ?? const [' '] {
+    _compute();
   }
 
   Map<String, int> get distribution => _distribution;
@@ -300,10 +306,10 @@ class Summary {
   int get unique => _unique;
   int get length => _namon?.length;
 
-  void _compute(List<String> restrictions) {
+  void _compute() {
     _distribution = _groupByChar();
     for (var char in _distribution.keys) {
-      if (restrictions.contains(_distribution[char]) == false) {
+      if (_restrictions.contains(_distribution[char]) == false) {
         _count += _distribution[char];
         if (_distribution[char] >= _frequency) {
           _frequency = _distribution[char];
@@ -317,6 +323,7 @@ class Summary {
   Map<String, int> _groupByChar() {
     final frequencies = <String, int>{};
     for (var char in _namon.split('')) {
+      if (_restrictions.contains(char)) continue;
       if (frequencies.containsKey(char)) {
         frequencies[char] += 1;
       } else {
