@@ -6,31 +6,30 @@ import 'utils.dart';
 ///
 /// It helps to define and understand the concept of namon/nama.
 class Name {
-  String _namon;
-  String _initial;
-  String _body;
+  late String _namon;
+  late String _initial;
+  late String _body;
   final Uppercase _cap;
   Namon type;
-  bool isEmpty;
-  bool isNotEmpty;
+  late bool isEmpty;
+  late bool isNotEmpty;
 
   /// Creates augmented names by adding extra functionalities to a string name.
   ///
   /// A name [type] must be indicated to categorize [this] name so it can
   /// be treated accordingly. [cap] determines how a [this] name should be
   /// capitalized.
-  Name(String namon, this.type, [Uppercase cap])
-      : _namon = namon,
-        isEmpty = namon.isEmpty,
-        isNotEmpty = namon.isNotEmpty,
-        _initial = namon[0],
-        _body = namon.substring(1),
-        _cap = cap ?? Uppercase.initial {
+  Name(String namon, this.type, [Uppercase? cap])
+      : _cap = cap ?? Uppercase.initial {
+    this.namon = namon;
     if (cap != null) caps(cap);
   }
 
   String get namon => _namon;
   set namon(String namon) {
+    if (namon.isEmpty || namon.length < 2) {
+      throw ArgumentError('Non-empty string value');
+    }
     _namon = namon;
     isEmpty = _namon.isEmpty;
     isNotEmpty = _namon.isNotEmpty;
@@ -58,7 +57,7 @@ class Name {
   List<String> initials() => [_initial];
 
   /// Capitalizes [this].
-  void caps([Uppercase option]) {
+  void caps([Uppercase? option]) {
     option ??= _cap;
     if (option == Uppercase.initial) {
       namon = '${_initial.toUpperCase()}$_body';
@@ -70,7 +69,7 @@ class Name {
   }
 
   /// De-capitalizes [this].
-  void decaps([Uppercase option]) {
+  void decaps([Uppercase? option]) {
     option ??= _cap;
     if (option == Uppercase.initial) {
       namon = '${_initial.toLowerCase()}$_body';
@@ -99,7 +98,7 @@ class FirstName extends Name {
   /// Some may consider [more] additional name parts of a given name as their
   /// first names, but not as a middle name. Though, it may mean the same,
   /// [more] provides the liberty to name as-is.
-  FirstName(String namon, [List<String> more])
+  FirstName(String namon, [List<String>? more])
       : _more = more ?? [],
         super(namon, Namon.firstName);
 
@@ -136,7 +135,7 @@ class FirstName extends Name {
 
   /// Capitalizes [this].
   @override
-  void caps([Uppercase option]) {
+  void caps([Uppercase? option]) {
     option ??= capitalized;
     if (option == Uppercase.initial) {
       namon = capitalize(namon);
@@ -149,7 +148,7 @@ class FirstName extends Name {
 
   /// De-capitalizes [this].
   @override
-  void decaps([Uppercase option]) {
+  void decaps([Uppercase? option]) {
     option ??= capitalized;
     if (option == Uppercase.initial) {
       namon = decapitalize(namon);
@@ -175,7 +174,7 @@ class FirstName extends Name {
 
 /// Representation of a last name with some extra functionalities.
 class LastName extends Name {
-  String _mother;
+  String? _mother;
   LastNameFormat format;
 
   /// Creates an extended version of [Name] flags it as a last name [type].
@@ -190,28 +189,26 @@ class LastName extends Name {
   String get father => namon;
 
   /// The surname inherited from a mother side.
-  String get mother => _mother;
+  String? get mother => _mother;
 
   /// Returns a string representation of [this].
   @override
-  String toString({LastNameFormat format}) {
+  String toString({LastNameFormat? format}) {
     format = format ?? this.format;
     switch (format) {
       case LastNameFormat.father:
         return namon;
       case LastNameFormat.mother:
-        return _mother;
+        return _mother ?? '';
       case LastNameFormat.hyphenated:
         return hasMother() ? '$namon-$_mother' : namon;
       case LastNameFormat.all:
         return hasMother() ? '$namon $_mother' : namon;
-      default:
-        return null;
     }
   }
 
   /// Returns `true` if the [mother]'s surname is defined.
-  bool hasMother() => _mother != null && _mother.isNotEmpty;
+  bool hasMother() => _mother?.isNotEmpty == true;
 
   /// Gives some descriptive statistics.
   ///
@@ -219,12 +216,12 @@ class LastName extends Name {
   /// and shape of the characters' distribution. See [Summary] for more details.
   @override
   Summary stats(
-          {LastNameFormat format, List<String> restrictions = const [' ']}) =>
+          {LastNameFormat? format, List<String> restrictions = const [' ']}) =>
       Summary(toString(format: format), restrictions: restrictions);
 
   /// Gets the initials of [this].
   @override
-  List<String> initials({LastNameFormat format}) {
+  List<String> initials({LastNameFormat? format}) {
     format ??= this.format;
     final initials = <String>[];
     switch (format) {
@@ -232,12 +229,12 @@ class LastName extends Name {
         initials.add(namon[0]);
         break;
       case LastNameFormat.mother:
-        if (hasMother()) initials.add(_mother[0]);
+        if (hasMother()) initials.add(_mother![0]);
         break;
       case LastNameFormat.hyphenated:
       case LastNameFormat.all:
         initials.add(namon[0]);
-        if (hasMother()) initials.add(_mother[0]);
+        if (hasMother()) initials.add(_mother![0]);
         break;
       default:
         initials.add(namon[0]);
@@ -247,27 +244,27 @@ class LastName extends Name {
 
   /// Capitalizes [this].
   @override
-  void caps([Uppercase option]) {
+  void caps([Uppercase? option]) {
     option ??= capitalized;
     if (option == Uppercase.initial) {
       namon = capitalize(namon);
-      if (hasMother()) _mother = capitalize(_mother);
+      if (hasMother()) _mother = capitalize(_mother!);
     } else if (option == Uppercase.all) {
       namon = namon.toUpperCase();
-      if (hasMother()) _mother = _mother.toUpperCase();
+      if (hasMother()) _mother = _mother!.toUpperCase();
     }
   }
 
   /// De-capitalizes [this].
   @override
-  void decaps([Uppercase option]) {
+  void decaps([Uppercase? option]) {
     option ??= capitalized;
     if (option == Uppercase.initial) {
       namon = decapitalize(namon);
-      if (hasMother()) _mother = decapitalize(_mother);
+      if (hasMother()) _mother = decapitalize(_mother!);
     } else if (option == Uppercase.all) {
       namon = namon.toLowerCase();
-      if (hasMother()) _mother = _mother.toLowerCase();
+      if (hasMother()) _mother = _mother!.toLowerCase();
     }
   }
 
@@ -275,7 +272,7 @@ class LastName extends Name {
   @override
   void normalize() {
     namon = capitalize(namon);
-    if (hasMother()) _mother = _mother.toLowerCase();
+    if (hasMother()) _mother = _mother!.toLowerCase();
   }
 
   /// Creates a password-like representation of [this].
@@ -294,7 +291,7 @@ class Summary {
   final List<String> _restrictions;
 
   /// Creates a [Summary] of a given string of alphabetical characters
-  Summary(this._namon, {List<String> restrictions})
+  Summary(this._namon, {List<String>? restrictions})
       : _restrictions = restrictions ?? const [' '] {
     _compute();
   }
@@ -304,15 +301,15 @@ class Summary {
   int get frequency => _frequency;
   String get top => _top;
   int get unique => _unique;
-  int get length => _namon?.length;
+  int get length => _namon.length;
 
   void _compute() {
     _distribution = _groupByChar();
     for (var char in _distribution.keys) {
       if (_restrictions.contains(_distribution[char]) == false) {
-        _count += _distribution[char];
-        if (_distribution[char] >= _frequency) {
-          _frequency = _distribution[char];
+        _count += _distribution[char]!;
+        if (_distribution[char]! >= _frequency) {
+          _frequency = _distribution[char]!;
           _top = char;
         }
         _unique++;
@@ -325,7 +322,7 @@ class Summary {
     for (var char in _namon.split('')) {
       if (_restrictions.contains(char)) continue;
       if (frequencies.containsKey(char)) {
-        frequencies[char] += 1;
+        frequencies[char] = frequencies[char]! + 1;
       } else {
         frequencies[char] = 1;
       }

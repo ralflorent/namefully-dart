@@ -9,13 +9,13 @@ import 'validators.dart';
 
 abstract class Parser<T> {
   /// raw data to be parsed
-  T raw;
+  late T raw;
 
   /// Configurations for parsing
-  Config config;
+  Config? config;
 
   /// Parses the raw data into a full name
-  FullName parse({Config options});
+  FullName parse({Config? options});
 }
 
 class StringParser implements Parser<String> {
@@ -23,14 +23,14 @@ class StringParser implements Parser<String> {
   String raw;
 
   @override
-  Config config;
+  Config? config;
 
   StringParser(this.raw);
 
   @override
-  FullName parse({Config options}) {
+  FullName parse({Config? options}) {
     config = Config.mergeWith(options);
-    final names = raw.split(SeparatorChar.extract(config.separator));
+    final names = raw.split(SeparatorChar.extract(config!.separator));
     return ListStringParser(names).parse(options: options);
   }
 }
@@ -40,20 +40,20 @@ class ListStringParser implements Parser<List<String>> {
   List<String> raw;
 
   @override
-  Config config;
+  Config? config;
 
   @override
   ListStringParser(this.raw);
 
   @override
-  FullName parse({Config options}) {
+  FullName parse({Config? options}) {
     /// Given this setting;
     config = Config.mergeWith(options);
 
     /// Try to validate first (if enabled);
     final raw = this.raw.map((n) => n.trim()).toList();
-    final index = organizeNameIndex(config.orderedBy, raw.length);
-    if (!config.bypass) ListStringValidator(index).validate(raw);
+    final index = organizeNameIndex(config!.orderedBy, raw.length);
+    if (!config!.bypass) ListStringValidator(index).validate(raw);
 
     /// Then distribute all the elements accordingly to set [FullName].
     return _distribute(raw, index);
@@ -97,21 +97,21 @@ class JsonNameParser implements Parser<Map<String, String>> {
   Map<String, String> raw;
 
   @override
-  Config config;
+  Config? config;
 
-  Map<Namon, String> _nama;
+  late Map<Namon, String> _nama;
 
   JsonNameParser(this.raw) {
     _asNama();
   }
 
   @override
-  FullName parse({Config options}) {
+  FullName parse({Config? options}) {
     /// Given this setting;
     config = Config.mergeWith(options);
 
     /// Try to validate first;
-    if (!config.bypass) NamaValidator().validate(_nama);
+    if (!config!.bypass) NamaValidator().validate(_nama);
 
     /// Then create a [FullName] from json.
     return FullName.fromJson(raw, config: config);
@@ -130,17 +130,17 @@ class ListNameParser implements Parser<List<Name>> {
   List<Name> raw;
 
   @override
-  Config config;
+  Config? config;
 
   ListNameParser(this.raw);
 
   @override
-  FullName parse({Config options}) {
+  FullName parse({Config? options}) {
     /// Given this setting;
     config = Config.mergeWith(options);
 
     /// Try to validate first;
-    if (!config.bypass) ListNameValidator().validate(raw);
+    if (!config!.bypass) ListNameValidator().validate(raw);
     final fullName = FullName(config: config);
 
     /// Then distribute all the elements accordingly to set [FullName].
@@ -158,9 +158,10 @@ class ListNameParser implements Parser<List<Name>> {
       } else if (name.type == Namon.lastName) {
         if (name is LastName) {
           fullName.lastName =
-              LastName(name.father, name.mother, config.lastNameFormat);
+              LastName(name.father, name.mother, config!.lastNameFormat);
         } else {
-          fullName.lastName = LastName(name.namon, null, config.lastNameFormat);
+          fullName.lastName =
+              LastName(name.namon, null, config!.lastNameFormat);
         }
       } else if (name.type == Namon.suffix) {
         fullName.suffix = name;

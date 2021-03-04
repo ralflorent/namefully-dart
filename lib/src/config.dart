@@ -1,7 +1,7 @@
 /// Config
 
 import 'enums.dart';
-import 'parsers.dart';
+import 'parsers.dart' show Parser;
 
 /// The single [Config]uration to use across the library.
 ///
@@ -35,7 +35,7 @@ class Config {
 
   /// Custom parser, a user-defined parser indicating how the name set is
   /// organized. [Namefully] cannot guess it.
-  Parser<dynamic> parser;
+  Parser<dynamic>? parser;
 
   /// how to format a surname:
   /// - 'father' (father name only)
@@ -69,13 +69,13 @@ class Config {
   ///
   /// This allows an override of some properties
   factory Config.inline(
-      {NameOrder orderedBy,
-      Separator separator,
-      AbbrTitle titling,
-      bool ending,
-      bool bypass,
-      Parser<dynamic> parser,
-      LastNameFormat lastNameFormat}) {
+      {NameOrder? orderedBy,
+      Separator? separator,
+      AbbrTitle? titling,
+      bool? ending,
+      bool? bypass,
+      Parser<dynamic>? parser,
+      LastNameFormat? lastNameFormat}) {
     _config.orderedBy = orderedBy ?? NameOrder.firstName;
     _config.separator = separator ?? Separator.space;
     _config.titling = titling ?? AbbrTitle.uk;
@@ -88,7 +88,7 @@ class Config {
 
   /// Returns a unified version of prexisting values of [Config] and the [other]
   /// provided values.
-  factory Config.mergeWith(Config other) {
+  factory Config.mergeWith(Config? other) {
     if (other == null) return _config;
     return Config.inline(
         orderedBy: other.orderedBy,

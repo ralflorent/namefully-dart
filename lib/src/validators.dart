@@ -8,10 +8,10 @@ import 'utils.dart';
 
 class ValidationError extends Error {
   /// Name of the invalid [name] type, if available.
-  final String name;
+  final String? name;
 
   /// Message describing the problem.
-  final String message;
+  final String? message;
 
   /// Creates error indicating with a [message] describing the problem.
   ///
@@ -193,14 +193,8 @@ class NameValidator implements Validator<Name> {
 class FullNameValidator implements Validator<FullName> {
   @override
   void validate(FullName fullName) {
-    if (fullName.firstName == null) {
-      throw ValidationError.name('firstName', 'field required');
-    }
     if (!(fullName.firstName is FirstName)) {
       throw ValidationError.name('firstName', 'must be of a FirstName type');
-    }
-    if (fullName.lastName == null) {
-      throw ValidationError.name('lastName', 'field required');
     }
     if (!(fullName.lastName is LastName)) {
       throw ValidationError.name('lastName', 'must be of a LastName type');
@@ -246,10 +240,10 @@ class NamaValidator implements Validator<Map<Namon, String>> {
       Validators.lastName.validate(nama[Namon.lastName]);
     }
     if (nama.containsKey(Namon.prefix)) {
-      NamonValidator().validate(nama[Namon.prefix]);
+      NamonValidator().validate(nama[Namon.prefix]!);
     }
     if (nama.containsKey(Namon.suffix)) {
-      NamonValidator().validate(nama[Namon.suffix]);
+      NamonValidator().validate(nama[Namon.suffix]!);
     }
   }
 }
@@ -260,9 +254,6 @@ class ListStringValidator implements Validator<List<String>> {
 
   @override
   void validate(List<String> values) {
-    if (values == null) {
-      throw ArgumentError.notNull();
-    }
     if (values.isEmpty ||
         values.length < minNumberOfNameParts &&
             values.length > maxNumberOfNameParts) {

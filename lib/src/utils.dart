@@ -1,8 +1,8 @@
 /// Utils
 
 import 'constants.dart';
-import 'extensions.dart';
 import 'enums.dart';
+import 'extensions.dart';
 
 class NameIndex {
   final int prefix, firstName, middleName, lastName, suffix;
@@ -14,7 +14,7 @@ class NameIndex {
 /// [orderedBy] by first or last name, [argLength] length of the provided array,
 /// [nameIndex] global preset of indexing.
 NameIndex organizeNameIndex(NameOrder orderedBy, int argLength,
-    {NameIndex nameIndex}) {
+    {NameIndex? nameIndex}) {
   var out = nameIndex ?? const NameIndex(0, 1, 2, 3, 4);
   if (orderedBy == NameOrder.firstName) {
     switch (argLength) {
@@ -80,9 +80,9 @@ String generatePassword(String str) {
   var mapper = passwordMapper;
   return str.split('').map((char) {
     if (mapper.containsKey(char.toLowerCase())) {
-      return mapper[char.toLowerCase()].random();
+      return mapper[char.toLowerCase()]!.random();
     }
-    return mapper['\$'].random();
+    return mapper['\$']!.random();
   }).join();
 }
 
@@ -117,8 +117,6 @@ class SeparatorChar {
         return SeparatorChar.space;
       case Separator.underscore:
         return SeparatorChar.underscore;
-      default:
-        return null;
     }
   }
 }
@@ -142,12 +140,10 @@ class NamonKey {
         return NamonKey.lastName;
       case Namon.suffix:
         return NamonKey.suffix;
-      default:
-        return null;
     }
   }
 
-  static Namon castTo(String str) {
+  static Namon? castTo(String str) {
     switch (str) {
       case 'prefix':
         return Namon.prefix;
