@@ -5,11 +5,11 @@ String findName(int index) => nameCases[index]['name'] as String;
 final nameCases = [
   {
     'name': 'John Smith',
-    'options': {},
+    'options': null,
   },
   {
     'name': ['George', 'Walker', 'Bush'],
-    'options': {},
+    'options': null,
   },
   {
     'name': [
@@ -19,14 +19,14 @@ final nameCases = [
       Name('Rose', Namon.middleName),
       LastName('Clarke')
     ],
-    'options': {}
+    'options': null
   },
   {
     'name': [
       FirstName('Daniel', ['Michael', 'Blake']),
       LastName('Day-Lewis'),
     ],
-    'options': {}
+    'options': null
   },
   {
     'name': 'Obama Barack',

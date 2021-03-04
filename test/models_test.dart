@@ -162,7 +162,8 @@ void main() {
       var name = LastName('Smith');
       expect(name.father, equals('Smith'));
       expect(name.hasMother(), equals(false));
-      expect(name.toString(format: LastNameFormat.mother), equals(isNull));
+      expect(name.mother, equals(isNull));
+      expect(name.toString(format: LastNameFormat.mother), equals(isEmpty));
       expect(name.type, equals(Namon.lastName));
     });
 
@@ -199,13 +200,94 @@ void main() {
 
     test('.stats() returns only a summary of the specified parts', () {
       expect(lastName.stats().count, equals(5));
-      // expect(lastName.stats(format: LastNameFormat.all).count, equals(11));
-      // expect(lastName.stats(format: LastNameFormat.all).length, equals(13));
+      expect(lastName.stats(format: LastNameFormat.mother).count, equals(3));
+      expect(lastName.stats(format: LastNameFormat.all).count, equals(8));
+      expect(lastName.stats(format: LastNameFormat.all).length, equals(9));
     });
 
     test('.initials() returns only the initials of the specified parts', () {
       expect(lastName.initials(), equals(['S']));
+      expect(lastName.initials(format: LastNameFormat.mother), equals(['D']));
+      expect(lastName.initials(format: LastNameFormat.hyphenated),
+          equals(['S', 'D']));
       expect(lastName.initials(format: LastNameFormat.all), equals(['S', 'D']));
+    });
+
+    test('.caps() capitalizes a last name afterwards', () {
+      var name = LastName('sánchez');
+      expect((name..caps()).toString(), equals('Sánchez'));
+      expect((name..caps(Uppercase.all)).toString(), equals('SÁNCHEZ'));
+    });
+
+    test('.caps() capitalizes all parts of the last name afterwards', () {
+      expect((lastName..caps(Uppercase.all)).toString(), equals('SMITH'));
+      expect(
+          (lastName..caps(Uppercase.all)).toString(format: LastNameFormat.all),
+          equals('SMITH DOE'));
+    });
+
+    test('.decaps() de-capitalizes the last name afterwards', () {
+      var name = LastName('SMITH', 'DOE');
+      expect((name..decaps()).toString(), equals('sMITH'));
+      expect(
+          (name..decaps()).toString(format: LastNameFormat.all), 'sMITH dOE');
+    });
+
+    test('.decaps() de-capitalizes all parts of a last name afterwards', () {
+      var name = LastName('SMITH', 'DOE');
+      expect((name..decaps(Uppercase.all)).toString(), equals('smith'));
+      expect((name..decaps(Uppercase.all)).toString(format: LastNameFormat.all),
+          equals('smith doe'));
+    });
+
+    test('.normalize() normalizes the last name afterwards', () {
+      expect((LastName('SMITH')..normalize()).toString(), equals('Smith'));
+      expect(
+          (LastName('SMITH', 'DOE')..normalize())
+              .toString(format: LastNameFormat.all),
+          equals('Smith Doe'));
+    });
+
+    test('.passwd() returns a password-like of the last name', () {
+      expect(lastName.passwd(), isNot(contains('Smith')));
+      expect(lastName.passwd(), isNot(contains('Smith Doe')));
+    });
+  });
+
+  group('Summary', () {
+    test('creates a statistically descriptive summary of a string', () {
+      var summary = Summary('abracadabra');
+      expect(summary.count, equals(11));
+      expect(summary.length, equals(11));
+      expect(summary.frequency, equals(5));
+      expect(summary.unique, equals(5));
+      expect(summary.top, equals('a'));
+      expect(summary.distribution,
+          equals({'a': 5, 'b': 2, 'r': 2, 'c': 1, 'd': 1}));
+    });
+
+    test('creates a descriptive summary of string with defined restrictions',
+        () {
+      var summary = Summary('abracadabra', restrictions: ['a']);
+      expect(summary.count, equals(6));
+      expect(summary.length, equals(11));
+      expect(summary.frequency, equals(2));
+      expect(summary.unique, equals(4));
+      expect(summary.top, equals('r'));
+      expect(summary.distribution, equals({'b': 2, 'r': 2, 'c': 1, 'd': 1}));
+    });
+
+    test(
+        'creates a descriptive summary of a string with space as a default'
+        'defined restrictions', () {
+      var summary = Summary('avada kedavra');
+      expect(summary.count, equals(12));
+      expect(summary.length, equals(13));
+      expect(summary.frequency, equals(5));
+      expect(summary.unique, equals(6));
+      expect(summary.top, equals('a'));
+      expect(summary.distribution,
+          equals({'a': 5, 'v': 2, 'd': 2, 'k': 1, 'e': 1, 'r': 1}));
     });
   });
 }

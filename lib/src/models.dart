@@ -28,7 +28,7 @@ class Name {
   String get namon => _namon;
   set namon(String namon) {
     if (namon.isEmpty || namon.length < 2) {
-      throw ArgumentError('Non-empty string value');
+      throw ArgumentError('non-empty string value');
     }
     _namon = namon;
     isEmpty = _namon.isEmpty;
@@ -109,7 +109,7 @@ class FirstName extends Name {
       includeAll && hasMore() ? '$namon ${_more.join(" ")}'.trim() : namon;
 
   /// Determines whether a [FirstName] has [more] name parts.
-  bool hasMore() => _more != null && _more.isNotEmpty;
+  bool hasMore() => _more.isNotEmpty;
 
   /// Returns a combined version of [this] and [more] if any.
   List<Name> asNames() {
@@ -272,12 +272,13 @@ class LastName extends Name {
   @override
   void normalize() {
     namon = capitalize(namon);
-    if (hasMother()) _mother = _mother!.toLowerCase();
+    if (hasMother()) _mother = capitalize(_mother!);
   }
 
   /// Creates a password-like representation of [this].
   @override
-  String passwd() => generatePassword(toString());
+  String passwd({LastNameFormat? format}) =>
+      generatePassword(toString(format: format));
 }
 
 /// Summary of descriptive stats of the name
@@ -287,32 +288,35 @@ class Summary {
   int _frequency = 0;
   String _top = '';
   int _unique = 0;
-  final String _namon;
+  late final String _namon;
   final List<String> _restrictions;
 
   /// Creates a [Summary] of a given string of alphabetical characters
-  Summary(this._namon, {List<String>? restrictions})
+  Summary(String namon, {List<String>? restrictions})
       : _restrictions = restrictions ?? const [' '] {
+    if (_namon.isEmpty || _namon.length < 2) {
+      throw ArgumentError('non-empty string value');
+    }
+    _namon = namon;
     _compute();
   }
 
   Map<String, int> get distribution => _distribution;
   int get count => _count;
+  int get length => _namon.length;
   int get frequency => _frequency;
   String get top => _top;
   int get unique => _unique;
-  int get length => _namon.length;
 
   void _compute() {
     _distribution = _groupByChar();
-    for (var char in _distribution.keys) {
-      if (_restrictions.contains(_distribution[char]) == false) {
-        _count += _distribution[char]!;
-        if (_distribution[char]! >= _frequency) {
-          _frequency = _distribution[char]!;
-          _top = char;
-        }
-        _unique++;
+    _unique = _distribution.keys.length;
+    _count = _distribution.values.reduce((acc, val) => acc + val);
+
+    for (var entry in _distribution.entries) {
+      if (entry.value >= _frequency) {
+        _frequency = entry.value;
+        _top = entry.key;
       }
     }
   }
