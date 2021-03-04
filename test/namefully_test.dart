@@ -3,14 +3,14 @@ import 'package:test/test.dart';
 
 void main() {
   group('Test Suite', () {
-    Namefully namefully;
+    var name = Namefully('Jon Snow');
 
     setUp(() {
-      namefully = Namefully('John Snow');
+      name = Namefully('Jon Snow');
     });
 
     test('First Test', () {
-      expect(namefully.firstName(), 'John');
+      expect(name.firstName(), 'Jon');
     });
   });
 }

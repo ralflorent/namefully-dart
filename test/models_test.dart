@@ -5,7 +5,7 @@ import 'test_utils.dart';
 
 void main() {
   group('Name', () {
-    Name name;
+    var name = Name('John', Namon.middleName);
 
     setUp(() {
       name = Name('John', Namon.middleName);
@@ -13,6 +13,7 @@ void main() {
 
     test('creates a name marked with a specific type', () {
       expect(name.namon, 'John');
+      expect(name.toString(), 'John');
       expect(name.type, Namon.middleName);
     });
 
@@ -22,6 +23,12 @@ void main() {
 
     test('creates a name fully capitalized', () {
       expect(Name('rick', Namon.firstName, Uppercase.all).toString(), 'RICK');
+    });
+
+    test('== [Name] returns true if they are equal', () {
+      expect(name == Name('John', Namon.middleName), equals(true));
+      expect(name == Name('Johnx', Namon.middleName), equals(false));
+      expect(name == Name('John', Namon.prefix), equals(false));
     });
 
     test('.stats() returns a summary of the name', () {
@@ -55,7 +62,7 @@ void main() {
   });
 
   group('FirstName', () {
-    FirstName firstName;
+    var firstName = FirstName('John', ['Ben', 'Carl']);
     setUp(() {
       firstName = FirstName('John', ['Ben', 'Carl']);
     });
@@ -71,6 +78,21 @@ void main() {
       expect(firstName.toString(), equals('John'));
       expect(firstName.more, equals(['Ben', 'Carl']));
       expect(firstName.type, equals(Namon.firstName));
+    });
+
+    test('.hasMore() indicates if a first name has more than 1 name part', () {
+      expect(firstName.hasMore(), equals(true));
+      expect(FirstName('John').hasMore(), equals(false));
+    });
+
+    test('.asNames() returns the name parts as a pile of [Name]s', () {
+      var names = firstName.asNames();
+      expect(names.length, equals(3));
+      expect(names.first.toString(), equals('John'));
+      for (var name in names) {
+        expect(name, isA<Name>());
+        expect(name.type, equals(Namon.firstName));
+      }
     });
 
     test('.toString() returns a string version of the first name', () {
@@ -127,6 +149,63 @@ void main() {
       expect(firstName.passwd(), isNot(contains('John')));
       expect(
           firstName.passwd(includeAll: true), isNot(contains('John Ben Carl')));
+    });
+  });
+
+  group('LastName', () {
+    var lastName = LastName('Smith', 'Doe');
+    setUp(() {
+      lastName = LastName('Smith', 'Doe');
+    });
+
+    test('creates a last name with a father surname only', () {
+      var name = LastName('Smith');
+      expect(name.father, equals('Smith'));
+      expect(name.hasMother(), equals(false));
+      expect(name.toString(format: LastNameFormat.mother), equals(isNull));
+      expect(name.type, equals(Namon.lastName));
+    });
+
+    test('creates a last name with both father and mother surnames', () {
+      expect(lastName.father, equals('Smith'));
+      expect(lastName.hasMother(), equals(true));
+      expect(lastName.toString(format: LastNameFormat.mother), equals('Doe'));
+      expect(lastName.type, equals(Namon.lastName));
+    });
+
+    test('creates a last name with a [LastNameFormat.mother] format', () {
+      expect(LastName('Smith', 'Doe', LastNameFormat.mother).toString(),
+          equals('Doe'));
+    });
+
+    test('creates a last name with a [LastNameFormat.hyphenated] format', () {
+      expect(LastName('Smith', 'Doe', LastNameFormat.hyphenated).toString(),
+          equals('Smith-Doe'));
+    });
+
+    test('creates a last name with a [LastNameFormat.all] format', () {
+      expect(LastName('Smith', 'Doe', LastNameFormat.all).toString(),
+          equals('Smith Doe'));
+    });
+
+    test('.toString() outputs a last name with a specific format', () {
+      expect(lastName.toString(), equals('Smith'));
+      expect(lastName.toString(format: LastNameFormat.mother), 'Doe');
+      expect(lastName.toString(format: LastNameFormat.hyphenated),
+          equals('Smith-Doe'));
+      expect(
+          lastName.toString(format: LastNameFormat.all), equals('Smith Doe'));
+    });
+
+    test('.stats() returns only a summary of the specified parts', () {
+      expect(lastName.stats().count, equals(5));
+      // expect(lastName.stats(format: LastNameFormat.all).count, equals(11));
+      // expect(lastName.stats(format: LastNameFormat.all).length, equals(13));
+    });
+
+    test('.initials() returns only the initials of the specified parts', () {
+      expect(lastName.initials(), equals(['S']));
+      expect(lastName.initials(format: LastNameFormat.all), equals(['S', 'D']));
     });
   });
 }
