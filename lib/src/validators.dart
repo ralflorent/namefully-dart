@@ -2,7 +2,6 @@
 
 import 'constants.dart';
 import 'enums.dart';
-import 'full_name.dart';
 import 'models.dart';
 import 'utils.dart';
 
@@ -56,9 +55,15 @@ class ValidationRule {
   /// - hyphenated
   /// - with apostrophe
   /// - with space
-  static final namon = RegExp(
-      "^${ValidationRule.base.pattern}+(([' -]${ValidationRule.base.pattern})?"
-      '${ValidationRule.base.pattern}*)*\$');
+  ///
+  /// For example, this rule matches the following use cases:
+  ///   prefix: `Mr`
+  ///   firstName: `Jean-Baptiste`,
+  ///   middleName`Jane Doe`
+  ///   lastName: `O'connor`,
+  ///   suffix: `Ph.D`,
+  static final namon = RegExp("^${base.pattern}+(([' -.]${base.pattern})?"
+      '${base.pattern}*)*\$');
 
   /// Matches one name part (namon) that is of nature:
   /// - Latin (English, Spanish, French, etc.)
@@ -66,7 +71,7 @@ class ValidationRule {
   /// - hyphenated
   /// - with apostrophe
   /// - with space
-  static final firstName = ValidationRule.namon;
+  static final firstName = namon;
 
   /// Matches 1+ names part (namon) that are of nature:
   /// - Latin (English, Spanish, French, etc.)
@@ -74,8 +79,8 @@ class ValidationRule {
   /// - hyphenated
   /// - with apostrophe
   /// - with space
-  static final middleName = RegExp("^${ValidationRule.base.pattern}+(([' -]"
-      '${ValidationRule.base.pattern})?${ValidationRule.base.pattern}*)*\$');
+  static final middleName = RegExp("^${base.pattern}+(([' -]"
+      '${base.pattern})?${base.pattern}*)*\$');
 
   /// Matches one name part (namon) that is of nature:
   /// - Latin (English, Spanish, French, etc.)
@@ -83,11 +88,20 @@ class ValidationRule {
   /// - hyphenated
   /// - with apostrophe
   /// - with space
-  static final lastName = ValidationRule.namon;
+  static final lastName = namon;
 }
 
 abstract class Validator<T> {
   void validate(T value);
+}
+
+class Validators {
+  static final namon = NamonValidator();
+  static final prefix = NameValidator();
+  static final firstName = FirstNameValidator();
+  static final middleName = MiddleNameValidator();
+  static final lastName = LastNameValidator();
+  static final suffix = NameValidator();
 }
 
 /// Namon validator to help to parse single pieces of string.
@@ -106,6 +120,10 @@ class NamonValidator implements Validator<String> {
 }
 
 class FirstNameValidator implements Validator<dynamic> {
+  static final _validator = FirstNameValidator._internal();
+  factory FirstNameValidator() => _validator;
+  FirstNameValidator._internal();
+
   /// Validates the name content [value].
   @override
   void validate(dynamic /** String | FirstName */ value) {
@@ -118,7 +136,7 @@ class FirstNameValidator implements Validator<dynamic> {
       }
     } else if (value is FirstName) {
       Validators.firstName.validate(value.namon);
-      if (value.more != null && value.more.isNotEmpty) {
+      if (value.more.isNotEmpty) {
         value.more.forEach(Validators.firstName.validate);
       }
     } else {
@@ -128,6 +146,10 @@ class FirstNameValidator implements Validator<dynamic> {
 }
 
 class MiddleNameValidator implements Validator<dynamic> {
+  static final _validator = MiddleNameValidator._internal();
+  factory MiddleNameValidator() => _validator;
+  MiddleNameValidator._internal();
+
   /// Validates the name content [value].
   @override
   void validate(dynamic /** String | List<String> | List<Name> */ value) {
@@ -158,6 +180,10 @@ class MiddleNameValidator implements Validator<dynamic> {
 }
 
 class LastNameValidator implements Validator<dynamic> {
+  static final _validator = LastNameValidator._internal();
+  factory LastNameValidator() => _validator;
+  LastNameValidator._internal();
+
   /// Validates the name content [value].
   @override
   void validate(dynamic /** String | LastName */ value) {
@@ -171,7 +197,7 @@ class LastNameValidator implements Validator<dynamic> {
     } else if (value is LastName) {
       Validators.lastName.validate(value.father);
       if (value.mother?.isNotEmpty == true) {
-        Validators.firstName.validate(value.mother);
+        Validators.lastName.validate(value.mother);
       }
     } else {
       throw ArgumentError('expecting String | LastName');
@@ -180,6 +206,10 @@ class LastNameValidator implements Validator<dynamic> {
 }
 
 class NameValidator implements Validator<Name> {
+  static final _validator = NameValidator._internal();
+  factory NameValidator() => _validator;
+  NameValidator._internal();
+
   /// Validates the [name] content.
   @override
   void validate(Name name) {
@@ -190,41 +220,15 @@ class NameValidator implements Validator<Name> {
   }
 }
 
-class FullNameValidator implements Validator<FullName> {
-  @override
-  void validate(FullName fullName) {
-    if (!(fullName.firstName is FirstName)) {
-      throw ValidationError.name('firstName', 'must be of a FirstName type');
-    }
-    if (!(fullName.lastName is LastName)) {
-      throw ValidationError.name('lastName', 'must be of a LastName type');
-    }
-    if (!(fullName.middleName is List<Name>)) {
-      throw ValidationError.name('middleName', 'must be of a List<Name> type');
-    }
-    if (fullName.prefix != null && !(fullName.prefix is Name)) {
-      throw ValidationError.name('prefix', 'must be of a Name type');
-    }
-    if (fullName.suffix != null && !(fullName.suffix is Name)) {
-      throw ValidationError.name('suffix', 'must be of a Name type');
-    }
-  }
-}
-
-class Validators {
-  static final namon = NamonValidator();
-  static final prefix = NameValidator();
-  static final firstName = FirstNameValidator();
-  static final middleName = MiddleNameValidator();
-  static final lastName = LastNameValidator();
-  static final suffix = NameValidator();
-}
-
 class NamaValidator implements Validator<Map<Namon, String>> {
+  static final _validator = NamaValidator._internal();
+  factory NamaValidator() => _validator;
+  NamaValidator._internal();
+
   @override
   void validate(Map<Namon, String> nama) {
     if (nama.isEmpty) throw ValidationError('must not be empty');
-    if (nama.length < minNumberOfNameParts &&
+    if (nama.length < minNumberOfNameParts ||
         nama.length > maxNumberOfNameParts) {
       throw ValidationError(
           'expecting $minNumberOfNameParts-$maxNumberOfNameParts fields');
@@ -255,8 +259,8 @@ class ListStringValidator implements Validator<List<String>> {
   @override
   void validate(List<String> values) {
     if (values.isEmpty ||
-        values.length < minNumberOfNameParts &&
-            values.length > maxNumberOfNameParts) {
+        values.length < minNumberOfNameParts ||
+        values.length > maxNumberOfNameParts) {
       throw ValidationError(
           'expecting a list of $minNumberOfNameParts-$maxNumberOfNameParts '
           'elements');
@@ -290,14 +294,15 @@ class ListStringValidator implements Validator<List<String>> {
 }
 
 class ListNameValidator implements Validator<List<Name>> {
+  static final _validator = ListNameValidator._internal();
+  factory ListNameValidator() => _validator;
+  ListNameValidator._internal();
+
   @override
   void validate(List<Name> values) {
-    if (values == null) {
-      throw ArgumentError.notNull();
-    }
     if (values.isEmpty ||
-        values.length < minNumberOfNameParts &&
-            values.length > maxNumberOfNameParts) {
+        values.length < minNumberOfNameParts ||
+        values.length > maxNumberOfNameParts) {
       throw ValidationError(
           'expecting a list of $minNumberOfNameParts-$maxNumberOfNameParts '
           'elements');

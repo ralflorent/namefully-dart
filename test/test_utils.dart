@@ -1,4 +1,8 @@
 import 'package:namefully/namefully.dart';
+import 'package:namefully/src/validators.dart';
+import 'package:test/test.dart';
+
+final Matcher throwsValidationError = throwsA(TypeMatcher<ValidationError>());
 
 String findName(int index) => nameCases[index]['name'] as String;
 

@@ -15,7 +15,6 @@ import 'enums.dart';
 import 'full_name.dart';
 import 'models.dart';
 import 'parsers.dart';
-import 'validators.dart';
 import 'utils.dart';
 
 /// [Namefully] is a utility for handling person names.
@@ -83,7 +82,6 @@ class Namefully {
   }
   Namefully.from(FullName fullName, {Config? config}) {
     _config = Config.mergeWith(config);
-    FullNameValidator().validate(fullName);
     _fullName = fullName;
     _summary = Summary(birthName());
   }
@@ -498,7 +496,7 @@ class Namefully {
 
   /// Splits a [birthName] using a [separator].
   List<String> split([RegExp? separator]) {
-    separator ??= RegExp("[' -]");
+    separator ??= RegExp("[' -.]");
     return birthName().replaceAll(separator, ' ').split(' ');
   }
 
@@ -553,7 +551,6 @@ class Namefully {
   void _build<T>(Parser<T> parser, [Config? options]) {
     _config = Config.mergeWith(options);
     _fullName = parser.parse(options: options);
-    FullNameValidator().validate(_fullName);
     _summary = Summary(birthName());
   }
 
