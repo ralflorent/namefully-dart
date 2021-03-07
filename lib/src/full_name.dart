@@ -14,18 +14,11 @@ class FullName {
   final Config _config;
 
   FullName({Config? config}) : _config = config ?? Config();
-  FullName.fromJson(Map<String, String> map, {Config? config})
+
+  /// For external use only
+  FullName.fromJson(Map<String, String> jsonName, {Config? config})
       : _config = config ?? Config() {
-    prefix = map['prefix'] != null ? Name(map['prefix']!, Namon.prefix) : null;
-    firstName = FirstName(map['firstName']!);
-    middleName = map['middleName'] != null
-        ? map['middleName']!
-            .split(' ')
-            .map((n) => Name(n, Namon.middleName))
-            .toList()
-        : [];
-    lastName = LastName(map['lastName']!);
-    suffix = map['suffix'] != null ? Name(map['suffix']!, Namon.suffix) : null;
+    _parseJsonName(jsonName);
   }
 
   Name? get prefix => _prefix;
@@ -45,7 +38,7 @@ class FullName {
 
   List<Name> get middleName => _middleName;
   set middleName(List<Name> names) {
-    if (!_config.bypass) names.forEach(Validators.middleName.validate);
+    if (!_config.bypass) Validators.middleName.validate(names);
     _middleName = names;
   }
 
@@ -73,16 +66,33 @@ class FullName {
     return false;
   }
 
-  void withPrefix(String namon) => prefix = Name(namon, Namon.prefix);
+  void rawPrefix(String namon) => prefix = Name(namon, Namon.prefix);
 
-  void withFirstName(String namon, {List<String>? more}) =>
+  void rawFirstName(String namon, {List<String>? more}) =>
       firstName = FirstName(namon, more);
 
-  void withMiddleName(List<String> names) =>
+  void rawMiddleName(List<String> names) =>
       middleName = names.map((n) => Name(n, Namon.middleName)).toList();
 
-  void withLastName(String father, {String? mother, LastNameFormat? format}) =>
+  void rawLastName(String father, {String? mother, LastNameFormat? format}) =>
       lastName = LastName(father, mother, format ?? LastNameFormat.father);
 
-  void withSuffix(String namon) => suffix = Name(namon, Namon.suffix);
+  void rawSuffix(String namon) => suffix = Name(namon, Namon.suffix);
+
+  void _parseJsonName(Map<String, String> json) {
+    try {
+      if (json['prefix'] != null) prefix = Name(json['prefix']!, Namon.prefix);
+      if (json['middleName'] != null) {
+        middleName = json['middleName']!
+            .split(' ')
+            .map((n) => Name(n, Namon.middleName))
+            .toList();
+      }
+      if (json['suffix'] != null) suffix = Name(json['suffix']!, Namon.suffix);
+      firstName = FirstName(json['firstName']!);
+      lastName = LastName(json['lastName']!);
+    } catch (e) {
+      throw ValidationError('invalid content! \n$e');
+    }
+  }
 }

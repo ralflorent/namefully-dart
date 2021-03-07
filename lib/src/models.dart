@@ -293,11 +293,11 @@ class Summary {
 
   /// Creates a [Summary] of a given string of alphabetical characters
   Summary(String namon, {List<String>? restrictions})
-      : _restrictions = restrictions ?? const [' '] {
+      : _namon = namon,
+        _restrictions = restrictions ?? const [' '] {
     if (_namon.isEmpty || _namon.length < 2) {
       throw ArgumentError('non-empty string value');
     }
-    _namon = namon;
     _compute();
   }
 
