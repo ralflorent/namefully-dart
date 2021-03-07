@@ -53,18 +53,15 @@ class Config {
   final String name;
 
   /// Cache of multiple instances
-  static final Map<String, Config> _cache = {
-    'default': Config._default('default')
-  };
+  static final Map<String, Config> _cache = {};
 
   /// Returns a single [Config] with default values.
   factory Config([String name = 'default']) {
     if (_cache.containsKey(name)) {
       return _cache[name]!;
     } else {
-      final config = Config._default(name);
-      _cache[name] = config;
-      return config;
+      _cache[name] = Config._default(name);
+      return _cache[name]!;
     }
   }
 
@@ -92,29 +89,29 @@ class Config {
     Parser<dynamic>? parser,
     LastNameFormat? lastNameFormat,
   }) {
-    var config = Config(name);
-    config.orderedBy = orderedBy ?? NameOrder.firstName;
-    config.separator = separator ?? Separator.space;
-    config.titling = titling ?? AbbrTitle.uk;
-    config.ending = ending ?? false;
-    config.bypass = bypass ?? false;
-    config.parser = parser;
-    config.lastNameFormat = lastNameFormat ?? LastNameFormat.father;
-    return config;
+    return Config(name)
+      ..orderedBy = orderedBy ?? NameOrder.firstName
+      ..separator = separator ?? Separator.space
+      ..titling = titling ?? AbbrTitle.uk
+      ..ending = ending ?? false
+      ..bypass = bypass ?? false
+      ..parser = parser
+      ..lastNameFormat = lastNameFormat ?? LastNameFormat.father;
   }
 
   /// Returns a unified version of prexisting values of [Config] and the [other]
   /// provided values.
-  factory Config.mergeWith(Config? other, {String name = 'default'}) {
-    if (other == null) return Config(name);
+  factory Config.mergeWith(Config? other) {
+    if (other == null) return Config();
     return Config.inline(
-        name: name,
-        orderedBy: other.orderedBy,
-        separator: other.separator,
-        titling: other.titling,
-        ending: other.ending,
-        bypass: other.bypass,
-        parser: other.parser,
-        lastNameFormat: other.lastNameFormat);
+      name: other.name,
+      orderedBy: other.orderedBy,
+      separator: other.separator,
+      titling: other.titling,
+      ending: other.ending,
+      bypass: other.bypass,
+      parser: other.parser,
+      lastNameFormat: other.lastNameFormat,
+    );
   }
 }
