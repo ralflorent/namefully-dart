@@ -85,12 +85,8 @@ class Namefully {
     _fullName = fullName;
     _summary = Summary(birthName());
   }
-  Namefully.fromParser(Config config) {
-    if (config.parser == null) throw ArgumentError.notNull('Config.parser');
-    if (!(config.parser is Parser)) {
-      throw ArgumentError('Config.parser is not a Parser<T>');
-    }
-    _build(config.parser!, config);
+  Namefully.fromParser(Parser<dynamic> parser, {Config? config}) {
+    _build(parser, config);
   }
 
   /// The [count] of characters of the [birthName] without spaces.

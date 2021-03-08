@@ -1,7 +1,6 @@
 /// Config
 
 import 'enums.dart';
-import 'parsers.dart' show Parser;
 
 /// The single [Config]uration to use across the library.
 ///
@@ -32,10 +31,6 @@ class Config {
   /// handful of suffixes or prefixes in English, this parameter is ideal to
   /// avoid checking their validity.
   bool bypass;
-
-  /// Custom parser, a user-defined parser indicating how the name set is
-  /// organized. [Namefully] cannot guess it.
-  Parser<dynamic>? parser;
 
   /// how to format a surname:
   /// - 'father' (father name only)
@@ -72,7 +67,6 @@ class Config {
         titling = AbbrTitle.uk,
         ending = false,
         bypass = false,
-        parser = null,
         lastNameFormat = LastNameFormat.father;
 
   /// Returns a unified version of default values of this [Config] and the
@@ -86,7 +80,6 @@ class Config {
     AbbrTitle? titling,
     bool? ending,
     bool? bypass,
-    Parser<dynamic>? parser,
     LastNameFormat? lastNameFormat,
   }) {
     return Config(name)
@@ -95,7 +88,6 @@ class Config {
       ..titling = titling ?? AbbrTitle.uk
       ..ending = ending ?? false
       ..bypass = bypass ?? false
-      ..parser = parser
       ..lastNameFormat = lastNameFormat ?? LastNameFormat.father;
   }
 
@@ -110,7 +102,6 @@ class Config {
       titling: other.titling,
       ending: other.ending,
       bypass: other.bypass,
-      parser: other.parser,
       lastNameFormat: other.lastNameFormat,
     );
   }

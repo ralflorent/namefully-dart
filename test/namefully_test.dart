@@ -313,10 +313,13 @@ void main() {
             equals('John Smith'));
       });
 
-      test('Parser', () {
-        var parser = SimpleParser('John#Smith');
-        var config = Config.inline(name: 'simpleParser', parser: parser);
-        expect(Namefully.fromParser(config).toString(), equals('John Smith'));
+      test('Parser<dynamic> (Custom Parser)', () {
+        expect(
+            Namefully.fromParser(
+              SimpleParser('John#Smith'), // simple parsing logic :P
+              config: Config.inline(name: 'simpleParser'),
+            ).toString(),
+            equals('John Smith'));
       });
     });
 
@@ -345,7 +348,6 @@ void main() {
       expect(config.bypass, equals(false));
       expect(config.ending, equals(false));
       expect(config.lastNameFormat, equals(LastNameFormat.father));
-      expect(config.parser, isNull);
     });
 
     test('creates a configuration with inline options', () {
@@ -363,7 +365,6 @@ void main() {
       expect(inlineConfig.bypass, equals(true));
       expect(inlineConfig.ending, equals(false));
       expect(inlineConfig.lastNameFormat, equals(LastNameFormat.hyphenated));
-      expect(inlineConfig.parser, isNull);
     });
 
     test('merges a configuration with another', () {
@@ -382,7 +383,6 @@ void main() {
       expect(mergedConfig.bypass, equals(false));
       expect(mergedConfig.ending, equals(true));
       expect(mergedConfig.lastNameFormat, equals(LastNameFormat.hyphenated));
-      expect(mergedConfig.parser, isNull);
     });
 
     test('can create more than 1 configuration when necessary', () {
@@ -402,7 +402,6 @@ void main() {
       expect(otherConfig.bypass, equals(true));
       expect(otherConfig.ending, equals(false));
       expect(otherConfig.lastNameFormat, equals(LastNameFormat.mother));
-      expect(otherConfig.parser, isNull);
 
       // Check the default config is not altered by the other config.
       expect(defaultConfig.name, equals('defaultConfig'));
@@ -412,7 +411,6 @@ void main() {
       expect(defaultConfig.bypass, equals(false));
       expect(defaultConfig.ending, equals(false));
       expect(defaultConfig.lastNameFormat, equals(LastNameFormat.father));
-      expect(defaultConfig.parser, isNull);
     });
   });
 }
