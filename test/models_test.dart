@@ -36,7 +36,7 @@ void main() {
     test('.stats() returns a summary of the name', () {
       var summary = name.stats();
       expect(summary.count, equals(4));
-      expect(summary.distribution, equals({'J': 1, 'o': 1, 'h': 1, 'n': 1}));
+      expect(summary.distribution, equals({'J': 1, 'O': 1, 'H': 1, 'N': 1}));
     });
 
     test('.initials() returns only the initials of the name', () {
@@ -267,9 +267,16 @@ void main() {
       expect(summary.length, equals(11));
       expect(summary.frequency, equals(5));
       expect(summary.unique, equals(5));
-      expect(summary.top, equals('a'));
-      expect(summary.distribution,
-          equals({'a': 5, 'b': 2, 'r': 2, 'c': 1, 'd': 1}));
+      expect(summary.top, equals('A'));
+      expect(
+          summary.distribution,
+          equals({
+            'A': 5,
+            'B': 2,
+            'R': 2,
+            'C': 1,
+            'D': 1,
+          }));
     });
 
     test('creates a descriptive summary of string with defined restrictions',
@@ -279,8 +286,8 @@ void main() {
       expect(summary.length, equals(11));
       expect(summary.frequency, equals(2));
       expect(summary.unique, equals(4));
-      expect(summary.top, equals('r'));
-      expect(summary.distribution, equals({'b': 2, 'r': 2, 'c': 1, 'd': 1}));
+      expect(summary.top, equals('R'));
+      expect(summary.distribution, equals({'B': 2, 'R': 2, 'C': 1, 'D': 1}));
     });
 
     test(
@@ -291,9 +298,17 @@ void main() {
       expect(summary.length, equals(13));
       expect(summary.frequency, equals(5));
       expect(summary.unique, equals(6));
-      expect(summary.top, equals('a'));
-      expect(summary.distribution,
-          equals({'a': 5, 'v': 2, 'd': 2, 'k': 1, 'e': 1, 'r': 1}));
+      expect(summary.top, equals('A'));
+      expect(
+          summary.distribution,
+          equals({
+            'A': 5,
+            'V': 2,
+            'D': 2,
+            'K': 1,
+            'E': 1,
+            'R': 1,
+          }));
     });
   });
 }

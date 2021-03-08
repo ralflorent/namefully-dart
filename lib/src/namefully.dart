@@ -130,6 +130,31 @@ class Namefully {
     return nama.join(' ');
   }
 
+  /// Returns a full name as set
+  @override
+  String toString() => fullName();
+
+  /// Gets a Map(json-like) representation of the [fullName].
+  Map<String, String?> toMap() => {
+        'prefix': prefix(),
+        'firstName': firstName(),
+        'middleName': middleName().join(' '),
+        'lastName': lastName(),
+        'suffix': suffix(),
+      };
+
+  /// Gets an array-like representation of the [fullName].
+  List<String?> toList() => [
+        prefix(),
+        firstName(),
+        middleName().join(' '),
+        lastName(),
+        suffix(),
+      ];
+
+  /// Confirms that a name part was set.
+  bool has(Namon namon) => _fullName.has(namon);
+
   /// Gets the [birthName] ordered as configured, no [prefix] or [suffix].
   ///
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
@@ -322,7 +347,7 @@ class Namefully {
         firsts = fn.initials().join(sep) + sep,
         lasts = ln.initials().join(sep) + sep,
         mids = hasMiddleName()
-            ? _fullName.middleName.map((n) => n.initials()).join(sep) + sep
+            ? _fullName.middleName.map((n) => n.initials()[0]).join(sep) + sep
             : '',
         gname = <String>[];
 
@@ -532,22 +557,6 @@ class Namefully {
     }
   }
 
-  /// Confirms that a name part was set.
-  bool has(Namon namon) => _fullName.has(namon);
-
-  /// Gets a Map(json-like) representation of the [fullName].
-  Map<String, String?> toMap() => {
-        'prefix': prefix(),
-        'firstName': firstName(),
-        'middleName': middleName().join(' '),
-        'lastName': lastName(),
-        'suffix': suffix()
-      };
-
-  /// Gets an array-like representation of the [fullName].
-  List<String?> toList() =>
-      [prefix(), firstName(), middleName().join(' '), lastName(), suffix()];
-
   void _build<T>(Parser<T> parser, [Config? options]) {
     _config = Config.mergeWith(options);
     _fullName = parser.parse(options: options);
@@ -590,7 +599,7 @@ class Namefully {
       case 'o':
       case 'O':
         var sxSep = _config.ending ? ',' : '';
-        const nama = <String>[];
+        final nama = <String>[];
 
         if (_fullName.prefix != null) {
           nama.add(_fullName.prefix.toString());

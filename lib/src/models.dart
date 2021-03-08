@@ -323,8 +323,9 @@ class Summary {
 
   Map<String, int> _groupByChar() {
     final frequencies = <String, int>{};
-    for (var char in _namon.split('')) {
-      if (_restrictions.contains(char)) continue;
+    var restrictions = _restrictions.map((n) => n.toUpperCase());
+    for (var char in _namon.toUpperCase().split('')) {
+      if (restrictions.contains(char)) continue;
       if (frequencies.containsKey(char)) {
         frequencies[char] = frequencies[char]! + 1;
       } else {
