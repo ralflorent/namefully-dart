@@ -1,10 +1,30 @@
 import 'package:namefully/namefully.dart';
+import 'package:namefully/src/parsers.dart';
 import 'package:namefully/src/validators.dart';
 import 'package:test/test.dart';
 
 final Matcher throwsValidationError = throwsA(TypeMatcher<ValidationError>());
 
 String findName(int index) => nameCases[index]['name'] as String;
+
+class SimpleParser implements Parser<String> {
+  @override
+  Config? config;
+
+  @override
+  String raw;
+
+  SimpleParser(this.raw);
+
+  @override
+  FullName parse({Config? options}) {
+    final names = raw.split('#'); // simple parsing logic :P
+    return FullName.fromJson({
+      'firstName': names[0].trim(),
+      'lastName': names[1].trim(),
+    }, config: options);
+  }
+}
 
 final nameCases = [
   {

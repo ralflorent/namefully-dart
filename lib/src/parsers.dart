@@ -99,7 +99,7 @@ class JsonNameParser implements Parser<Map<String, String>> {
   @override
   Config? config;
 
-  late Map<Namon, String> _nama;
+  Map<Namon, String> _nama = {};
 
   JsonNameParser(this.raw) {
     _asNama();
@@ -118,10 +118,15 @@ class JsonNameParser implements Parser<Map<String, String>> {
   }
 
   void _asNama() {
-    raw.forEach((key, value) {
-      var namon = NamonKey.castTo(key);
-      if (namon != null) _nama[namon] = value;
-    });
+    for (var entry in raw.entries) {
+      var namon = NamonKey.castTo(entry.key);
+      if (namon == null) throw UnsupportedError('unacceptable key');
+      if (_nama.containsKey(namon)) {
+        throw ArgumentError('duplicate keys "${entry.key}"');
+      } else {
+        _nama[namon] = entry.value;
+      }
+    }
   }
 }
 
