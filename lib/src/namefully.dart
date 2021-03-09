@@ -11,17 +11,11 @@
 
 import 'config.dart';
 import 'constants.dart';
-import 'models/enums.dart';
-import 'models/full_name.dart';
-import 'models/name.dart';
-import 'models/summary.dart';
-import 'parsers/json_name_parser.dart';
-import 'parsers/list_name_parser.dart';
-import 'parsers/list_string_parser.dart';
-import 'parsers/string_parser.dart';
-import 'parsers/parser.dart';
-import 'util.dart';
-import 'validators/full_name_validator.dart';
+import 'enums.dart';
+import 'full_name.dart';
+import 'models.dart';
+import 'parsers.dart';
+import 'utils.dart';
 
 /// [Namefully] is a utility for handling person names.
 ///
@@ -66,38 +60,33 @@ import 'validators/full_name_validator.dart';
 /// Happy name handling!
 class Namefully {
   /// A copy of high-quality name data.
-  FullName _fullName;
+  late FullName _fullName;
 
   /// Statistical info on the birth name.
-  Summary _summary;
+  late Summary _summary;
 
   /// A copy of the default configuration combined with a customized one.
-  Config _config;
+  late Config _config;
 
-  Namefully(String names, {Config config}) {
+  Namefully(String names, {Config? config}) {
     _build(StringParser(names), config);
   }
-  Namefully.fromList(List<String> names, {Config config}) {
+  Namefully.fromList(List<String> names, {Config? config}) {
     _build(ListStringParser(names), config);
   }
-  Namefully.fromJson(Map<String, String> names, {Config config}) {
+  Namefully.fromJson(Map<String, String> names, {Config? config}) {
     _build(JsonNameParser(names), config);
   }
-  Namefully.of(List<Name> names, {Config config}) {
+  Namefully.of(List<Name> names, {Config? config}) {
     _build(ListNameParser(names), config);
   }
-  Namefully.from(FullName fullName, {Config config}) {
+  Namefully.from(FullName fullName, {Config? config}) {
     _config = Config.mergeWith(config);
-    FullNameValidator().validate(fullName);
     _fullName = fullName;
     _summary = Summary(birthName());
   }
-  Namefully.fromParser(Config config) {
-    if (config?.parser == null) throw ArgumentError.notNull('Config.parser');
-    if (!(config?.parser is Parser)) {
-      throw ArgumentError('Config.parser is not a Parser<T>');
-    }
-    _build(config.parser, config);
+  Namefully.fromParser(Parser<dynamic> parser, {Config? config}) {
+    _build(parser, config);
   }
 
   /// The [count] of characters of the [birthName] without spaces.
@@ -119,7 +108,8 @@ class Namefully {
   /// var name = Namefully('Jon Novak Snow');
   /// print(name.format('l f m')); // "Snow Jon Novak"
   /// ```
-  String fullName([NameOrder orderedBy]) {
+  String fullName([NameOrder? orderedBy]) {
+    orderedBy ??= _config.orderedBy;
     final sep = _config.ending ? ',' : '';
     final nama = <String>[];
     if (_fullName.prefix != null) nama.add(_fullName.prefix.toString());
@@ -133,26 +123,43 @@ class Namefully {
       nama.add(middleName().join(' ') + sep);
     }
     if (_fullName.suffix != null) nama.add(_fullName.suffix.toString());
-    return nama.join(' ');
+    return nama.join(' ').trim();
   }
+
+  /// Returns a full name as set
+  @override
+  String toString() => fullName();
+
+  /// Gets a Map(json-like) representation of the [fullName].
+  Map<String, String?> toMap() => {
+        'prefix': prefix(),
+        'firstName': firstName(),
+        'middleName': middleName().join(' '),
+        'lastName': lastName(),
+        'suffix': suffix(),
+      };
+
+  /// Gets an array-like representation of the [fullName].
+  List<String?> toList() => [
+        prefix(),
+        firstName(),
+        middleName().join(' '),
+        lastName(),
+        suffix(),
+      ];
+
+  /// Confirms that a name part was set.
+  bool has(Namon namon) => _fullName.has(namon);
 
   /// Gets the [birthName] ordered as configured, no [prefix] or [suffix].
   ///
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
-  String birthName([NameOrder orderedBy]) {
+  String birthName([NameOrder? orderedBy]) {
     orderedBy ??= _config.orderedBy;
     return orderedBy == NameOrder.firstName
-        ? (<String>[]
-              ..add(firstName())
-              ..addAll(middleName())
-              ..add(lastName()))
-            .join(' ')
-        : (<String>[]
-              ..add(lastName())
-              ..add(firstName())
-              ..addAll(middleName()))
-            .join(' ');
+        ? <String>[firstName(), ...middleName(), lastName()].join(' ')
+        : <String>[lastName(), firstName(), ...middleName()].join(' ');
   }
 
   /// Gets the [firstName] part of the [fullName].
@@ -166,7 +173,7 @@ class Namefully {
   ///
   /// the last name [format] overrides the how-to formatting of a surname
   /// output, considering its subparts.
-  String lastName([LastNameFormat format]) =>
+  String lastName([LastNameFormat? format]) =>
       _fullName.lastName.toString(format: format);
 
   /// Gets the [middleName] part of the [fullName].
@@ -177,10 +184,10 @@ class Namefully {
   bool hasMiddleName() => has(Namon.middleName);
 
   /// Gets the [prefix] part of the [fullName].
-  String prefix() => _fullName.prefix?.toString();
+  String? prefix() => _fullName.prefix?.toString();
 
   /// Gets the [suffix] part of the [fullName].
-  String suffix() => _fullName.suffix?.toString();
+  String? suffix() => _fullName.suffix?.toString();
 
   /// Gets the [initials] of the [fullName].
   ///
@@ -200,7 +207,7 @@ class Namefully {
   ///  `lastName firstName [middleName]`
   /// which means that if no middle name was set, setting [withMid] to true
   /// will output nothing and warn the end user about it.
-  List<String> initials({NameOrder orderedBy, bool withMid = false}) {
+  List<String> initials({NameOrder? orderedBy, bool withMid = false}) {
     orderedBy ??= _config.orderedBy;
     var midInits = _fullName.middleName.map((n) => n.initials()).toList();
     final initials = <String>[];
@@ -252,7 +259,7 @@ class Namefully {
   ///
   /// Another thing to consider is that the summary is case *insensitive*. Note
   /// that the letter `a` has the top frequency, be it `3`.
-  Summary stats({NameType what, List<String> restrictions = const [' ']}) {
+  Summary? stats({NameType? what, List<String> restrictions = const [' ']}) {
     switch (what) {
       case NameType.firstName:
         return _fullName.firstName
@@ -291,7 +298,7 @@ class Namefully {
   /// For a given `Firstname Fathername Mothername`, shortening this name when
   /// the lastnameFormat is set as `mother` is equivalent to making it:
   /// `Firstname Mothername`.
-  String shorten({NameOrder orderedBy}) {
+  String shorten({NameOrder? orderedBy}) {
     orderedBy ??= _config.orderedBy;
     return orderedBy == NameOrder.firstName
         ? [_fullName.firstName.namon, _fullName.lastName.toString()].join(' ')
@@ -336,7 +343,7 @@ class Namefully {
         firsts = fn.initials().join(sep) + sep,
         lasts = ln.initials().join(sep) + sep,
         mids = hasMiddleName()
-            ? _fullName.middleName.map((n) => n.initials()).join(sep) + sep
+            ? _fullName.middleName.map((n) => n.initials()[0]).join(sep) + sep
             : '',
         gname = <String>[];
 
@@ -486,7 +493,7 @@ class Namefully {
   String toggle() => toggleCase(birthName());
 
   /// Transforms a [birthName] to a specific title [case].
-  String to([Capitalization _case]) {
+  String to(Capitalization _case) {
     switch (_case) {
       case Capitalization.camel:
         return camel();
@@ -505,14 +512,12 @@ class Namefully {
         return toggle();
       case Capitalization.upper:
         return upper();
-      default:
-        return null;
     }
   }
 
   /// Splits a [birthName] using a [separator].
-  List<String> split([RegExp separator]) {
-    separator ??= RegExp(r"[' -]");
+  List<String> split([RegExp? separator]) {
+    separator ??= RegExp("[' -.]");
     return birthName().replaceAll(separator, ' ').split(' ');
   }
 
@@ -520,7 +525,7 @@ class Namefully {
   String join([String separator = '']) => split().join(separator);
 
   /// Returns a password-like representation of a name.
-  String passwd([NameType what]) {
+  String? passwd([NameType? what]) {
     switch (what) {
       case NameType.firstName:
         return _fullName.firstName.passwd();
@@ -548,30 +553,13 @@ class Namefully {
     }
   }
 
-  /// Confirms that a name part was set.
-  bool has(Namon namon) => _fullName.has(namon);
-
-  /// Gets a Map(json-like) representation of the [fullName].
-  Map<String, String> toMap() => {
-        'prefix': prefix(),
-        'firstName': firstName(),
-        'middleName': middleName().join(' '),
-        'lastName': lastName(),
-        'suffix': suffix()
-      };
-
-  /// Gets an array-like representation of the [fullName].
-  List<String> toList() =>
-      [prefix(), firstName(), middleName().join(' '), lastName(), suffix()];
-
-  void _build<T>(Parser<T> parser, [Config options]) {
+  void _build<T>(Parser<T> parser, [Config? options]) {
     _config = Config.mergeWith(options);
     _fullName = parser.parse(options: options);
-    FullNameValidator().validate(_fullName);
     _summary = Summary(birthName());
   }
 
-  String _map(String char) {
+  String? _map(String char) {
     switch (char) {
       case '.':
         return '.';
@@ -607,7 +595,7 @@ class Namefully {
       case 'o':
       case 'O':
         var sxSep = _config.ending ? ',' : '';
-        const nama = <String>[];
+        final nama = <String>[];
 
         if (_fullName.prefix != null) {
           nama.add(_fullName.prefix.toString());
@@ -626,11 +614,11 @@ class Namefully {
       case 'p':
         return _fullName.prefix?.toString();
       case 'P':
-        return _fullName.prefix?.toString()?.toUpperCase();
+        return _fullName.prefix?.toString().toUpperCase();
       case 's':
         return _fullName.suffix?.toString();
       case 'S':
-        return _fullName.suffix?.toString()?.toUpperCase();
+        return _fullName.suffix?.toString().toUpperCase();
       default:
         return null;
     }

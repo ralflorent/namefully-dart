@@ -1,7 +1,6 @@
 /// Config
 
-import 'models/enums.dart';
-import 'parsers/parser.dart';
+import 'enums.dart';
 
 /// The single [Config]uration to use across the library.
 ///
@@ -33,10 +32,6 @@ class Config {
   /// avoid checking their validity.
   bool bypass;
 
-  /// Custom parser, a user-defined parser indicating how the name set is
-  /// organized. [Namefully] cannot guess it.
-  Parser<dynamic> parser;
-
   /// how to format a surname:
   /// - 'father' (father name only)
   /// - 'mother' (mother name only)
@@ -49,54 +44,65 @@ class Config {
   /// namefully.
   LastNameFormat lastNameFormat;
 
-  /// Cache of an instance of this class (self instantiation with default props).
-  static final Config _config = Config._internal();
+  /// The name of the cached [Config].
+  final String name;
+
+  /// Cache of multiple instances
+  static final Map<String, Config> _cache = {};
 
   /// Returns a single [Config] with default values.
-  factory Config() => _config;
+  factory Config([String name = 'default']) {
+    if (_cache.containsKey(name)) {
+      return _cache[name]!;
+    } else {
+      _cache[name] = Config._default(name);
+      return _cache[name]!;
+    }
+  }
 
-  Config._internal()
+  /// Self instantiation with default props.
+  Config._default(this.name)
       : orderedBy = NameOrder.firstName,
         separator = Separator.space,
         titling = AbbrTitle.uk,
         ending = false,
         bypass = false,
-        parser = null,
         lastNameFormat = LastNameFormat.father;
 
   /// Returns a unified version of default values of this [Config] and the
   /// optional values to consider.
   ///
   /// This allows an override of some properties
-  factory Config.inline(
-      {NameOrder orderedBy,
-      Separator separator,
-      AbbrTitle titling,
-      bool ending,
-      bool bypass,
-      Parser<dynamic> parser,
-      LastNameFormat lastNameFormat}) {
-    _config.orderedBy = orderedBy ?? NameOrder.firstName;
-    _config.separator = separator ?? Separator.space;
-    _config.titling = titling ?? AbbrTitle.uk;
-    _config.ending = ending ?? false;
-    _config.bypass = bypass ?? false;
-    _config.parser = parser;
-    _config.lastNameFormat = lastNameFormat ?? LastNameFormat.father;
-    return _config;
+  factory Config.inline({
+    String name = 'default',
+    NameOrder? orderedBy,
+    Separator? separator,
+    AbbrTitle? titling,
+    bool? ending,
+    bool? bypass,
+    LastNameFormat? lastNameFormat,
+  }) {
+    return Config(name)
+      ..orderedBy = orderedBy ?? NameOrder.firstName
+      ..separator = separator ?? Separator.space
+      ..titling = titling ?? AbbrTitle.uk
+      ..ending = ending ?? false
+      ..bypass = bypass ?? false
+      ..lastNameFormat = lastNameFormat ?? LastNameFormat.father;
   }
 
   /// Returns a unified version of prexisting values of [Config] and the [other]
   /// provided values.
-  factory Config.mergeWith(Config other) {
-    if (other == null) return _config;
+  factory Config.mergeWith(Config? other) {
+    if (other == null) return Config();
     return Config.inline(
-        orderedBy: other.orderedBy,
-        separator: other.separator,
-        titling: other.titling,
-        ending: other.ending,
-        bypass: other.bypass,
-        parser: other.parser,
-        lastNameFormat: other.lastNameFormat);
+      name: other.name,
+      orderedBy: other.orderedBy,
+      separator: other.separator,
+      titling: other.titling,
+      ending: other.ending,
+      bypass: other.bypass,
+      lastNameFormat: other.lastNameFormat,
+    );
   }
 }

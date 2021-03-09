@@ -3,10 +3,9 @@
 library namefully;
 
 export 'src/config.dart';
-export 'src/models/enums.dart';
-export 'src/models/first_name.dart';
-export 'src/models/full_name.dart';
-export 'src/models/last_name.dart';
-export 'src/models/name.dart';
-export 'src/models/summary.dart';
+export 'src/enums.dart';
+export 'src/full_name.dart';
+export 'src/models.dart';
 export 'src/namefully.dart';
+export 'src/utils.dart' show NameIndex, organizeNameIndex;
+export 'src/validators.dart' show Validators;
