@@ -1,5 +1,4 @@
 import 'package:namefully/namefully.dart';
-import 'package:namefully/src/parsers.dart';
 import 'package:namefully/src/validators.dart';
 import 'package:test/test.dart';
 
