@@ -61,7 +61,11 @@ void main() {
     });
 
     test('builds a full name with no validation rules', () {
-      fullName = FullName(config: Config.inline(bypass: true))
+      fullName = FullName(
+          config: Config.inline(
+        name: 'withBypass',
+        bypass: true,
+      ))
         ..firstName = FirstName('2Pac')
         ..lastName = LastName('Shakur');
 

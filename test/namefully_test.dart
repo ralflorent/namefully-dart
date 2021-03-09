@@ -304,7 +304,6 @@ void main() {
       });
 
       test('FullName', () {
-        // var fullName =
         expect(
             Namefully.from(FullName()
                   ..rawFirstName('John')
@@ -395,7 +394,7 @@ void main() {
       });
 
       test('bypassing validation rules', () {
-        var nameCase = findName('withBypass ');
+        var nameCase = findName('withBypass');
         var name = Namefully.fromJson(
           nameCase.name as Map<String, String>,
           config: nameCase.config,
@@ -404,7 +403,7 @@ void main() {
         expect(name.prefix(), equals('Mme.'));
         expect(name.birthName(), equals('Marine Le Pen'));
         expect(name.suffix(), equals('M.Sc.'));
-      }, skip: true); // todo: review logic behing bypass
+      });
     });
   });
 

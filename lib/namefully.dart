@@ -1,4 +1,4 @@
-/// Main entry to the `namefully` library
+/// `namefully`'s Public API
 
 library namefully;
 
@@ -7,4 +7,5 @@ export 'src/enums.dart';
 export 'src/full_name.dart';
 export 'src/models.dart';
 export 'src/namefully.dart';
+export 'src/utils.dart' show NameIndex, organizeNameIndex;
 export 'src/validators.dart' show Validators;
