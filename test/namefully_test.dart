@@ -323,19 +323,89 @@ void main() {
       });
     });
 
-    // group('built with other settings', () {
-    //   test('.firstName() returns a first name', () {
-    //     var name = Namefully('John Smith', config: Config.inline(name: 'v1'));
-    //     expect(name.firstName(), equals('John'));
-    //     expect(name.firstName(includeAll: true), equals('John'));
-    //   });
+    group('can be built with a name', () {
+      test('ordered by lastName', () {
+        var nameCase = findName('byLastName');
+        var name = Namefully(nameCase.name as String, config: nameCase.config);
+        expect(name.toString(), 'Obama Barack');
+        expect(name.firstName(), 'Barack');
+        expect(name.lastName(), 'Obama');
+      });
 
-    //   test('.lastName() returns a last name', () {
-    //     var name = Namefully('John Smith', config: Config.inline(name: 'v2'));
-    //     expect(name.lastName(), equals('Smith'));
-    //     expect(name.lastName(LastNameFormat.all), equals('Smith'));
-    //   });
-    // });
+      test('containing many first names', () {
+        var nameCase = findName('manyFirstNames');
+        var name = Namefully.of(
+          nameCase.name as List<Name>,
+          config: nameCase.config,
+        );
+        expect(name.toString(), 'Daniel Michael Blake Day-Lewis');
+        expect(name.firstName(includeAll: false), equals('Daniel'));
+        expect(name.firstName(), equals('Daniel Michael Blake'));
+        expect(name.hasMiddleName(), equals(false));
+      });
+
+      test('containing many middle names', () {
+        var nameCase = findName('manyMiddleNames');
+        var name = Namefully.of(
+          nameCase.name as List<Name>,
+          config: nameCase.config,
+        );
+        expect(name.toString(), 'Emilia Isobel Euphemia Rose Clarke');
+        expect(name.hasMiddleName(), equals(true));
+        expect(name.middleName(), equals(['Isobel', 'Euphemia', 'Rose']));
+      });
+
+      test('containing many last names', () {
+        var nameCase = findName('manyLastNames');
+        var name = Namefully.of(
+          nameCase.name as List<Name>,
+          config: nameCase.config,
+        );
+        expect(name.toString(), 'Shakira Isabel Ripoll');
+        expect(name.lastName(), equals('Ripoll'));
+        expect(name.lastName(LastNameFormat.all), 'Mebarak Ripoll');
+      });
+
+      test('containing a US title', () {
+        var nameCase = findName('withTitling');
+        var name = Namefully.fromJson(
+          nameCase.name as Map<String, String>,
+          config: nameCase.config,
+        );
+        expect(name.toString(), 'Dr. Albert Einstein');
+        expect(name.prefix(), equals('Dr.'));
+      });
+
+      test('separated by commas', () {
+        var nameCase = findName('withSeparator');
+        var name = Namefully(nameCase.name as String, config: nameCase.config);
+        expect(name.toString(), 'Thiago Da Silva');
+        expect(name.lastName(), equals('Da Silva'));
+      });
+
+      test('containing a suffix', () {
+        var nameCase = findName('withEnding');
+        var name = Namefully.fromJson(
+          nameCase.name as Map<String, String>,
+          config: nameCase.config,
+        );
+        expect(name.toString(), 'Fabrice Piazza, Ph.D');
+        expect(name.birthName(), equals('Fabrice Piazza'));
+        expect(name.suffix(), equals('Ph.D'));
+      });
+
+      test('bypassing validation rules', () {
+        var nameCase = findName('withBypass ');
+        var name = Namefully.fromJson(
+          nameCase.name as Map<String, String>,
+          config: nameCase.config,
+        );
+        expect(name.toString(), 'Mme. Marine Le Pen, M.Sc.');
+        expect(name.prefix(), equals('Mme.'));
+        expect(name.birthName(), equals('Marine Le Pen'));
+        expect(name.suffix(), equals('M.Sc.'));
+      }, skip: true); // todo: review logic behing bypass
+    });
   });
 
   group('Config', () {

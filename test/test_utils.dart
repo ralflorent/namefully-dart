@@ -5,8 +5,6 @@ import 'package:test/test.dart';
 
 final Matcher throwsValidationError = throwsA(TypeMatcher<ValidationError>());
 
-String findName(int index) => nameCases[index]['name'] as String;
-
 class SimpleParser implements Parser<String> {
   @override
   Config? config;
@@ -26,16 +24,34 @@ class SimpleParser implements Parser<String> {
   }
 }
 
-final nameCases = [
-  {
+class NameCase {
+  final dynamic name;
+  final Config config;
+  NameCase(this.name, this.config);
+}
+
+NameCase findName(String name) => NameCase(
+      nameCases[name]!['name'],
+      nameCases[name]!['options'] as Config,
+    );
+
+final nameCases = {
+  'simpleName': {
     'name': 'John Smith',
-    'options': null,
+    'options': Config.inline(name: 'simpleName'),
   },
-  {
-    'name': ['George', 'Walker', 'Bush'],
-    'options': null,
+  'byLastName': {
+    'name': 'Obama Barack',
+    'options': Config.inline(name: 'byLastName', orderedBy: NameOrder.lastName),
   },
-  {
+  'manyFirstNames': {
+    'name': [
+      FirstName('Daniel', ['Michael', 'Blake']),
+      LastName('Day-Lewis'),
+    ],
+    'options': Config.inline(name: 'manyFirstNames'),
+  },
+  'manyMiddleNames': {
     'name': [
       FirstName('Emilia'),
       Name('Isobel', Namon.middleName),
@@ -43,45 +59,45 @@ final nameCases = [
       Name('Rose', Namon.middleName),
       LastName('Clarke')
     ],
-    'options': null
+    'options': Config.inline(name: 'manyMiddleNames'),
   },
-  {
-    'name': [
-      FirstName('Daniel', ['Michael', 'Blake']),
-      LastName('Day-Lewis'),
-    ],
-    'options': null
-  },
-  {
-    'name': 'Obama Barack',
-    'options': Config.inline(orderedBy: NameOrder.lastName),
-  },
-  {
-    'name': {'prefix': 'Dr', 'firstName': 'Albert', 'lastName': 'Einstein'},
-    'options': Config.inline(titling: AbbrTitle.us),
-  },
-  {
-    'name': {'firstName': 'Fabrice', 'lastName': 'Piazza', 'suffix': 'PhD'},
-    'options': Config.inline(ending: true),
-  },
-  {
-    'name': 'Thiago, Da Silva',
-    'options': Config.inline(separator: Separator.comma),
-  },
-  {
+  'manyLastNames': {
     'name': [
       FirstName('Shakira', ['Isabel']),
       LastName('Mebarak', 'Ripoll')
     ],
-    'options': Config.inline(lastNameFormat: LastNameFormat.mother)
+    'options': Config.inline(
+      name: 'manyLastNames',
+      lastNameFormat: LastNameFormat.mother,
+    )
   },
-  {
+  'withTitling': {
+    'name': {'prefix': 'Dr', 'firstName': 'Albert', 'lastName': 'Einstein'},
+    'options': Config.inline(name: 'withTitling', titling: AbbrTitle.us),
+  },
+  'withEnding': {
+    'name': {'firstName': 'Fabrice', 'lastName': 'Piazza', 'suffix': 'Ph.D'},
+    'options': Config.inline(name: 'withEnding', ending: true),
+  },
+  'withSeparator': {
+    'name': 'Thiago, Da Silva',
+    'options': Config.inline(
+      name: 'withSeparator',
+      separator: Separator.comma,
+    ),
+  },
+  'withBypass': {
     'name': {
       'prefix': 'Mme',
       'firstName': 'Marine',
       'lastName': 'Le Pen',
       'suffix': 'M.Sc.'
     },
-    'options': Config.inline(bypass: true, ending: true, titling: AbbrTitle.us)
+    'options': Config.inline(
+      name: 'withBypass',
+      bypass: true,
+      ending: true,
+      titling: AbbrTitle.us,
+    )
   },
-];
+};

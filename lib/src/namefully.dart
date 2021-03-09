@@ -123,7 +123,7 @@ class Namefully {
       nama.add(middleName().join(' ') + sep);
     }
     if (_fullName.suffix != null) nama.add(_fullName.suffix.toString());
-    return nama.join(' ');
+    return nama.join(' ').trim();
   }
 
   /// Returns a full name as set
