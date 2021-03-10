@@ -1,5 +1,8 @@
 # namefully
 
+[![travisci][travisci-img]][travisci-url]
+[![Coverage Status][codecov-img]][codecov-url]
+
 A Dart utility for handling person names.
 
 ## Motivation
@@ -322,3 +325,13 @@ Developed by [Ralph Florent](https://github.com/ralflorent).
 ## License
 
 The underlying content of this utility is licensed under [MIT](LICENSE).
+
+<!-- References -->
+[version-img]: https://img.shields.io/pub/v/namefully
+[version-url]: https://pub.dev/packages/namefully
+[travisci-img]: https://travis-ci.com/ralflorent/namefully-dart.svg?style=shield
+[travisci-url]: https://travis-ci.com/ralflorent/namefully-dart.svg?branch=beta/0.1.0-beta.1
+[codecov-img]: https://raw.githubusercontent.com/ralflorent/namefully-dart/beta/0.1.0-beta.1/coverage_badge.svg?sanitize=true
+[codecov-url]: https://codecov.io/gh/ralflorent/namefully-dart
+[license-img]: https://img.shields.io/pub/l/namefully
+[license-url]: https://opensource.org/licenses/MIT
