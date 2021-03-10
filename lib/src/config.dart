@@ -1,8 +1,6 @@
-/// Config
-
 import 'enums.dart';
 
-/// The single [Config]uration to use across the library.
+/// A single [Config]uration to use across the other components.
 ///
 /// A singleton pattern is used to keep one configuration across the [Namefully]
 /// setup. This is useful to avoid confusion when building other components such
@@ -12,31 +10,45 @@ import 'enums.dart';
 /// For example, a person's [FullName] may appear by:
 /// [NameOrder.firstName]: `Jon Snow` or
 /// [NameOrder.lastName]: `Snow Jon`.
+///
+/// [Config] makes it easy to set up a specific [Config]uration for [Namefully]
+/// and reuse it through other instances or components along the way. If a new
+/// [Config] is needed, a named configuration may be created. It is actually
+/// advised to use named [Config(name)] instead as it may help mitigate issues
+/// and avoid confusion and ambuguity in the future. Plus, a named configuration
+/// explains its purpose.
+///
+/// ```dart
+/// var defaultConfig = Config();
+/// var otherConfig = Config('other'); // still has the default props
+/// var inlineConfig = Config.inline(name: 'other', bypass: true);
+/// ```
+///
+/// Additionally, [mergeWith] combines an existing configuration with a new,
+/// prioritizing the new properties.
 class Config {
-  /// The order of appearance of a full name: by [NameOrder.firstName] or
-  /// [NameOrder.lastName].
+  /// The order of appearance of a full name.
   NameOrder orderedBy;
 
-  /// For literal `String` input, this is the parameter used to indicate the
-  /// token to utilize to split the string names.
+  /// The token used to indicate how to split string values.
   Separator separator;
 
-  /// Whether or not to add period to a prefix using the American or British way.
+  /// The abbreviation type to indicate whether or not to add period to a prefix
+  /// using the American or British way.
   AbbrTitle titling;
 
-  /// Indicates if the ending suffix should be separated with a comma or space.
+  /// The option indicating if an [ending] suffix is used in a formal way.
   bool ending;
 
-  /// Bypass the validation rules with this option. Since I only provide a
-  /// handful of suffixes or prefixes in English, this parameter is ideal to
-  /// avoid checking their validity.
+  /// A [bypass] of the validation rules with this option. This option is ideal
+  /// to avoid checking their validity.
   bool bypass;
 
-  /// how to format a surname:
-  /// - 'father' (father name only)
-  /// - 'mother' (mother name only)
-  /// - 'hyphenated' (joining both father and mother names with a hyphen)
-  /// - 'all' (joining both father and mother names with a space).
+  /// An option indicating how to format a surname:
+  /// - `father` name only
+  /// - `mother` name only
+  /// - `hyphenated`, joining both father and mother names with a hyphen
+  /// - `all`, joining both father and mother names with a space.
   ///
   /// This parameter can be set either by an instance of a last name or during
   /// the creation of a namefully instance. To avoid ambiguity, we prioritize as
@@ -47,7 +59,7 @@ class Config {
   /// The name of the cached [Config].
   final String name;
 
-  /// Cache of multiple instances
+  /// Cache for multiple instances.
   static final Map<String, Config> _cache = {};
 
   /// Returns a single [Config] with default values.
@@ -72,7 +84,7 @@ class Config {
   /// Returns a unified version of default values of this [Config] and the
   /// optional values to consider.
   ///
-  /// This allows an override of some properties
+  /// This allows an override of some properties.
   factory Config.inline({
     String name = 'default',
     NameOrder? orderedBy,
@@ -91,7 +103,7 @@ class Config {
       ..lastNameFormat = lastNameFormat ?? LastNameFormat.father;
   }
 
-  /// Returns a unified version of prexisting values of [Config] and the [other]
+  /// Returns a unified version of existing values of [Config] and the [other]
   /// provided values.
   factory Config.mergeWith(Config? other) {
     if (other == null) return Config();

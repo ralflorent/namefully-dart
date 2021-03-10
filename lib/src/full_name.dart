@@ -1,10 +1,35 @@
-/// Full name
-
 import 'config.dart';
 import 'enums.dart';
 import 'models.dart';
 import 'validators.dart';
 
+/// The core component of this utility.
+///
+/// This component is comprised of five entities that make it easy to handle a
+/// full name set: prefix, first name, middle name, last name, and suffix.
+///
+/// This class is intended for internal processes. However, it is understandable
+/// that it might be needed at some point for additional purposes. For this rea-
+/// son, it's made available.
+///
+/// It is recommended to avoid using [FullName] unless it is highly necessary or
+/// a custom parser is used for uncommon use cases. This utility tries to cover
+/// as many use cases as possible.
+///
+/// To harness Dart cascade features, a good use of it may look like this:
+///
+///```dart
+/// var fullName = FullName()
+///     ..rawPrefix('Mr')
+///     ..rawFirstName('John')
+///     ..rawMiddleName(['Ben', 'Carl'])
+///     ..rawLastName('Smith')
+///     ..rawSuffix('Ph.D');
+/// print(fullName.shorten()); // John Smith
+/// ```
+///
+/// Additionally, a optional [Config]uration can be used to indicate some speci-
+/// fic behaviors related to that name handling.
 class FullName {
   Name? _prefix;
   late FirstName _firstName;
@@ -15,7 +40,6 @@ class FullName {
 
   FullName({Config? config}) : _config = config ?? Config();
 
-  /// For external use only
   FullName.fromJson(Map<String, String> jsonName, {Config? config})
       : _config = config ?? Config() {
     _parseJsonName(jsonName);

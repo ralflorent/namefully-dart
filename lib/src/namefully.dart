@@ -4,7 +4,6 @@
 ///
 /// Sources
 /// - repo: https://github.com/ralflorent/namefully-dart
-/// - docs: https://namefully.dev
 /// - pub:  https://pub.dev/packages/namefully
 ///
 /// @license MIT
@@ -17,7 +16,7 @@ import 'models.dart';
 import 'parsers.dart';
 import 'utils.dart';
 
-/// [Namefully] is a utility for handling person names.
+/// A helper for organizing person names.
 ///
 /// It does not magically guess which part of the name is what. It relies
 /// actually on how the developer indicates the roles of the name parts so that
@@ -36,8 +35,8 @@ import 'utils.dart';
 ///
 /// Note that the name standards used for the current version of this library
 /// are as follows:
-///      [Prefix] Firstname [Middlename] Lastname [Suffix]
-/// The opening `[` and closing `]` brackets mean that these parts are optional.
+///      `(prefix) firstName (middleName) lastName (suffix)`
+/// The opening `(` and closing `)` symbols mean that these parts are optional.
 /// In other words, the most basic and typical case is a name that looks like
 /// this: `John Smith`, where `John` is the first name and `Smith`, the last
 /// name.
@@ -234,11 +233,11 @@ class Namefully {
   /// [what] indicates which variant to use when describing a name part
   ///
   /// Treated as a categorical dataset, the summary contains the following info:
-  /// [count]: the number of *unrestricted* characters of the name;
-  /// [frequency]: the highest frequency within the characters;
-  /// [top]: the character with the highest frequency;
-  /// [unique]: the count of unique characters of the name;
-  /// [distribution]: the characters' distribution.
+  /// `count`: the number of *unrestricted* characters of the name;
+  /// `frequency`: the highest frequency within the characters;
+  /// `top`: the character with the highest frequency;
+  /// `unique`: the count of unique characters of the name;
+  /// `distribution`: the characters' distribution.
   ///
   /// @example
   /// Given the name "Thomas Alva Edison", the summary will output as follows:
@@ -492,9 +491,9 @@ class Namefully {
   /// Transforms a [birthName]  to ToGgLe CaSe.
   String toggle() => toggleCase(birthName());
 
-  /// Transforms a [birthName] to a specific title [case].
-  String to(Capitalization _case) {
-    switch (_case) {
+  /// Transforms a [birthName] to a specific title [capitalization].
+  String to(Capitalization capitalization) {
+    switch (capitalization) {
       case Capitalization.camel:
         return camel();
       case Capitalization.dot:

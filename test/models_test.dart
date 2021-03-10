@@ -20,11 +20,11 @@ void main() {
     });
 
     test('creates a name with its initial capitalized', () {
-      expect(Name('ben', Namon.firstName, Uppercase.initial).toString(), 'Ben');
+      expect(Name('ben', Namon.firstName, CapsRange.initial).toString(), 'Ben');
     });
 
     test('creates a name fully capitalized', () {
-      expect(Name('rick', Namon.firstName, Uppercase.all).toString(), 'RICK');
+      expect(Name('rick', Namon.firstName, CapsRange.all).toString(), 'RICK');
     });
 
     test('== [Name] returns true if they are equal', () {
@@ -45,13 +45,13 @@ void main() {
 
     test('.caps() capitalizes the name afterwards', () {
       expect((name..caps()).toString(), 'John');
-      expect((name..caps(Uppercase.all)).toString(), 'JOHN');
+      expect((name..caps(CapsRange.all)).toString(), 'JOHN');
     });
 
     test('.decaps() de-capitalizes the name afterwards', () {
       var n = Name('MORTY', Namon.firstName);
       expect((n..decaps()).toString(), 'mORTY');
-      expect((n..decaps(Uppercase.all)).toString(), 'morty');
+      expect((n..decaps(CapsRange.all)).toString(), 'morty');
     });
 
     test('.normalize() normalizes the name afterward', () {
@@ -121,8 +121,8 @@ void main() {
     });
 
     test('.caps() capitalizes all parts of a first name afterwards', () {
-      expect((firstName..caps(Uppercase.all)).toString(), equals('JOHN'));
-      expect((firstName..caps(Uppercase.all)).toString(includeAll: true),
+      expect((firstName..caps(CapsRange.all)).toString(), equals('JOHN'));
+      expect((firstName..caps(CapsRange.all)).toString(includeAll: true),
           equals('JOHN BEN CARL'));
     });
 
@@ -134,8 +134,8 @@ void main() {
 
     test('.decaps() de-capitalizes all parts of a first name afterwards', () {
       var name = FirstName('JOHN', ['BEN', 'CARL']);
-      expect((name..decaps(Uppercase.all)).toString(), equals('john'));
-      expect((name..decaps(Uppercase.all)).toString(includeAll: true),
+      expect((name..decaps(CapsRange.all)).toString(), equals('john'));
+      expect((name..decaps(CapsRange.all)).toString(includeAll: true),
           equals('john ben carl'));
     });
 
@@ -218,13 +218,13 @@ void main() {
     test('.caps() capitalizes a last name afterwards', () {
       var name = LastName('sánchez');
       expect((name..caps()).toString(), equals('Sánchez'));
-      expect((name..caps(Uppercase.all)).toString(), equals('SÁNCHEZ'));
+      expect((name..caps(CapsRange.all)).toString(), equals('SÁNCHEZ'));
     });
 
     test('.caps() capitalizes all parts of the last name afterwards', () {
-      expect((lastName..caps(Uppercase.all)).toString(), equals('SMITH'));
+      expect((lastName..caps(CapsRange.all)).toString(), equals('SMITH'));
       expect(
-          (lastName..caps(Uppercase.all)).toString(format: LastNameFormat.all),
+          (lastName..caps(CapsRange.all)).toString(format: LastNameFormat.all),
           equals('SMITH DOE'));
     });
 
@@ -237,8 +237,8 @@ void main() {
 
     test('.decaps() de-capitalizes all parts of a last name afterwards', () {
       var name = LastName('SMITH', 'DOE');
-      expect((name..decaps(Uppercase.all)).toString(), equals('smith'));
-      expect((name..decaps(Uppercase.all)).toString(format: LastNameFormat.all),
+      expect((name..decaps(CapsRange.all)).toString(), equals('smith'));
+      expect((name..decaps(CapsRange.all)).toString(format: LastNameFormat.all),
           equals('smith doe'));
     });
 
