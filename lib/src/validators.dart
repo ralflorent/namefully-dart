@@ -96,6 +96,7 @@ abstract class Validator<T> {
   void validate(T value);
 }
 
+/// A list of validators for a specific namon.
 class Validators {
   static final namon = NamonValidator();
   static final prefix = NameValidator();

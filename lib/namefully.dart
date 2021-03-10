@@ -9,4 +9,4 @@ export 'src/models.dart';
 export 'src/namefully.dart';
 export 'src/parsers.dart' show Parser;
 export 'src/utils.dart' show NameIndex, organizeNameIndex;
-export 'src/validators.dart' show Validators;
+export 'src/validators.dart' show Validators, ValidationError;
