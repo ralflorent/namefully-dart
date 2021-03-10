@@ -98,7 +98,7 @@ class JsonNameParser implements Parser<Map<String, String>> {
   @override
   Config? config;
 
-  Map<Namon, String> _nama = {};
+  final Map<Namon, String> _nama = {};
 
   JsonNameParser(this.raw) {
     _asNama();
