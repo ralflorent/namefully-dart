@@ -1,7 +1,5 @@
 # namefully
 
-## Description
-
 A Dart utility for handling person names.
 
 ## Motivation

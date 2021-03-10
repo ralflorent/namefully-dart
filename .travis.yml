@@ -1,0 +1,15 @@
+language: dart
+
+dart:
+- stable
+- beta
+- dev
+- "2.12.0"
+
+dart_task:
+- test: --platform vm
+- dartfmt: true
+- dartanalyzer: true
+
+script:
+- bash <(curl -s https://codecov.io/bash)
