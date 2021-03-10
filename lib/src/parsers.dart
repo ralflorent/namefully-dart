@@ -5,6 +5,7 @@ import 'models.dart';
 import 'utils.dart';
 import 'validators.dart';
 
+/// A parser signature that helps to organize the names accordingly.
 abstract class Parser<T> {
   /// raw data to be parsed
   late T raw;

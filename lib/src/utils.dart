@@ -7,6 +7,7 @@ extension CharSet<T> on Set<T> {
   T random() => List.from(this).elementAt(Random().nextInt(length)) as T;
 }
 
+/// A fixed set of values to handle specific positions for list of names.
 class NameIndex {
   final int prefix, firstName, middleName, lastName, suffix;
   const NameIndex(

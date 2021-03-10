@@ -4,7 +4,6 @@
 ///
 /// Sources
 /// - repo: https://github.com/ralflorent/namefully-dart
-/// - docs: https://namefully.dev
 /// - pub:  https://pub.dev/packages/namefully
 ///
 /// @license MIT
@@ -17,7 +16,7 @@ import 'models.dart';
 import 'parsers.dart';
 import 'utils.dart';
 
-/// [Namefully] is a utility for handling person names.
+/// A helper for organizing person names.
 ///
 /// It does not magically guess which part of the name is what. It relies
 /// actually on how the developer indicates the roles of the name parts so that
