@@ -59,17 +59,17 @@ void main() {
     test('.capitalize() capitalizes a string accordingly', () {
       expect(capitalize(''), equals(''));
       expect(capitalize('stRiNg'), equals('String'));
-      expect(capitalize('stRiNg', Uppercase.initial), equals('String'));
-      expect(capitalize('StRiNg', Uppercase.all), equals('STRING'));
-      expect(capitalize('StRiNg', Uppercase.none), equals('StRiNg'));
+      expect(capitalize('stRiNg', CapsRange.initial), equals('String'));
+      expect(capitalize('StRiNg', CapsRange.all), equals('STRING'));
+      expect(capitalize('StRiNg', CapsRange.none), equals('StRiNg'));
     });
 
     test('.decapitalize() de-capitalizes a string accordingly', () {
       expect(decapitalize(''), equals(''));
       expect(decapitalize('StRiNg'), equals('stRiNg'));
-      expect(decapitalize('StRiNg', Uppercase.initial), equals('stRiNg'));
-      expect(decapitalize('StRiNg', Uppercase.all), equals('string'));
-      expect(decapitalize('StRiNg', Uppercase.none), equals('StRiNg'));
+      expect(decapitalize('StRiNg', CapsRange.initial), equals('stRiNg'));
+      expect(decapitalize('StRiNg', CapsRange.all), equals('string'));
+      expect(decapitalize('StRiNg', CapsRange.none), equals('StRiNg'));
     });
 
     test('.toggleCase() toggles a string accordingly', () {

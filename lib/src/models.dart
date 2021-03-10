@@ -1,4 +1,3 @@
-/// Name class definition
 import 'enums.dart';
 import 'utils.dart';
 
@@ -9,7 +8,7 @@ class Name {
   late String _namon;
   late String _initial;
   late String _body;
-  final Uppercase _cap;
+  final CapsRange _cap;
   Namon type;
   late bool isEmpty;
   late bool isNotEmpty;
@@ -19,8 +18,8 @@ class Name {
   /// A name [type] must be indicated to categorize [this] name so it can
   /// be treated accordingly. [cap] determines how a [this] name should be
   /// capitalized.
-  Name(String namon, this.type, [Uppercase? cap])
-      : _cap = cap ?? Uppercase.initial {
+  Name(String namon, this.type, [CapsRange? cap])
+      : _cap = cap ?? CapsRange.initial {
     this.namon = namon;
     if (cap != null) caps(cap);
   }
@@ -37,7 +36,7 @@ class Name {
     _body = _namon.substring(1);
   }
 
-  Uppercase get capitalized => _cap;
+  CapsRange get capitalized => _cap;
 
   @override
   String toString() => _namon;
@@ -57,11 +56,11 @@ class Name {
   List<String> initials() => [_initial];
 
   /// Capitalizes [this].
-  void caps([Uppercase? option]) {
+  void caps([CapsRange? option]) {
     option ??= _cap;
-    if (option == Uppercase.initial) {
+    if (option == CapsRange.initial) {
       namon = '${_initial.toUpperCase()}$_body';
-    } else if (option == Uppercase.all) {
+    } else if (option == CapsRange.all) {
       namon = '${_initial.toUpperCase()}${_body.toUpperCase()}';
     } else {
       namon = _namon.toLowerCase();
@@ -69,11 +68,11 @@ class Name {
   }
 
   /// De-capitalizes [this].
-  void decaps([Uppercase? option]) {
+  void decaps([CapsRange? option]) {
     option ??= _cap;
-    if (option == Uppercase.initial) {
+    if (option == CapsRange.initial) {
       namon = '${_initial.toLowerCase()}$_body';
-    } else if (option == Uppercase.all) {
+    } else if (option == CapsRange.all) {
       namon = '${_initial.toLowerCase()}${_body.toLowerCase()}';
     } else {
       namon = _namon.toUpperCase();
@@ -135,12 +134,12 @@ class FirstName extends Name {
 
   /// Capitalizes [this].
   @override
-  void caps([Uppercase? option]) {
+  void caps([CapsRange? option]) {
     option ??= capitalized;
-    if (option == Uppercase.initial) {
+    if (option == CapsRange.initial) {
       namon = capitalize(namon);
       if (hasMore()) _more = _more.map(capitalize).toList();
-    } else if (option == Uppercase.all) {
+    } else if (option == CapsRange.all) {
       namon = namon.toUpperCase();
       if (hasMore()) _more = _more.map((n) => n.toUpperCase()).toList();
     }
@@ -148,12 +147,12 @@ class FirstName extends Name {
 
   /// De-capitalizes [this].
   @override
-  void decaps([Uppercase? option]) {
+  void decaps([CapsRange? option]) {
     option ??= capitalized;
-    if (option == Uppercase.initial) {
+    if (option == CapsRange.initial) {
       namon = decapitalize(namon);
       if (hasMore()) _more = _more.map(decapitalize).toList();
-    } else if (option == Uppercase.all) {
+    } else if (option == CapsRange.all) {
       namon = namon.toLowerCase();
       if (hasMore()) _more = _more.map((n) => n.toLowerCase()).toList();
     }
@@ -244,12 +243,12 @@ class LastName extends Name {
 
   /// Capitalizes [this].
   @override
-  void caps([Uppercase? option]) {
+  void caps([CapsRange? option]) {
     option ??= capitalized;
-    if (option == Uppercase.initial) {
+    if (option == CapsRange.initial) {
       namon = capitalize(namon);
       if (hasMother()) _mother = capitalize(_mother!);
-    } else if (option == Uppercase.all) {
+    } else if (option == CapsRange.all) {
       namon = namon.toUpperCase();
       if (hasMother()) _mother = _mother!.toUpperCase();
     }
@@ -257,12 +256,12 @@ class LastName extends Name {
 
   /// De-capitalizes [this].
   @override
-  void decaps([Uppercase? option]) {
+  void decaps([CapsRange? option]) {
     option ??= capitalized;
-    if (option == Uppercase.initial) {
+    if (option == CapsRange.initial) {
       namon = decapitalize(namon);
       if (hasMother()) _mother = decapitalize(_mother!);
-    } else if (option == Uppercase.all) {
+    } else if (option == CapsRange.all) {
       namon = namon.toLowerCase();
       if (hasMother()) _mother = _mother!.toLowerCase();
     }
@@ -281,7 +280,7 @@ class LastName extends Name {
       generatePassword(toString(format: format));
 }
 
-/// Summary of descriptive stats of the name
+/// Summary of descriptive stats of the name.
 class Summary {
   Map<String, int> _distribution = {};
   int _count = 0;
@@ -291,7 +290,7 @@ class Summary {
   late final String _namon;
   final List<String> _restrictions;
 
-  /// Creates a [Summary] of a given string of alphabetical characters
+  /// Creates a [Summary] of a given string of alphabetical characters.
   Summary(String namon, {List<String>? restrictions})
       : _namon = namon,
         _restrictions = restrictions ?? const [' '] {

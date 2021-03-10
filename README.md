@@ -107,7 +107,7 @@ of a raw string name under the hood.
 
 ```dart
 var name = Namefully(
-  'SAdam,Sandler',
+  'Adam,Sandler',
   config: Config.inline(separator: Separator.comma),
 );
 print(name.fullName()); // Adam Sandler

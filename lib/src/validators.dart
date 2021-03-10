@@ -5,7 +5,8 @@ import 'enums.dart';
 import 'models.dart';
 import 'utils.dart';
 
-class ValidationError extends Error {
+/// An error thrown to indicate that a namon fails the valiation rules.
+class ValidationError extends Error implements Exception {
   /// Name of the invalid [name] type, if available.
   final String? name;
 

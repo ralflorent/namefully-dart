@@ -1,8 +1,11 @@
-/// Utils
+import 'dart:math';
 
 import 'constants.dart';
 import 'enums.dart';
-import 'extensions.dart';
+
+extension CharSet<T> on Set<T> {
+  T random() => List.from(this).elementAt(Random().nextInt(length)) as T;
+}
 
 class NameIndex {
   final int prefix, firstName, middleName, lastName, suffix;
@@ -51,19 +54,19 @@ NameIndex organizeNameIndex(NameOrder orderedBy, int argLength,
 }
 
 /// Capitalizes a [string] via a [Capitalization] option.
-String capitalize(String string, [Uppercase option = Uppercase.initial]) {
-  if (string.isEmpty || option == Uppercase.none) return string;
+String capitalize(String string, [CapsRange option = CapsRange.initial]) {
+  if (string.isEmpty || option == CapsRange.none) return string;
   final initial = string[0].toUpperCase();
   final rest = string.substring(1).toLowerCase();
-  return option == Uppercase.initial ? (initial + rest) : string.toUpperCase();
+  return option == CapsRange.initial ? (initial + rest) : string.toUpperCase();
 }
 
 /// De-capitalizes a [string] via a [Capitalization] option.
-String decapitalize(String string, [Uppercase option = Uppercase.initial]) {
-  if (string.isEmpty || option == Uppercase.none) return string;
+String decapitalize(String string, [CapsRange option = CapsRange.initial]) {
+  if (string.isEmpty || option == CapsRange.none) return string;
   final initial = string[0].toLowerCase();
   final rest = string.substring(1);
-  return option == Uppercase.initial ? (initial + rest) : string.toLowerCase();
+  return option == CapsRange.initial ? (initial + rest) : string.toLowerCase();
 }
 
 /// Toggles a [string] representation.

@@ -1,5 +1,3 @@
-/// Parsers
-
 import 'config.dart';
 import 'enums.dart';
 import 'full_name.dart';
