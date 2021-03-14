@@ -6,8 +6,6 @@
 
 A Dart utility for handling person names.
 
-> NOTE: CURRENTLY BEING DEVELOPED!!!
-
 ## Motivation
 
 Have you ever had to format a user's name in a particular order, way, or shape?
@@ -311,6 +309,6 @@ The underlying content of this utility is licensed under [MIT](LICENSE).
 [version-img]: https://img.shields.io/pub/v/namefully
 [version-url]: https://pub.dev/packages/namefully
 [travisci-img]: https://travis-ci.com/ralflorent/namefully-dart.svg?style=shield
-[travisci-url]: https://travis-ci.com/ralflorent/namefully-dart.svg?branch=beta/0.1.0-beta.1
-[codecov-img]: https://raw.githubusercontent.com/ralflorent/namefully-dart/beta/0.1.0-beta.1/coverage_badge.svg?sanitize=true
+[travisci-url]: https://travis-ci.com/ralflorent/namefully-dart.svg?branch=main
+[codecov-img]: https://raw.githubusercontent.com/ralflorent/namefully-dart/main/coverage_badge.svg?sanitize=true
 [codecov-url]: https://codecov.io/gh/ralflorent/namefully-dart
