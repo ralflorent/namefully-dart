@@ -10,19 +10,19 @@ enum AbbrTitle { us, uk }
 ///
 /// This enum can be set via [Config] or when creating a [LastName]. As this can
 /// become ambiguous at the time of handling it, the value set in [Config] is
-/// prioritized and viewed as source of truth for future considerations.
+/// prioritized and viewed as the source of truth for future considerations.
 enum LastNameFormat { father, mother, hyphenated, all }
 
-/// The order of appearance of a full name.
+/// The order of appearance of a [FullName].
 enum NameOrder { firstName, lastName }
 
-/// The types of name handled in thi according the name standards.
+/// The types of name handled in this according the name standards.
 enum NameType { firstName, middleName, lastName, birthName }
 
-/// The distinct variants to indicate how to flatten a name.
+/// The distinct variants to indicate how to flatten a [FullName].
 enum FlattenedBy { firstName, middleName, lastName, firstMid, midLast, all }
 
-/// The range to use when capitalizing a string.
+/// The range to use when capitalizing a string content.
 enum CapsRange { none, initial, all }
 
 /// The types of capitalization cases supported in this utility.
@@ -40,6 +40,7 @@ enum Capitalization {
 
 /// The types of name handled in this utility according the name standards.
 ///
+/// **Note**:
 /// The word `namon` does not exist. It is a singular form used to refer to a
 /// piece of name. And the plural form is `nama`.
 enum Namon { prefix, firstName, middleName, lastName, suffix }

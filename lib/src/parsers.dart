@@ -7,13 +7,13 @@ import 'validators.dart';
 
 /// A parser signature that helps to organize the names accordingly.
 abstract class Parser<T> {
-  /// raw data to be parsed
+  /// The raw data to be parsed.
   late T raw;
 
-  /// Configurations for parsing
+  /// The configurations to consider while parsing.
   Config? config;
 
-  /// Parses the raw data into a full name
+  /// Parses the raw data into a [FullName].
   FullName parse({Config? options});
 }
 

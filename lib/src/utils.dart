@@ -3,20 +3,41 @@ import 'dart:math';
 import 'constants.dart';
 import 'enums.dart';
 
-extension CharSet<T> on Set<T> {
-  T random() => List.from(this).elementAt(Random().nextInt(length)) as T;
-}
-
 /// A fixed set of values to handle specific positions for list of names.
+///
+/// As for list of names, this helps to follow a specific order based on the
+/// count of elements. It is expected that the list has to be between two and
+/// five elements. Also, the order of appearance set in the [Config]uration
+/// influences how the parsing is carried out.
+///
+/// Ordered by first name, the parser works as follows:
+/// - 2 elements: firstName lastName
+/// - 3 elements: firstName middleName lastName
+/// - 4 elements: prefix firstName middleName lastName
+/// - 5 elements: prefix firstName middleName lastName suffix
+///
+/// Ordered by last name, the parser works as follows:
+/// - 2 elements: lastName firstName
+/// - 3 elements: lastName firstName middleName
+/// - 4 elements: prefix lastName firstName middleName
+/// - 5 elements: prefix lastName firstName middleName suffix
+///
+/// For example, `Jane Smith` (ordered by first name) is expected to be indexed:
+/// `['Jane', 'Smith']`.
 class NameIndex {
   final int prefix, firstName, middleName, lastName, suffix;
   const NameIndex(
-      this.prefix, this.firstName, this.middleName, this.lastName, this.suffix);
+    this.prefix,
+    this.firstName,
+    this.middleName,
+    this.lastName,
+    this.suffix,
+  );
 }
 
-/// Reorganizes the existing global indexes for array of name parts:
-/// [orderedBy] by first or last name, [argLength] length of the provided array,
-/// [nameIndex] global preset of indexing.
+/// Reorganizes the existing global indexes for list of name parts:
+/// [orderedBy] first or last name, of [argLength] of the provided array, using
+/// [nameIndex] as a global preset of indexing.
 NameIndex organizeNameIndex(NameOrder orderedBy, int argLength,
     {NameIndex? nameIndex}) {
   var out = nameIndex ?? const NameIndex(0, 1, 2, 3, 4);
@@ -54,20 +75,20 @@ NameIndex organizeNameIndex(NameOrder orderedBy, int argLength,
   return out;
 }
 
-/// Capitalizes a [string] via a [Capitalization] option.
-String capitalize(String string, [CapsRange option = CapsRange.initial]) {
-  if (string.isEmpty || option == CapsRange.none) return string;
+/// Capitalizes a [string] via a [CapsRange] option.
+String capitalize(String string, [CapsRange range = CapsRange.initial]) {
+  if (string.isEmpty || range == CapsRange.none) return string;
   final initial = string[0].toUpperCase();
   final rest = string.substring(1).toLowerCase();
-  return option == CapsRange.initial ? (initial + rest) : string.toUpperCase();
+  return range == CapsRange.initial ? (initial + rest) : string.toUpperCase();
 }
 
-/// De-capitalizes a [string] via a [Capitalization] option.
-String decapitalize(String string, [CapsRange option = CapsRange.initial]) {
-  if (string.isEmpty || option == CapsRange.none) return string;
+/// De-capitalizes a [string] via a [CapsRange] option.
+String decapitalize(String string, [CapsRange range = CapsRange.initial]) {
+  if (string.isEmpty || range == CapsRange.none) return string;
   final initial = string[0].toLowerCase();
   final rest = string.substring(1);
-  return option == CapsRange.initial ? (initial + rest) : string.toLowerCase();
+  return range == CapsRange.initial ? (initial + rest) : string.toLowerCase();
 }
 
 /// Toggles a [string] representation.
@@ -79,10 +100,15 @@ String toggleCase(String string) {
   return chars.join();
 }
 
-/// Generates a password [str] content.
-String generatePassword(String str) {
+/// Makes a [Set] capable of [random]izing its elements.
+extension CharSet<E> on Set<E> {
+  E random() => List.from(this).elementAt(Random().nextInt(length)) as E;
+}
+
+/// Generates a password-like content from a [string].
+String generatePassword(String string) {
   var mapper = passwordMapper;
-  return str.split('').map((char) {
+  return string.split('').map((char) {
     if (mapper.containsKey(char.toLowerCase())) {
       return mapper[char.toLowerCase()]!.random();
     }
@@ -91,15 +117,15 @@ String generatePassword(String str) {
 }
 
 class SeparatorChar {
-  static final comma = ',';
-  static final colon = ':';
-  static final empty = '';
-  static final doubleQuote = '"';
-  static final hyphen = '-';
-  static final period = '.';
-  static final singleQuote = "'";
-  static final space = ' ';
-  static final underscore = '_';
+  static const comma = ',';
+  static const colon = ':';
+  static const empty = '';
+  static const doubleQuote = '"';
+  static const hyphen = '-';
+  static const period = '.';
+  static const singleQuote = "'";
+  static const space = ' ';
+  static const underscore = '_';
 
   static String extract(Separator separator) {
     switch (separator) {
@@ -126,11 +152,11 @@ class SeparatorChar {
 }
 
 class NamonKey {
-  static final prefix = 'prefix';
-  static final firstName = 'firstName';
-  static final middleName = 'middleName';
-  static final lastName = 'lastName';
-  static final suffix = 'suffix';
+  static const prefix = 'prefix';
+  static const firstName = 'firstName';
+  static const middleName = 'middleName';
+  static const lastName = 'lastName';
+  static const suffix = 'suffix';
 
   static String castFrom(Namon namon) {
     switch (namon) {
@@ -147,8 +173,8 @@ class NamonKey {
     }
   }
 
-  static Namon? castTo(String str) {
-    switch (str) {
+  static Namon? castTo(String string) {
+    switch (string) {
       case 'prefix':
         return Namon.prefix;
       case 'firstName':

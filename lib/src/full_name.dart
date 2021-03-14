@@ -90,17 +90,22 @@ class FullName {
     return false;
   }
 
+  /// Sets a [prefix] using string values.
   void rawPrefix(String namon) => prefix = Name(namon, Namon.prefix);
 
+  /// Sets a [firstName] using string values.
   void rawFirstName(String namon, {List<String>? more}) =>
       firstName = FirstName(namon, more);
 
+  /// Sets a [middleName] using string values.
   void rawMiddleName(List<String> names) =>
       middleName = names.map((n) => Name(n, Namon.middleName)).toList();
 
+  /// Sets a [lastName] using string values.
   void rawLastName(String father, {String? mother, LastNameFormat? format}) =>
       lastName = LastName(father, mother, format ?? LastNameFormat.father);
 
+  /// Sets a [suffix] using string values.
   void rawSuffix(String namon) => suffix = Name(namon, Namon.suffix);
 
   void _parseJsonName(Map<String, String> json) {
@@ -115,8 +120,8 @@ class FullName {
       if (json['suffix'] != null) suffix = Name(json['suffix']!, Namon.suffix);
       firstName = FirstName(json['firstName']!);
       lastName = LastName(json['lastName']!);
-    } catch (e) {
-      throw ValidationError('invalid content! \n$e');
+    } catch (error) {
+      throw ValidationError('invalid content! \n$error');
     }
   }
 }

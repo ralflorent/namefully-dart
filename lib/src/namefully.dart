@@ -1,12 +1,11 @@
 /// Welcome to namefully!
 ///
-/// `namefully` is a Dart utility for handing person names.
+/// `namefully` is a Dart utility for handling person names.
 ///
 /// Sources
 /// - repo: https://github.com/ralflorent/namefully-dart
 /// - pub:  https://pub.dev/packages/namefully
-///
-/// @license MIT
+/// - license: MIT
 
 import 'config.dart';
 import 'constants.dart';
@@ -16,20 +15,21 @@ import 'models.dart';
 import 'parsers.dart';
 import 'utils.dart';
 
-/// A helper for organizing person names.
+/// A helper for organizing person names in a particular order, way, or shape.
 ///
-/// It does not magically guess which part of the name is what. It relies
-/// actually on how the developer indicates the roles of the name parts so that
-/// it, internally, can perform certain operations and saves the developer some
-/// calculations/processings. Nevertheless, Namefully can be constructed using
+/// Though `namefully` is easy to use, it does not magically guess which part of
+/// the name is what (prefix, suffix, first, last, or middle names). It relies
+/// actually on how the name parts are indicated (i.e., their roles) so that
+/// it can perform internally certain operations and saves us some extra
+/// calculations/processings. In addition, [Namefully] can be created using
 /// distinct raw data shapes. This is intended to give some flexibility to the
 /// developer so that he or she is not bound to a particular data format.
-/// Please do follow closely the APIs to know how to properly use it in order to
-/// avoid some errors (mainly validation's).
+/// By following closely the API reference to know how to harness its usability,
+/// this utility aims to save time in formatting names.
 ///
 /// [Namefully] also works like a trapdoor. Once a raw data is provided and
-/// validated, a developer can only ACCESS in a vast amount of, yet effective
-/// ways the name info. NO EDITING is possible. If the name is mistaken, a new
+/// validated, a developer can only *access* in a vast amount of, yet effective
+/// ways the name info. *No editing* is possible. If the name is mistaken, a new
 /// instance of [Namefully] must be created. Remember, this utility's primary
 /// objective is to help to **handle** a person name.
 ///
@@ -41,7 +41,7 @@ import 'utils.dart';
 /// this: `John Smith`, where `John` is the first name and `Smith`, the last
 /// name.
 ///
-/// @see https://departments.weber.edu/qsupport&training/Data_Standards/Name.htm
+/// See https://departments.weber.edu/qsupport&training/Data_Standards/Name.htm
 /// for more info on name standards.
 ///
 /// **IMPORTANT**: Keep in mind that the order of appearance matters and can be
@@ -53,18 +53,18 @@ import 'utils.dart';
 /// [Namefully] and the rest will follow.
 ///
 /// Some terminologies used across the library are:
-/// - namon: 1 piece of a name (e.g., firstname)
-/// - nama: 2+ pieces of a name (e.g., firstname + lastname)
+/// - namon: 1 piece of name (e.g., first name)
+/// - nama: 2+ pieces of name (e.g., first name + last name)
 ///
 /// Happy name handling!
 class Namefully {
   /// A copy of high-quality name data.
   late FullName _fullName;
 
-  /// Statistical info on the birth name.
+  /// The statistical information on the birth name.
   late Summary _summary;
 
-  /// A copy of the default configuration combined with a customized one.
+  /// A copy of the default configuration (combined with a custom one if any).
   late Config _config;
 
   Namefully(String names, {Config? config}) {
@@ -88,13 +88,13 @@ class Namefully {
     _build(parser, config);
   }
 
-  /// The [count] of characters of the [birthName] without spaces.
+  /// The number of characters of the [birthName] without spaces.
   int get count => _summary.count;
 
   /// The number of characters of the [birthName], including spaces.
   int get length => _summary.length;
 
-  /// Gets the [fullName] ordered as configured.
+  /// Gets the full name ordered as configured.
   ///
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
@@ -104,8 +104,8 @@ class Namefully {
   ///
   /// For example:
   /// ```dart
-  /// var name = Namefully('Jon Novak Snow');
-  /// print(name.format('l f m')); // "Snow Jon Novak"
+  /// var name = Namefully('Jon Stark Snow');
+  /// print(name.format('l f m')); // "Snow Jon Stark"
   /// ```
   String fullName([NameOrder? orderedBy]) {
     orderedBy ??= _config.orderedBy;
@@ -125,11 +125,11 @@ class Namefully {
     return nama.join(' ').trim();
   }
 
-  /// Returns a full name as set
+  /// Returns a full name as set.
   @override
   String toString() => fullName();
 
-  /// Gets a Map(json-like) representation of the [fullName].
+  /// Gets a Map or json-like representation of the [fullName].
   Map<String, String?> toMap() => {
         'prefix': prefix(),
         'firstName': firstName(),
@@ -150,7 +150,7 @@ class Namefully {
   /// Confirms that a name part was set.
   bool has(Namon namon) => _fullName.has(namon);
 
-  /// Gets the [birthName] ordered as configured, no [prefix] or [suffix].
+  /// Gets the birth name ordered as configured, no [prefix] or [suffix].
   ///
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
@@ -194,14 +194,13 @@ class Namefully {
   /// by overriding the preset configuration.
   /// [withMid] determines whether to include the initials of [middleName]
   ///
-  /// @example
-  /// Given the names:
+  /// For example, given the names:
   /// - `John Smith` => ['J', 'S']
   /// - `John Ben Smith` => ['J', 'S']
   /// when [withMid] is set to true:
   /// - `John Ben Smith` => ['J', 'B', 'S']
   ///
-  /// **NOTE**:
+  /// **Note**:
   /// Ordered by last name obeys the following format:
   ///  `lastName firstName [middleName]`
   /// which means that if no middle name was set, setting [withMid] to true
@@ -239,8 +238,7 @@ class Namefully {
   /// `unique`: the count of unique characters of the name;
   /// `distribution`: the characters' distribution.
   ///
-  /// @example
-  /// Given the name "Thomas Alva Edison", the summary will output as follows:
+  /// Given the name `Thomas Alva Edison`, the summary will output as follows:
   ///
   /// Descriptive statistics for "Thomas Alva Edison"
   ///  count    : 16
@@ -250,7 +248,7 @@ class Namefully {
   ///  distribution: { T: 1, H: 1, O: 2, M: 1, A: 2, S: 2, ' ': 2, L: 1, V: 1,
   ///  E: 1, D: 1, I: 1, N: 1 }
   ///
-  /// **NOTE:**
+  /// **Note:**
   /// During the setup, a set of restricted characters can be defined to be
   /// removed from the stats. By default, the only restricted character is the
   /// `space`. That is why the [count] for the example below results in `16`
@@ -285,7 +283,6 @@ class Namefully {
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
   ///
-  /// @example
   /// For a given name such as `Mr Keanu Charles Reeves`, shortening this name
   /// is equivalent to making it `Keanu Reeves`.
   ///
@@ -293,7 +290,6 @@ class Namefully {
   /// names forming part of the entire first names, if any. Meanwhile, for
   /// the last name, the configured `lastnameFormat` is prioritized.
   ///
-  /// @example
   /// For a given `Firstname Fathername Mothername`, shortening this name when
   /// the lastnameFormat is set as `mother` is equivalent to making it:
   /// `Firstname Mothername`.
@@ -311,11 +307,10 @@ class Namefully {
   /// to use when doing so. By default, a full name gets flattened by
   /// [FlattenedBy.middleName].
   ///
-  /// if the set limit is violated, [warning] warns the user about it.
+  /// if the set limit is violated, a [warning] is given to the user about it.
   ///
-  /// @example
-  /// The flattening operation is only executed iff there is valid entry and it
-  /// surpasses the limit set. In the examples below, let us assume that the
+  /// The flattening operation is only executed iff there is a valid entry and
+  /// it surpasses the limit set. In the examples below, let us assume that the
   /// name goes beyond the limit value.
   ///
   /// Flattening a long name refers to reducing the name to the following forms.
@@ -446,7 +441,6 @@ class Namefully {
   /// '-': hyphen
   /// '_': underscore
   ///
-  /// @example
   /// Given the name `Joe Jim Smith`, call [format] with the how string.
   /// - format('l f') => 'Smith Joe'
   /// - format('L, f') => 'SMITH, Joe'
@@ -470,25 +464,25 @@ class Namefully {
   /// Transforms a [birthName] to UPPERCASE.
   String upper() => birthName().toUpperCase();
 
-  /// Transforms a [birthName]  to lowercase.
+  /// Transforms a [birthName] to lowercase.
   String lower() => birthName().toLowerCase();
 
-  /// Transforms a [birthName]  to camelCase.
+  /// Transforms a [birthName] to camelCase.
   String camel() => decapitalize(pascal());
 
-  /// Transforms a [birthName]  to PascalCase.
+  /// Transforms a [birthName] to PascalCase.
   String pascal() => split().map((n) => capitalize(n)).join();
 
-  /// Transforms a [birthName]  to snake_case.
+  /// Transforms a [birthName] to snake_case.
   String snake() => split().map((n) => n.toLowerCase()).join('_');
 
   /// Transforms a [birthName] to hyphen-case (or kebab-case).
   String hyphen() => split().map((n) => n.toLowerCase()).join('-');
 
-  /// Transforms a [birthName]  to dot.case.
+  /// Transforms a [birthName] to dot.case.
   String dot() => split().map((n) => n.toLowerCase()).join('.');
 
-  /// Transforms a [birthName]  to ToGgLe CaSe.
+  /// Transforms a [birthName] to ToGgLe CaSe.
   String toggle() => toggleCase(birthName());
 
   /// Transforms a [birthName] to a specific title [capitalization].

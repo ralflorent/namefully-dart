@@ -1,11 +1,9 @@
-/// Validators
-
 import 'constants.dart';
 import 'enums.dart';
 import 'models.dart';
 import 'utils.dart';
 
-/// An error thrown to indicate that a namon fails the valiation rules.
+/// An error thrown to indicate that a namon fails the validation rules.
 class ValidationError extends Error implements Exception {
   /// Name of the invalid [name] type, if available.
   final String? name;
@@ -163,7 +161,7 @@ class MiddleNameValidator implements Validator<dynamic> {
     } else if (value is List<String>) {
       try {
         value.forEach(namonValidator.validate);
-      } on ValidationError {
+      } on ValidationError catch (_) {
         throw ValidationError.name('middleName', 'invalid content');
       }
     } else if (value is List<Name>) {
@@ -172,7 +170,7 @@ class MiddleNameValidator implements Validator<dynamic> {
           namonValidator.validate(n.namon);
           if (n.type != Namon.middleName) throw ValidationError();
         });
-      } on ValidationError {
+      } on ValidationError catch (_) {
         throw ValidationError.name('middleName', 'invalid content');
       }
     } else {

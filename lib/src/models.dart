@@ -15,8 +15,8 @@ class Name {
 
   /// Creates augmented names by adding extra functionalities to a string name.
   ///
-  /// A name [type] must be indicated to categorize [this] name so it can
-  /// be treated accordingly. [cap] determines how a [this] name should be
+  /// A name [type] must be indicated to categorize [this] name so it can be
+  /// treated accordingly. [cap] determines how a [this] name should be
   /// capitalized.
   Name(String namon, this.type, [CapsRange? cap])
       : _cap = cap ?? CapsRange.initial {
@@ -89,14 +89,14 @@ class Name {
 
 /// Representation of a first name with some extra functionalities.
 class FirstName extends Name {
-  /// The additional name parts of a [this].
+  /// The additional name parts of [this] first name.
   List<String> _more = [];
 
-  /// Creates an extended version of [Name] flags it as a first name [type].
+  /// Creates an extended version of [Name] and flags it as a first name [type].
   ///
   /// Some may consider [more] additional name parts of a given name as their
-  /// first names, but not as a middle name. Though, it may mean the same,
-  /// [more] provides the liberty to name as-is.
+  /// first names, but not as their middle names. Though, it may mean the same,
+  /// [more] provides the freedom to do it as it pleases.
   FirstName(String namon, [List<String>? more])
       : _more = more ?? [],
         super(namon, Namon.firstName);
@@ -176,11 +176,10 @@ class LastName extends Name {
   String? _mother;
   LastNameFormat format;
 
-  /// Creates an extended version of [Name] flags it as a last name [type].
+  /// Creates an extended version of [Name] and flags it as a last name [type].
   ///
   /// Some people may keep their [mother]'s surname and want to keep a clear cut
-  /// between it and their [father]'s surname. However, there are no clear rules
-  /// about it.
+  /// from their [father]'s surname. However, there are no clear rules about it.
   LastName(String father, [this._mother, this.format = LastNameFormat.father])
       : super(father, Namon.lastName);
 
@@ -190,7 +189,7 @@ class LastName extends Name {
   /// The surname inherited from a mother side.
   String? get mother => _mother;
 
-  /// Returns a string representation of [this].
+  /// Returns a string representation of [this] last name.
   @override
   String toString({LastNameFormat? format}) {
     format = format ?? this.format;
@@ -274,13 +273,13 @@ class LastName extends Name {
     if (hasMother()) _mother = capitalize(_mother!);
   }
 
-  /// Creates a password-like representation of [this].
+  /// Creates a password-like representation of [this] last name.
   @override
   String passwd({LastNameFormat? format}) =>
       generatePassword(toString(format: format));
 }
 
-/// Summary of descriptive stats of the name.
+/// Summary of descriptive statistics of name components.
 class Summary {
   Map<String, int> _distribution = {};
   int _count = 0;
@@ -300,11 +299,23 @@ class Summary {
     _compute();
   }
 
+  /// The characters' distribution along with their frequencies.
   Map<String, int> get distribution => _distribution;
+
+  /// The number of characters of the distribution, excluding the restricted
+  /// ones.
   int get count => _count;
+
+  /// The total number of characters of the content.
   int get length => _namon.length;
+
+  /// The count of the most repeated characters.
   int get frequency => _frequency;
+
+  /// The most repeated character.
   String get top => _top;
+
+  /// The count of unique characters
   int get unique => _unique;
 
   void _compute() {
@@ -320,6 +331,7 @@ class Summary {
     }
   }
 
+  /// Creates the distribution, taking the restricted characters into account.
   Map<String, int> _groupByChar() {
     final frequencies = <String, int>{};
     var restrictions = _restrictions.map((n) => n.toUpperCase());

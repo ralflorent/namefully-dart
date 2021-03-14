@@ -8,14 +8,14 @@ import 'enums.dart';
 /// may be of particular shapes.
 ///
 /// For example, a person's [FullName] may appear by:
-/// [NameOrder.firstName]: `Jon Snow` or
-/// [NameOrder.lastName]: `Snow Jon`.
+/// - [NameOrder.firstName]: `Jon Snow` or
+/// - [NameOrder.lastName]: `Snow Jon`.
 ///
-/// [Config] makes it easy to set up a specific [Config]uration for [Namefully]
+/// [Config] makes it easy to set up a specific configuration for [Namefully]
 /// and reuse it through other instances or components along the way. If a new
 /// [Config] is needed, a named configuration may be created. It is actually
 /// advised to use named [Config(name)] instead as it may help mitigate issues
-/// and avoid confusion and ambuguity in the future. Plus, a named configuration
+/// and avoid confusion and ambiguity in the future. Plus, a named configuration
 /// explains its purpose.
 ///
 /// ```dart
@@ -24,8 +24,8 @@ import 'enums.dart';
 /// var inlineConfig = Config.inline(name: 'other', bypass: true);
 /// ```
 ///
-/// Additionally, [mergeWith] combines an existing configuration with a new,
-/// prioritizing the new properties.
+/// Additionally, [mergeWith] combines an existing configuration with a new one,
+/// prioritizing the new one's values.
 class Config {
   /// The order of appearance of a full name.
   NameOrder orderedBy;
@@ -50,10 +50,9 @@ class Config {
   /// - `hyphenated`, joining both father and mother names with a hyphen
   /// - `all`, joining both father and mother names with a space.
   ///
-  /// This parameter can be set either by an instance of a last name or during
-  /// the creation of a namefully instance. To avoid ambiguity, we prioritize as
-  /// source of truth the value set as optional parameter when instantiating
-  /// namefully.
+  /// Note that this option can be set when creating a [LastName]. As this can
+  /// become ambiguous at the time of handling it, the value set in [this] is
+  /// prioritized and viewed as the source of truth for future considerations.
   LastNameFormat lastNameFormat;
 
   /// The name of the cached [Config].

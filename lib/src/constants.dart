@@ -1,5 +1,3 @@
-/// Constants
-
 const allowedTokens = <String>[
   '.',
   ',',
