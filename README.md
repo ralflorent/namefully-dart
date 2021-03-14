@@ -1,5 +1,6 @@
 # namefully
 
+[![pub version][version-img]][version-url]
 [![travisci][travisci-img]][travisci-url]
 [![Coverage Status][codecov-img]][codecov-url]
 
@@ -49,7 +50,7 @@ void main() {
 
 ## `Config` and default values
 
-This is a single configuration `Config` to use across the other components.
+`Config` is a single configuration to use across the other components.
 
 A singleton pattern is used to keep one configuration across the `Namefully`
 setup. This is useful to avoid confusion when building other components such
@@ -272,42 +273,20 @@ So, this utility understands the name parts as follows:
 - suffix: `PhD`
 - full name: `Mr John Joe Smith PhD`
 - birth name: `John Joe Smith`
-- flattened: `John J. Smith`
+- flattened: `John J. S.`
 - initials: `J J S`
 
 ### Limitations
 
 `namefully` does not have support for certain use cases:
 
-- mononame:  `Plato`. It can be tricked though by setting the mononame as both
-first and last name;
-- multiple surnames: `De La Cruz`, `Da Vinci`. You can also trick it using your
-own parsing method or setting separately each name part via the `Nama|Name` type
-or the string array input;
+- mononame: `Plato`. A workaround to this is to set the mononame as both first
+and last name;
 - multiple prefixes: `Prof. Dr. Einstein`. An alternative would be to use the
 `bypass` option.
 
-See the [test cases](test) for further details.
-
-## API
-
-| Name | Arguments | Default Values | Returns | Description |
-|---|---|---|---|---|
-|*prefix*|-|-|`String?`|Gets the prefix part of the full name, if any|
-|*firstName*|`includeAll`|`true`|`String`|Gets the first name part of the full name|
-|*middleNames*|-|-|`List<String>`|Gets the middle name part of the full name, if any|
-|*lastName*|`LastNameFormat?`||`String`|Gets the last name part of the full name|
-|*suffix*|-|-|`String?`|Gets the suffix part of the full name, if any|
-|*fullName*|`NameOrder?`|-|`String`|Gets the full name|
-|*birthName*|`NameOrder?`|-|`String`|Gets the birth name, no prefix or suffix|
-|*initials*|`NameOrder?`, `withMid`| -, `false`|`String`|Gets the initials of the first and last names|
-|*stats*|`NameType?`|-|`Summary?`|Gives some descriptive statistics of the characters' distribution.|
-|*shorten*|`NameOrder?`|-|`String`|Returns a typical name (e.g. first and last name)|
-|*flatten*|`limit`, `by`|`20`, `midLast`|`String`|Compresses a name using different forms of variants|
-|*zip*|`NameType?`|`midLast`|`String`|Shortens a full name|
-|*format*|`how?`|-|`String`|Formats the name as desired|
-|*to*|`Capitalization`|-|`String`|Transforms a birth name to a specific title case|
-|*passwd*|`NameType?`|-|`String`|Returns a password-like representation of a name|
+See the [test cases](test) for further details or the
+[API Reference](https://pub.dev/documentation/namefully).
 
 ## Related packages
 
@@ -333,5 +312,3 @@ The underlying content of this utility is licensed under [MIT](LICENSE).
 [travisci-url]: https://travis-ci.com/ralflorent/namefully-dart.svg?branch=beta/0.1.0-beta.1
 [codecov-img]: https://raw.githubusercontent.com/ralflorent/namefully-dart/beta/0.1.0-beta.1/coverage_badge.svg?sanitize=true
 [codecov-url]: https://codecov.io/gh/ralflorent/namefully-dart
-[license-img]: https://img.shields.io/pub/l/namefully
-[license-url]: https://opensource.org/licenses/MIT
