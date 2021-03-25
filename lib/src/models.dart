@@ -279,25 +279,23 @@ class LastName extends Name {
       generatePassword(toString(format: format));
 }
 
-/// Summary of descriptive statistics of name components.
-class Summary {
+/// Summary of descriptive (categorical) statistics of name components.
+class Summary with Summarizer {
+  Summary(String namon, {List<String>? restrictions}) {
+    super.compute(namon, restrictions: restrictions);
+  }
+}
+
+/// A component that knows how to help a class extend some basic categorical
+/// statistics on string values.
+mixin Summarizer {
   Map<String, int> _distribution = {};
   int _count = 0;
   int _frequency = 0;
   String _top = '';
   int _unique = 0;
-  late final String _namon;
-  final List<String> _restrictions;
-
-  /// Creates a [Summary] of a given string of alphabetical characters.
-  Summary(String namon, {List<String>? restrictions})
-      : _namon = namon,
-        _restrictions = restrictions ?? const [' '] {
-    if (_namon.isEmpty || _namon.length < 2) {
-      throw ArgumentError('non-empty string value');
-    }
-    _compute();
-  }
+  late final String _string;
+  late final List<String> _restrictions;
 
   /// The characters' distribution along with their frequencies.
   Map<String, int> get distribution => _distribution;
@@ -307,7 +305,7 @@ class Summary {
   int get count => _count;
 
   /// The total number of characters of the content.
-  int get length => _namon.length;
+  int get length => _string.length;
 
   /// The count of the most repeated characters.
   int get frequency => _frequency;
@@ -318,7 +316,13 @@ class Summary {
   /// The count of unique characters
   int get unique => _unique;
 
-  void _compute() {
+  /// Creates a summary of a given string of alphabetical characters.
+  Summarizer compute(String string, {List<String>? restrictions}) {
+    _string = string;
+    _restrictions = restrictions ?? const [' '];
+    if (string.isEmpty || string.length < 2) {
+      throw ArgumentError('non-empty string value');
+    }
     _distribution = _groupByChar();
     _unique = _distribution.keys.length;
     _count = _distribution.values.reduce((acc, val) => acc + val);
@@ -329,13 +333,14 @@ class Summary {
         _top = entry.key;
       }
     }
+    return this;
   }
 
   /// Creates the distribution, taking the restricted characters into account.
   Map<String, int> _groupByChar() {
     final frequencies = <String, int>{};
     var restrictions = _restrictions.map((n) => n.toUpperCase());
-    for (var char in _namon.toUpperCase().split('')) {
+    for (var char in _string.toUpperCase().split('')) {
       if (restrictions.contains(char)) continue;
       if (frequencies.containsKey(char)) {
         frequencies[char] = frequencies[char]! + 1;
