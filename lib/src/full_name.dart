@@ -45,6 +45,25 @@ class FullName {
     _parseJsonName(jsonName);
   }
 
+  FullName.raw({
+    String? prefix,
+    required String firstName,
+    List<String>? middleName,
+    required String lastName,
+    String? suffix,
+    Config? config,
+  }) : _config = config ?? Config() {
+    if (prefix != null) rawPrefix(prefix);
+    rawFirstName(firstName);
+    if (middleName != null) rawMiddleName(middleName);
+    rawLastName(lastName);
+    if (suffix != null) rawSuffix(suffix);
+  }
+
+  /// A snapshot of the configuration used to set up this full name.
+  Config get config => _config;
+
+  /// The prefix part of the full name.
   Name? get prefix => _prefix;
   set prefix(Name? name) {
     if (name == null) return;
@@ -54,24 +73,28 @@ class FullName {
         Namon.prefix);
   }
 
+  /// The first name part of the full name.
   FirstName get firstName => _firstName;
   set firstName(FirstName name) {
     if (!_config.bypass) Validators.firstName.validate(name);
     _firstName = name;
   }
 
+  /// The middle name part of the full name.
   List<Name> get middleName => _middleName;
   set middleName(List<Name> names) {
     if (!_config.bypass) Validators.middleName.validate(names);
     _middleName = names;
   }
 
+  /// The last name part of the full name.
   LastName get lastName => _lastName;
   set lastName(LastName name) {
     if (!_config.bypass) Validators.lastName.validate(name);
     _lastName = name;
   }
 
+  /// The suffix part of the full name.
   Name? get suffix => _suffix;
   set suffix(Name? name) {
     if (name == null) return;
@@ -79,6 +102,7 @@ class FullName {
     _suffix = name;
   }
 
+  /// Returns true if a [namon] has been set.
   bool has(Namon namon) {
     if (namon == Namon.prefix) return prefix?.isNotEmpty == true;
     if (namon == Namon.firstName) return firstName.isNotEmpty;
@@ -94,20 +118,24 @@ class FullName {
   void rawPrefix(String namon) => prefix = Name(namon, Namon.prefix);
 
   /// Sets a [firstName] using string values.
-  void rawFirstName(String namon, {List<String>? more}) =>
-      firstName = FirstName(namon, more);
+  void rawFirstName(String namon, {List<String>? more}) {
+    firstName = FirstName(namon, more);
+  }
 
   /// Sets a [middleName] using string values.
-  void rawMiddleName(List<String> names) =>
-      middleName = names.map((n) => Name(n, Namon.middleName)).toList();
+  void rawMiddleName(List<String> names) {
+    middleName = names.map((n) => Name(n, Namon.middleName)).toList();
+  }
 
   /// Sets a [lastName] using string values.
-  void rawLastName(String father, {String? mother, LastNameFormat? format}) =>
-      lastName = LastName(father, mother, format ?? LastNameFormat.father);
+  void rawLastName(String father, {String? mother, LastNameFormat? format}) {
+    lastName = LastName(father, mother, format ?? LastNameFormat.father);
+  }
 
   /// Sets a [suffix] using string values.
   void rawSuffix(String namon) => suffix = Name(namon, Namon.suffix);
 
+  /// Parses a [json] name into a full name.
   void _parseJsonName(Map<String, String> json) {
     try {
       if (json['prefix'] != null) prefix = Name(json['prefix']!, Namon.prefix);
