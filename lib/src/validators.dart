@@ -90,6 +90,7 @@ class ValidationRule {
   static final lastName = namon;
 }
 
+/// A validator knows how to validate.
 abstract class Validator<T> {
   void validate(T value);
 }
@@ -253,8 +254,8 @@ class NamaValidator implements Validator<Map<Namon, String>> {
 }
 
 class ListStringValidator implements Validator<List<String>> {
-  final NameIndex _index;
-  ListStringValidator([this._index = const NameIndex(-1, 0, -1, 1, -1)]);
+  final NameIndex index;
+  ListStringValidator([this.index = const NameIndex(-1, 0, -1, 1, -1)]);
 
   @override
   void validate(List<String> values) {
@@ -268,26 +269,26 @@ class ListStringValidator implements Validator<List<String>> {
 
     switch (values.length) {
       case 2:
-        Validators.firstName.validate(values[_index.firstName]);
-        Validators.lastName.validate(values[_index.lastName]);
+        Validators.firstName.validate(values[index.firstName]);
+        Validators.lastName.validate(values[index.lastName]);
         break;
       case 3:
-        Validators.firstName.validate(values[_index.firstName]);
-        Validators.middleName.validate(values[_index.middleName]);
-        Validators.lastName.validate(values[_index.lastName]);
+        Validators.firstName.validate(values[index.firstName]);
+        Validators.middleName.validate(values[index.middleName]);
+        Validators.lastName.validate(values[index.lastName]);
         break;
       case 4:
-        NamonValidator().validate(values[_index.prefix]);
-        Validators.firstName.validate(values[_index.firstName]);
-        Validators.middleName.validate(values[_index.middleName]);
-        Validators.lastName.validate(values[_index.lastName]);
+        NamonValidator().validate(values[index.prefix]);
+        Validators.firstName.validate(values[index.firstName]);
+        Validators.middleName.validate(values[index.middleName]);
+        Validators.lastName.validate(values[index.lastName]);
         break;
       case 5:
-        NamonValidator().validate(values[_index.prefix]);
-        Validators.firstName.validate(values[_index.firstName]);
-        Validators.middleName.validate(values[_index.middleName]);
-        Validators.lastName.validate(values[_index.lastName]);
-        NamonValidator().validate(values[_index.suffix]);
+        NamonValidator().validate(values[index.prefix]);
+        Validators.firstName.validate(values[index.firstName]);
+        Validators.middleName.validate(values[index.middleName]);
+        Validators.lastName.validate(values[index.lastName]);
+        NamonValidator().validate(values[index.suffix]);
         break;
     }
   }

@@ -16,7 +16,7 @@ class Name {
   /// Creates augmented names by adding extra functionalities to a string name.
   ///
   /// A name [type] must be indicated to categorize [this] name so it can be
-  /// treated accordingly. [cap] determines how a [this] name should be
+  /// treated accordingly. [cap] determines how [this] name should be
   /// capitalized.
   Name(String namon, this.type, [CapsRange? cap])
       : _cap = cap ?? CapsRange.initial {
@@ -36,6 +36,7 @@ class Name {
     _body = _namon.substring(1);
   }
 
+  /// The capitalization range.
   CapsRange get capitalized => _cap;
 
   @override
@@ -43,8 +44,9 @@ class Name {
 
   /// Returns true if [other] is equal to [this].
   @override
-  bool operator ==(other) =>
-      other is Name && other.namon == namon && other.type == type;
+  bool operator ==(other) {
+    return other is Name && other.namon == namon && other.type == type;
+  }
 
   /// Gives some descriptive statistics.
   ///
@@ -80,8 +82,7 @@ class Name {
   }
 
   /// Normalizes [this] as it should be.
-  void normalize() =>
-      _namon = '${_initial.toUpperCase()}${_body.toLowerCase()}';
+  void normalize() => _namon = _initial.toUpperCase() + _body.toLowerCase();
 
   /// Creates a password-like representation of [this].
   String passwd() => generatePassword(namon);
@@ -89,7 +90,6 @@ class Name {
 
 /// Representation of a first name with some extra functionalities.
 class FirstName extends Name {
-  /// The additional name parts of [this] first name.
   List<String> _more = [];
 
   /// Creates an extended version of [Name] and flags it as a first name [type].
@@ -101,11 +101,13 @@ class FirstName extends Name {
       : _more = more ?? [],
         super(namon, Namon.firstName);
 
+  /// The additional name parts of [this] first name.
   List<String> get more => _more;
 
   @override
-  String toString({bool includeAll = false}) =>
-      includeAll && hasMore() ? '$namon ${_more.join(" ")}'.trim() : namon;
+  String toString({bool includeAll = false}) {
+    return includeAll && hasMore() ? '$namon ${_more.join(" ")}'.trim() : namon;
+  }
 
   /// Determines whether a [FirstName] has [more] name parts.
   bool hasMore() => _more.isNotEmpty;
@@ -123,14 +125,21 @@ class FirstName extends Name {
   /// The statistical description summarizes the central tendency, dispersion
   /// and shape of the characters' distribution. See [Summary] for more details.
   @override
-  Summary stats(
-          {bool includeAll = false, List<String> restrictions = const [' ']}) =>
-      Summary(toString(includeAll: includeAll), restrictions: restrictions);
+  Summary stats({
+    bool includeAll = false,
+    List<String> restrictions = const [' '],
+  }) {
+    return Summary(
+      toString(includeAll: includeAll),
+      restrictions: restrictions,
+    );
+  }
 
   /// Gets the initials of [this].
   @override
-  List<String> initials({bool includeAll = false}) =>
-      [namon[0], if (includeAll && hasMore()) ..._more.map((n) => n[0])];
+  List<String> initials({bool includeAll = false}) {
+    return [namon[0], if (includeAll && hasMore()) ..._more.map((n) => n[0])];
+  }
 
   /// Capitalizes [this].
   @override
@@ -167,13 +176,16 @@ class FirstName extends Name {
 
   /// Creates a password-like representation of [this].
   @override
-  String passwd({bool includeAll = false}) =>
-      generatePassword(toString(includeAll: true));
+  String passwd({bool includeAll = false}) {
+    return generatePassword(toString(includeAll: true));
+  }
 }
 
 /// Representation of a last name with some extra functionalities.
 class LastName extends Name {
   String? _mother;
+
+  /// The internal last name format.
   LastNameFormat format;
 
   /// Creates an extended version of [Name] and flags it as a last name [type].
@@ -213,9 +225,12 @@ class LastName extends Name {
   /// The statistical description summarizes the central tendency, dispersion
   /// and shape of the characters' distribution. See [Summary] for more details.
   @override
-  Summary stats(
-          {LastNameFormat? format, List<String> restrictions = const [' ']}) =>
-      Summary(toString(format: format), restrictions: restrictions);
+  Summary stats({
+    LastNameFormat? format,
+    List<String> restrictions = const [' '],
+  }) {
+    return Summary(toString(format: format), restrictions: restrictions);
+  }
 
   /// Gets the initials of [this].
   @override
@@ -275,20 +290,21 @@ class LastName extends Name {
 
   /// Creates a password-like representation of [this] last name.
   @override
-  String passwd({LastNameFormat? format}) =>
-      generatePassword(toString(format: format));
+  String passwd({LastNameFormat? format}) {
+    return generatePassword(toString(format: format));
+  }
 }
 
 /// Summary of descriptive (categorical) statistics of name components.
-class Summary with Summarizer {
+class Summary with Summarizable {
   Summary(String namon, {List<String>? restrictions}) {
-    super.compute(namon, restrictions: restrictions);
+    super.summarize(namon, restrictions: restrictions);
   }
 }
 
 /// A component that knows how to help a class extend some basic categorical
 /// statistics on string values.
-mixin Summarizer {
+mixin Summarizable {
   Map<String, int> _distribution = {};
   int _count = 0;
   int _frequency = 0;
@@ -317,7 +333,7 @@ mixin Summarizer {
   int get unique => _unique;
 
   /// Creates a summary of a given string of alphabetical characters.
-  Summarizer compute(String string, {List<String>? restrictions}) {
+  Summarizable summarize(String string, {List<String>? restrictions}) {
     _string = string;
     _restrictions = restrictions ?? const [' '];
     if (string.isEmpty || string.length < 2) {

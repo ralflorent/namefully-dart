@@ -38,8 +38,11 @@ class NameIndex {
 /// Reorganizes the existing global indexes for list of name parts:
 /// [orderedBy] first or last name, of [argLength] of the provided array, using
 /// [nameIndex] as a global preset of indexing.
-NameIndex organizeNameIndex(NameOrder orderedBy, int argLength,
-    {NameIndex? nameIndex}) {
+NameIndex organizeNameIndex(
+  NameOrder orderedBy,
+  int argLength, {
+  NameIndex? nameIndex,
+}) {
   var out = nameIndex ?? const NameIndex(0, 1, 2, 3, 4);
   if (orderedBy == NameOrder.firstName) {
     switch (argLength) {

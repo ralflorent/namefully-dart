@@ -6,7 +6,6 @@
 /// - repo: https://github.com/ralflorent/namefully-dart
 /// - pub:  https://pub.dev/packages/namefully
 /// - license: MIT
-
 import 'config.dart';
 import 'constants.dart';
 import 'enums.dart';
@@ -172,12 +171,14 @@ class Namefully {
   ///
   /// the last name [format] overrides the how-to formatting of a surname
   /// output, considering its subparts.
-  String lastName([LastNameFormat? format]) =>
-      _fullName.lastName.toString(format: format);
+  String lastName([LastNameFormat? format]) {
+    return _fullName.lastName.toString(format: format);
+  }
 
   /// Gets the [middleName] part of the [fullName].
-  List<String> middleName() =>
-      _fullName.middleName.map((n) => n.namon).toList();
+  List<String> middleName() {
+    return _fullName.middleName.map((n) => n.namon).toList();
+  }
 
   /// Returns true if any [middleName]'s set.
   bool hasMiddleName() => has(Namon.middleName);
@@ -192,7 +193,7 @@ class Namefully {
   ///
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
-  /// [withMid] determines whether to include the initials of [middleName]
+  /// [withMid] determines whether to include the initials of [middleName].
   ///
   /// For example, given the names:
   /// - `John Smith` => ['J', 'S']
@@ -323,10 +324,11 @@ class Namefully {
   /// * [FlattenedBy.all]: => 'J. W. O. L.'
   ///
   /// A shorter version of this method is [zip()].
-  String flatten(
-      {int limit = 20,
-      FlattenedBy by = FlattenedBy.middleName,
-      bool warning = true}) {
+  String flatten({
+    int limit = 20,
+    FlattenedBy by = FlattenedBy.middleName,
+    bool warning = true,
+  }) {
     if (fullName().length <= limit) return fullName();
 
     var sep = '.',
@@ -339,63 +341,69 @@ class Namefully {
         mids = hasMiddleName()
             ? _fullName.middleName.map((n) => n.initials()[0]).join(sep) + sep
             : '',
-        gname = <String>[];
+        name = <String>[];
 
     if (_config.orderedBy == NameOrder.firstName) {
       switch (by) {
         case FlattenedBy.firstName:
-          gname =
-              hasMid ? [firsts, mn, ln.toString()] : [firsts, ln.toString()];
+          name = hasMid ? [firsts, mn, ln.toString()] : [firsts, ln.toString()];
           break;
         case FlattenedBy.lastName:
-          gname = hasMid ? [fn.toString(), mn, lasts] : [fn.toString(), lasts];
+          name = hasMid ? [fn.toString(), mn, lasts] : [fn.toString(), lasts];
           break;
         case FlattenedBy.middleName:
-          gname = hasMid
+          name = hasMid
               ? [fn.toString(), mids, ln.toString()]
               : [fn.toString(), ln.toString()];
           break;
         case FlattenedBy.firstMid:
-          gname =
-              hasMid ? [firsts, mids, ln.toString()] : [firsts, ln.toString()];
+          name = hasMid
+              ? [
+                  firsts,
+                  mids,
+                  ln.toString(),
+                ]
+              : [firsts, ln.toString()];
           break;
         case FlattenedBy.midLast:
-          gname =
-              hasMid ? [fn.toString(), mids, lasts] : [fn.toString(), lasts];
+          name = hasMid ? [fn.toString(), mids, lasts] : [fn.toString(), lasts];
           break;
         case FlattenedBy.all:
-          gname = hasMid ? [firsts, mids, lasts] : [firsts, lasts];
+          name = hasMid ? [firsts, mids, lasts] : [firsts, lasts];
           break;
       }
     } else {
       switch (by) {
         case FlattenedBy.firstName:
-          gname =
-              hasMid ? [ln.toString(), firsts, mn] : [ln.toString(), firsts];
+          name = hasMid ? [ln.toString(), firsts, mn] : [ln.toString(), firsts];
           break;
         case FlattenedBy.lastName:
-          gname = hasMid ? [lasts, fn.toString(), mn] : [lasts, fn.toString()];
+          name = hasMid ? [lasts, fn.toString(), mn] : [lasts, fn.toString()];
           break;
         case FlattenedBy.middleName:
-          gname = hasMid
+          name = hasMid
               ? [ln.toString(), fn.toString(), mids]
               : [ln.toString(), fn.toString()];
           break;
         case FlattenedBy.firstMid:
-          gname =
-              hasMid ? [ln.toString(), firsts, mids] : [ln.toString(), firsts];
+          name = hasMid
+              ? [
+                  ln.toString(),
+                  firsts,
+                  mids,
+                ]
+              : [ln.toString(), firsts];
           break;
         case FlattenedBy.midLast:
-          gname =
-              hasMid ? [lasts, fn.toString(), mids] : [lasts, fn.toString()];
+          name = hasMid ? [lasts, fn.toString(), mids] : [lasts, fn.toString()];
           break;
         case FlattenedBy.all:
-          gname = hasMid ? [firsts, mids, lasts] : [firsts, lasts];
+          name = hasMid ? [firsts, mids, lasts] : [firsts, lasts];
           break;
       }
     }
 
-    var flat = by == FlattenedBy.all ? gname.join() : gname.join(' ');
+    final flat = by == FlattenedBy.all ? name.join() : name.join(' ');
     if (warning && flat.length > limit) {
       print('The flattened name <$flat> still surpasses the set limit $limit');
     }
@@ -405,8 +413,9 @@ class Namefully {
   /// Zips or compacts a name using different forms of variants.
   ///
   /// See [flatten()] for more details.
-  String zip({FlattenedBy by = FlattenedBy.midLast}) =>
-      flatten(limit: 0, by: by, warning: false);
+  String zip({FlattenedBy by = FlattenedBy.midLast}) {
+    return flatten(limit: 0, by: by, warning: false);
+  }
 
   /// Formats the [fullName] as desired.
   ///
@@ -546,12 +555,14 @@ class Namefully {
     }
   }
 
+  /// Builds the core elements for name data.
   void _build<T>(Parser<T> parser, [Config? options]) {
     _config = Config.mergeWith(options);
     _fullName = parser.parse(options: options);
     _summary = Summary(birthName());
   }
 
+  /// Maps each [char]acter to a specific name piece.
   String? _map(String char) {
     switch (char) {
       case '.':
