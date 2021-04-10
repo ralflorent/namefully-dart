@@ -1,7 +1,7 @@
 import 'config.dart';
 import 'enums.dart';
 import 'full_name.dart';
-import 'models.dart';
+import 'names.dart';
 import 'utils.dart';
 import 'validators.dart';
 

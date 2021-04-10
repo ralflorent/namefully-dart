@@ -1,6 +1,6 @@
 import 'constants.dart';
 import 'enums.dart';
-import 'models.dart';
+import 'names.dart';
 import 'utils.dart';
 
 /// An error thrown to indicate that a namon fails the validation rules.

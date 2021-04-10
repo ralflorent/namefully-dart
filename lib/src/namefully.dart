@@ -10,7 +10,7 @@ import 'config.dart';
 import 'constants.dart';
 import 'enums.dart';
 import 'full_name.dart';
-import 'models.dart';
+import 'names.dart';
 import 'parsers.dart';
 import 'utils.dart';
 
@@ -20,7 +20,7 @@ import 'utils.dart';
 /// the name is what (prefix, suffix, first, last, or middle names). It relies
 /// actually on how the name parts are indicated (i.e., their roles) so that
 /// it can perform internally certain operations and saves us some extra
-/// calculations/processings. In addition, [Namefully] can be created using
+/// calculations/processing. In addition, [Namefully] can be created using
 /// distinct raw data shapes. This is intended to give some flexibility to the
 /// developer so that he or she is not bound to a particular data format.
 /// By following closely the API reference to know how to harness its usability,
@@ -146,7 +146,7 @@ class Namefully {
         suffix(),
       ];
 
-  /// Confirms that a name part was set.
+  /// Confirms that a name part has been set.
   bool has(Namon namon) => _fullName.has(namon);
 
   /// Gets the birth name ordered as configured, no [prefix] or [suffix].
@@ -171,7 +171,7 @@ class Namefully {
   /// Gets the [lastName] part of the [fullName].
   ///
   /// the last name [format] overrides the how-to formatting of a surname
-  /// output, considering its subparts.
+  /// output, considering its sub-parts.
   String lastName([LastNameFormat? format]) {
     return _fullName.lastName.toString(format: format);
   }

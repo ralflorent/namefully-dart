@@ -1,6 +1,6 @@
 import 'config.dart';
 import 'enums.dart';
-import 'models.dart';
+import 'names.dart';
 import 'validators.dart';
 
 /// The core component of this utility.
