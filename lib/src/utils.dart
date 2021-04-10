@@ -105,7 +105,17 @@ String toggleCase(String string) {
 
 /// Makes a [Set] capable of [random]izing its elements.
 extension CharSet<E> on Set<E> {
+  /// Shuffles the elements within a set and returns a random one.
   E random() => List.from(this).elementAt(Random().nextInt(length)) as E;
+}
+
+/// Add validation capabilities to [String].
+extension StringValidation on String {
+  /// A minimum 2 characters must be provided.
+  bool get isValid => trim().isNotEmpty && trim().length > 1;
+
+  /// A minimum 2 characters must be provided.
+  bool get isInvalid => !isValid;
 }
 
 /// Generates a password-like content from a [string].

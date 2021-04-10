@@ -1,19 +1,18 @@
 import 'enums.dart';
 import 'utils.dart';
 
-/// Representation of a string type name with some extra functionalities.
+/// Representation of a string type name with some extra capabilities.
 ///
 /// It helps to define and understand the concept of namon/nama.
 class Name {
   late String _namon;
   late String _initial;
   late String _body;
+  late bool _isEmpty;
   final CapsRange _cap;
-  Namon type;
-  late bool isEmpty;
-  late bool isNotEmpty;
+  final Namon type;
 
-  /// Creates augmented names by adding extra functionalities to a string name.
+  /// Creates augmented names by adding extra functionality to a string name.
   ///
   /// A name [type] must be indicated to categorize [this] name so it can be
   /// treated accordingly. [cap] determines how [this] name should be
@@ -24,20 +23,24 @@ class Name {
     if (cap != null) caps(cap);
   }
 
+  /// The piece of string treated as a name.
   String get namon => _namon;
   set namon(String namon) {
-    if (namon.isEmpty || namon.length < 2) {
-      throw ArgumentError('non-empty string value');
-    }
+    if (namon.isInvalid) throw ArgumentError('invalid string value');
     _namon = namon;
-    isEmpty = _namon.isEmpty;
-    isNotEmpty = _namon.isNotEmpty;
+    _isEmpty = _namon.isEmpty;
     _initial = _namon[0];
     _body = _namon.substring(1);
   }
 
   /// The capitalization range.
   CapsRange get capitalized => _cap;
+
+  /// Returns whether this name is empty.
+  bool get isEmpty => _isEmpty;
+
+  /// Returns whether this name is not empty.
+  bool get isNotEmpty => !_isEmpty;
 
   @override
   String toString() => _namon;
@@ -88,7 +91,7 @@ class Name {
   String passwd() => generatePassword(namon);
 }
 
-/// Representation of a first name with some extra functionalities.
+/// Representation of a first name with some extra functionality.
 class FirstName extends Name {
   List<String> _more = [];
 
@@ -181,7 +184,7 @@ class FirstName extends Name {
   }
 }
 
-/// Representation of a last name with some extra functionalities.
+/// Representation of a last name with some extra functionality.
 class LastName extends Name {
   String? _mother;
 
@@ -329,16 +332,14 @@ mixin Summarizable {
   /// The most repeated character.
   String get top => _top;
 
-  /// The count of unique characters
+  /// The count of unique characters.
   int get unique => _unique;
 
   /// Creates a summary of a given string of alphabetical characters.
   Summarizable summarize(String string, {List<String>? restrictions}) {
     _string = string;
     _restrictions = restrictions ?? const [' '];
-    if (string.isEmpty || string.length < 2) {
-      throw ArgumentError('non-empty string value');
-    }
+    if (string.isInvalid) throw ArgumentError('invalid string value');
     _distribution = _groupByChar();
     _unique = _distribution.keys.length;
     _count = _distribution.values.reduce((acc, val) => acc + val);

@@ -202,6 +202,10 @@ void main() {
       test('.flatten() flattens a full name based on specs', () {
         expect(name.flatten(limit: 12, by: FlattenedBy.middleName),
             equals('John B. Smith'));
+        expect(
+            name.flatten(
+                limit: 12, by: FlattenedBy.middleName, withPeriod: false),
+            equals('John B Smith'));
       });
 
       test('.zip() flattens a full name', () {
@@ -263,10 +267,15 @@ void main() {
       test('.flatten() flattens a full name based on specs', () {
         expect(name.flatten(limit: 12, by: FlattenedBy.middleName),
             equals('Smith John B.'));
+        expect(
+            name.flatten(
+                limit: 12, by: FlattenedBy.middleName, withPeriod: false),
+            equals('Smith John B'));
       });
 
       test('.zip() flattens a full name', () {
         expect(name.zip(), 'S. John B.');
+        expect(name.zip(withPeriod: false), 'S John B');
         expect(name.zip(by: FlattenedBy.firstName), 'Smith J. Ben');
         expect(name.zip(by: FlattenedBy.middleName), 'Smith John B.');
         expect(name.zip(by: FlattenedBy.lastName), 'S. John Ben');

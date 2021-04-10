@@ -164,8 +164,9 @@ class Namefully {
   ///
   /// The [includeAll] param determines whether to include other pieces of the
   /// [FirstName].
-  String firstName({bool includeAll = true}) =>
-      _fullName.firstName.toString(includeAll: includeAll);
+  String firstName({bool includeAll = true}) {
+    return _fullName.firstName.toString(includeAll: includeAll);
+  }
 
   /// Gets the [lastName] part of the [fullName].
   ///
@@ -289,11 +290,11 @@ class Namefully {
   ///
   /// As a shortened name, the namon of the first name is favored over the other
   /// names forming part of the entire first names, if any. Meanwhile, for
-  /// the last name, the configured `lastnameFormat` is prioritized.
+  /// the last name, the configured `lastNameFormat` is prioritized.
   ///
-  /// For a given `Firstname Fathername Mothername`, shortening this name when
-  /// the lastnameFormat is set as `mother` is equivalent to making it:
-  /// `Firstname Mothername`.
+  /// For a given `FirstName FatherName MotherName`, shortening this name when
+  /// the lastNameFormat is set as `mother` is equivalent to making it:
+  /// `FirstName MotherName`.
   String shorten({NameOrder? orderedBy}) {
     orderedBy ??= _config.orderedBy;
     return orderedBy == NameOrder.firstName
@@ -327,19 +328,21 @@ class Namefully {
   String flatten({
     int limit = 20,
     FlattenedBy by = FlattenedBy.middleName,
+    bool withPeriod = true,
     bool warning = true,
   }) {
     if (fullName().length <= limit) return fullName();
 
-    var sep = '.',
+    var sep = withPeriod ? '.' : '',
         fn = _fullName.firstName,
         mn = middleName().join(' '),
         ln = _fullName.lastName,
         hasMid = hasMiddleName(),
-        firsts = fn.initials().join(sep) + sep,
-        lasts = ln.initials().join(sep) + sep,
+        firsts = fn.initials().join('$sep ') + sep,
+        lasts = ln.initials().join('$sep ') + sep,
         mids = hasMiddleName()
-            ? _fullName.middleName.map((n) => n.initials()[0]).join(sep) + sep
+            ? _fullName.middleName.map((n) => n.initials()[0]).join('$sep ') +
+                sep
             : '',
         name = <String>[];
 
@@ -413,8 +416,8 @@ class Namefully {
   /// Zips or compacts a name using different forms of variants.
   ///
   /// See [flatten()] for more details.
-  String zip({FlattenedBy by = FlattenedBy.midLast}) {
-    return flatten(limit: 0, by: by, warning: false);
+  String zip({FlattenedBy by = FlattenedBy.midLast, bool withPeriod = true}) {
+    return flatten(limit: 0, by: by, warning: false, withPeriod: withPeriod);
   }
 
   /// Formats the [fullName] as desired.

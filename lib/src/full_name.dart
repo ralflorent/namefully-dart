@@ -28,7 +28,7 @@ import 'validators.dart';
 /// print(fullName.shorten()); // John Smith
 /// ```
 ///
-/// Additionally, a optional [Config]uration can be used to indicate some speci-
+/// Additionally, an optional [Config]uration can be used to indicate some speci-
 /// fic behaviors related to that name handling.
 class FullName {
   Name? _prefix;
@@ -45,6 +45,7 @@ class FullName {
     _parseJsonName(jsonName);
   }
 
+  /// Creates a full name with raw string content.
   FullName.raw({
     String? prefix,
     required String firstName,
@@ -69,8 +70,9 @@ class FullName {
     if (name == null) return;
     if (!_config.bypass) Validators.prefix.validate(name);
     _prefix = Name(
-        _config.titling == AbbrTitle.us ? (name.namon + '.') : name.namon,
-        Namon.prefix);
+      _config.titling == AbbrTitle.us ? (name.namon + '.') : name.namon,
+      Namon.prefix,
+    );
   }
 
   /// The first name part of the full name.
@@ -138,16 +140,13 @@ class FullName {
   /// Parses a [json] name into a full name.
   void _parseJsonName(Map<String, String> json) {
     try {
-      if (json['prefix'] != null) prefix = Name(json['prefix']!, Namon.prefix);
+      if (json['prefix'] != null) rawPrefix(json['prefix']!);
       if (json['middleName'] != null) {
-        middleName = json['middleName']!
-            .split(' ')
-            .map((n) => Name(n, Namon.middleName))
-            .toList();
+        rawMiddleName(json['middleName']!.split(' '));
       }
-      if (json['suffix'] != null) suffix = Name(json['suffix']!, Namon.suffix);
-      firstName = FirstName(json['firstName']!);
-      lastName = LastName(json['lastName']!);
+      if (json['suffix'] != null) rawSuffix(json['suffix']!);
+      rawFirstName(json['firstName']!);
+      rawLastName(json['lastName']!);
     } catch (error) {
       throw ValidationError('invalid content! \n$error');
     }
