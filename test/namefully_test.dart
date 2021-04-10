@@ -490,5 +490,33 @@ void main() {
       expect(defaultConfig.ending, equals(false));
       expect(defaultConfig.lastNameFormat, equals(LastNameFormat.father));
     });
+
+    test('can create a copy from an existing configuration', () {
+      var config = Config('config');
+      var copyConfig = config.copyWith(
+        name: 'copyConfig',
+        orderedBy: NameOrder.lastName,
+        lastNameFormat: LastNameFormat.mother,
+        bypass: true,
+      );
+
+      // Check the copied config is set as defined.
+      expect(copyConfig.name, equals('copyConfig'));
+      expect(copyConfig.orderedBy, equals(NameOrder.lastName));
+      expect(copyConfig.separator, equals(Separator.space));
+      expect(copyConfig.titling, equals(AbbrTitle.uk));
+      expect(copyConfig.bypass, equals(true));
+      expect(copyConfig.ending, equals(false));
+      expect(copyConfig.lastNameFormat, equals(LastNameFormat.mother));
+
+      // Check the config is not altered by the copy config.
+      expect(config.name, equals('config'));
+      expect(config.orderedBy, equals(NameOrder.firstName));
+      expect(config.separator, equals(Separator.space));
+      expect(config.titling, equals(AbbrTitle.uk));
+      expect(config.bypass, equals(false));
+      expect(config.ending, equals(false));
+      expect(config.lastNameFormat, equals(LastNameFormat.father));
+    });
   });
 }

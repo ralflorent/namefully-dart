@@ -33,7 +33,7 @@ class ValidationError extends Error implements Exception {
 
 /// Set of [ValidationRule]s (or [RegEx]).
 ///
-/// This is intented to match specific alphabets only as a person name does not
+/// This is intended to match specific alphabets only as a person name does not
 /// contain special characters. `\w` does not cover non-Latin characters. So,
 /// it is extended using unicode chars to cover more cases (e.g., Icelandic).
 /// It matches as follows:

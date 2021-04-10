@@ -116,4 +116,37 @@ class Config {
       lastNameFormat: other.lastNameFormat,
     );
   }
+
+  /// Returns a copy of this configuration merged with the provided values.
+  ///
+  /// The word `_copy` is added to the existing config's name to create the new
+  /// config's name if the name already exists for previous configurations. This
+  /// is useful to maintain the uniqueness of each configuration. For example,
+  /// if the new copy is made from the default configuration, this new copy will
+  /// be named `default_copy`.
+  Config copyWith({
+    String? name,
+    NameOrder? orderedBy,
+    Separator? separator,
+    AbbrTitle? titling,
+    bool? ending,
+    bool? bypass,
+    LastNameFormat? lastNameFormat,
+  }) {
+    return Config(_getNewName(name ?? this.name + '_copy'))
+      ..orderedBy = orderedBy ?? this.orderedBy
+      ..separator = separator ?? this.separator
+      ..titling = titling ?? this.titling
+      ..ending = ending ?? this.ending
+      ..bypass = bypass ?? this.bypass
+      ..lastNameFormat = lastNameFormat ?? this.lastNameFormat;
+    ;
+  }
+
+  /// Returns a unique new name.
+  String _getNewName(String name) {
+    return name == this.name || _cache.containsKey(name)
+        ? _getNewName(name + '_copy')
+        : name;
+  }
 }
