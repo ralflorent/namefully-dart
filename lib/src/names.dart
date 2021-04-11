@@ -189,7 +189,7 @@ class LastName extends Name {
   String? _mother;
 
   /// The internal last name format.
-  LastNameFormat format;
+  final LastNameFormat format;
 
   /// Creates an extended version of [Name] and flags it as a last name [type].
   ///

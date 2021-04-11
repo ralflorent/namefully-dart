@@ -120,7 +120,7 @@ extension StringValidation on String {
 
 /// Generates a password-like content from a [string].
 String generatePassword(String string) {
-  var mapper = passwordMapper;
+  var mapper = kPasswordMapper;
   return string.split('').map((char) {
     if (mapper.containsKey(char.toLowerCase())) {
       return mapper[char.toLowerCase()]!.random();

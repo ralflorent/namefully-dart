@@ -229,10 +229,10 @@ class NamaValidator implements Validator<Map<Namon, String>> {
   @override
   void validate(Map<Namon, String> nama) {
     if (nama.isEmpty) throw ValidationError('must not be empty');
-    if (nama.length < minNumberOfNameParts ||
-        nama.length > maxNumberOfNameParts) {
+    if (nama.length < kMinNumberOfNameParts ||
+        nama.length > kMaxNumberOfNameParts) {
       throw ValidationError(
-          'expecting $minNumberOfNameParts-$maxNumberOfNameParts fields');
+          'expecting $kMinNumberOfNameParts-$kMaxNumberOfNameParts fields');
     }
     if (!nama.containsKey(Namon.firstName)) {
       throw ValidationError('"firstName" is a required key');
@@ -260,10 +260,10 @@ class ListStringValidator implements Validator<List<String>> {
   @override
   void validate(List<String> values) {
     if (values.isEmpty ||
-        values.length < minNumberOfNameParts ||
-        values.length > maxNumberOfNameParts) {
+        values.length < kMinNumberOfNameParts ||
+        values.length > kMaxNumberOfNameParts) {
       throw ValidationError(
-          'expecting a list of $minNumberOfNameParts-$maxNumberOfNameParts '
+          'expecting a list of $kMinNumberOfNameParts-$kMaxNumberOfNameParts '
           'elements');
     }
 
@@ -302,10 +302,10 @@ class ListNameValidator implements Validator<List<Name>> {
   @override
   void validate(List<Name> values) {
     if (values.isEmpty ||
-        values.length < minNumberOfNameParts ||
-        values.length > maxNumberOfNameParts) {
+        values.length < kMinNumberOfNameParts ||
+        values.length > kMaxNumberOfNameParts) {
       throw ValidationError(
-          'expecting a list of $minNumberOfNameParts-$maxNumberOfNameParts '
+          'expecting a list of $kMinNumberOfNameParts-$kMaxNumberOfNameParts '
           'elements');
     }
   }

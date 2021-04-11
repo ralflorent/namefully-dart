@@ -58,13 +58,13 @@ import 'utils.dart';
 /// Happy name handling!
 class Namefully {
   /// A copy of high-quality name data.
-  late FullName _fullName;
+  late final FullName _fullName;
 
   /// The statistical information on the birth name.
-  late Summary _summary;
+  late final Summary _summary;
 
   /// A copy of the default configuration (combined with a custom one if any).
-  late Config _config;
+  late final Config _config;
 
   Namefully(String names, {Config? config}) {
     _build(StringParser(names), config);
@@ -465,7 +465,7 @@ class Namefully {
 
     final formatted = <String>[];
     for (var c in how.split('')) {
-      if (!allowedTokens.contains(c)) {
+      if (!kAllowedTokens.contains(c)) {
         throw ArgumentError('<$c> is an invalid character for the formatting.');
       }
       formatted.add(_map(c) ?? '');
