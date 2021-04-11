@@ -49,6 +49,17 @@ void main() {
       _runExpectations(fullName);
     });
 
+    test('creates a full name from raw string content', () {
+      fullName = FullName.raw(
+        prefix: 'Mr',
+        firstName: 'John',
+        middleName: ['Ben', 'Carl'],
+        lastName: 'Smith',
+        suffix: 'Ph.D',
+      );
+      _runExpectations(fullName);
+    });
+
     test('builds a full name as it goes', () {
       fullName = FullName()
         ..prefix = prefix

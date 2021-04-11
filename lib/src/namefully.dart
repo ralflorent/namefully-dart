@@ -231,7 +231,7 @@ class Namefully {
   /// Gives some descriptive statistics that summarize the central tendency,
   /// dispersion and shape of the characters' distribution.
   ///
-  /// [what] indicates which variant to use when describing a name part
+  /// [what] indicates which variant to use when describing a name part.
   ///
   /// Treated as a categorical dataset, the summary contains the following info:
   /// `count`: the number of *unrestricted* characters of the name;
