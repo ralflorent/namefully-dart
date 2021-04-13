@@ -87,6 +87,11 @@ class Namefully {
     _build(parser, config);
   }
 
+  Namefully.builder({
+    Config? config,
+    Namefully Function(String names)? builder,
+  });
+
   /// The number of characters of the [birthName] without spaces.
   int get count => _summary.count;
 
@@ -629,5 +634,103 @@ class Namefully {
       default:
         return null;
     }
+  }
+}
+
+abstract class _State<T> {
+  late final T? previous;
+  late final T current;
+  void add(T state);
+}
+
+class _NamefullyState extends _State<Namefully> {
+  @override
+  final Namefully? previous;
+
+  @override
+  final Namefully current;
+
+  final String name;
+
+  static final Set<_NamefullyState> history = <_NamefullyState>{};
+
+  _NamefullyState._(this.name, this.current, this.previous);
+
+  factory _NamefullyState({String? name, required Namefully initialState}) {
+    history.add(
+      _NamefullyState._(name ?? 'state_${history.length}', initialState, null),
+    );
+    return history.last;
+  }
+
+  Namefully get last => history.last.current;
+
+  @override
+  void add(Namefully current, {String? name}) {
+    history.add(_NamefullyState._(
+      name ?? 'state_${history.length}',
+      current,
+      history.last.current,
+    ));
+  }
+}
+
+/// Build of name on the fly.
+class NameBuilder {
+  final _NamefullyState _nameState;
+
+  factory NameBuilder.string({
+    required String firstName,
+    List<String> middleName = const [],
+    required String lastName,
+  }) {
+    return NameBuilder._(
+      _NamefullyState(
+        name: 'initial',
+        initialState: Namefully.fromList(
+          [firstName, ...middleName, lastName],
+          config: Config.inline(name: 'NameBuilder'),
+        ),
+      ),
+    );
+  }
+
+  NameBuilder._(this._nameState);
+
+  void order(NameOrder by) {
+    _nameState.add(
+      Namefully(
+        _nameState.last.fullName(by),
+        config: _nameState.last._config.copyWith(orderedBy: by),
+      ),
+      name: 'order',
+    );
+  }
+
+  void join(Separator separator) {}
+
+  void shorten() {
+    _nameState.add(
+      Namefully(
+        _nameState.last.shorten(),
+        config: Config.inline(name: 'NameBuilder'),
+      ),
+      name: 'shorten',
+    );
+  }
+
+  void flatten(FlattenedBy by) {
+    _nameState.add(
+      Namefully(
+        _nameState.last.zip(by: by, withPeriod: false),
+        config: Config.inline(name: 'NameBuilder'),
+      ),
+    );
+  }
+
+  void to(Capitalization capitalization) {}
+
+  String build() {
+    return _nameState.last.toString();
   }
 }
