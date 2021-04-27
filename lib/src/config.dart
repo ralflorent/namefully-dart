@@ -140,7 +140,6 @@ class Config {
       ..ending = ending ?? this.ending
       ..bypass = bypass ?? this.bypass
       ..lastNameFormat = lastNameFormat ?? this.lastNameFormat;
-    ;
   }
 
   /// Returns a unique new name.
