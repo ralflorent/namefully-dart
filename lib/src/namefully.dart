@@ -640,6 +640,165 @@ class Namefully {
   }
 }
 
+/// An on-the-fly name builder.
+///
+/// This builder knows how to take a [name] from distinct raw forms and build it
+/// through a state management mechanism. That is, as the name changes, its
+/// states  are persisted and notified to any subscriber listening to those
+/// changes, thanks to a stream controller that broadcasts them.
+///
+/// The builder starts by creating an initial state of the created name. If a
+/// change event occurs to this name, this change is hence viewed as the current
+/// name state to consider, and the previous one becomes history. As this works
+/// like a state store, this gives a rollback flexibility in case an undesirable
+/// change is made.
+///
+/// Once the builder finishes building up the name, the changes are committed
+/// and the store is freed as well as the stream controller for performance
+/// purposes. That means, the builder may no longer change the final name state
+/// and should live up to that last change.
+///
+/// In the following example, a listener prints out the different states of the
+/// name: `Jane Ann Doe`.
+///
+/// ```dart
+/// var builder = NameBuilder('Jane Ann Doe', config: Config('NameBuilder'))
+///   ..stream.listen((e) => print('stream name: $e'))
+///   ..shorten() // stream name: 'Jane Doe'
+///   ..upper() // stream name: 'JANE DOE'
+///   ..order(NameOrder.lastName) // stream name: 'DOE JANE'
+///   ..lower() // stream name: 'doe jane'
+///   ..build();
+/// print(builder.asString); // 'doe jane'
+///
+/// NOTE: Most of the operations supported in the name builder can be performed
+/// with [Namefully.format]. This builder is an expensive operation and should
+/// be used in specific use cases, or when judged extremely necessary. Otherwise,
+/// keep it sane and simple using the traditional `Namefully`.
+/// ```
+class NameBuilder {
+  /// The context in which the name is being built up.
+  Namefully _context;
+
+  /// Whether this builder can continue building additional name states.
+  bool _canBuild = true;
+
+  /// The state of the changing name.
+  final _NamefullyState _state;
+
+  /// The controller providing the on-the-fly updates of the changing name.
+  final _controller = StreamController<Namefully>();
+
+  /// The name changes made available for listeners.
+  Stream<Namefully> get stream => _controller.stream.asBroadcastStream();
+
+  /// The name for the current context.
+  Namefully get name => _context;
+
+  /// The name for the current context as a string.
+  String get asString => _context.toString();
+
+  /// Creates the initial state of the given [name] under a specific [stateName]
+  /// if provided.
+  NameBuilder._(Namefully name, [String? stateName])
+      : _context = name,
+        _state = _NamefullyState(initialState: name, name: stateName) {
+    _controller.sink.add(_context);
+  }
+
+  factory NameBuilder(String names, {Config? config}) {
+    return NameBuilder._(Namefully(names, config: config));
+  }
+
+  factory NameBuilder.only({
+    required String firstName,
+    List<String>? middleName,
+    required String lastName,
+    Config? config,
+  }) {
+    var names = FullName.raw(
+      firstName: firstName,
+      middleName: middleName,
+      lastName: lastName,
+      config: config,
+    );
+    return NameBuilder._(Namefully.from(names, config: config));
+  }
+
+  factory NameBuilder.fromList(List<String> names, {Config? config}) {
+    return NameBuilder._(Namefully.fromList(names, config: config));
+  }
+
+  factory NameBuilder.of(List<Name> names, {Config? config}) {
+    return NameBuilder._(Namefully.of(names, config: config));
+  }
+
+  factory NameBuilder.from(FullName names, {Config? config}) {
+    return NameBuilder._(Namefully.from(names, config: config));
+  }
+
+  factory NameBuilder.fromJson(Map<String, String> names, {Config? config}) {
+    return NameBuilder._(Namefully.fromJson(names, config: config));
+  }
+
+  factory NameBuilder.fromParser(Parser names, {Config? config}) {
+    return NameBuilder._(Namefully.fromParser(names, config: config));
+  }
+
+  /// Arranges the name [by] the specified order: [NameOrder.firstName] or
+  /// [NameOrder.lastName].
+  void order(NameOrder by) {
+    if (!_canBuild) throw _builderClosedError;
+    _context = Namefully(
+      _state.last.fullName(by),
+      config: _state.last._config.copyWith(orderedBy: by),
+    );
+    _state.add(_context, name: 'order');
+    _controller.sink.add(_context);
+  }
+
+  /// Shortens a full name to a typical name, a combination of [firstName] and
+  /// [lastName].
+  ///
+  /// See [Namefully.shorten] for more info.
+  void shorten() {
+    if (!_canBuild) throw _builderClosedError;
+    _context = Namefully(_state.last.shorten(), config: _state.last._config);
+    _state.add(_context, name: 'shorten');
+    _controller.sink.add(_context);
+  }
+
+  /// Transforms a [birthName] to UPPERCASE.
+  void upper() {
+    if (!_canBuild) throw _builderClosedError;
+    _context = Namefully(_state.last.upper(), config: _state.last._config);
+    _state.add(_context, name: 'upper');
+    _controller.sink.add(_context);
+  }
+
+  /// Transforms a [birthName] to lowercase.
+  void lower() {
+    if (!_canBuild) throw _builderClosedError;
+    _context = Namefully(_state.last.lower(), config: _state.last._config);
+    _state.add(_context, name: 'lower');
+    _controller.sink.add(_context);
+  }
+
+  /// Returns the final state of the changing name.
+  Namefully build() {
+    if (!_canBuild) throw _builderClosedError;
+    close();
+    return _context;
+  }
+
+  /// Closes this builder on demand.
+  void close() {
+    _canBuild = false;
+    _controller.close();
+    _state.dispose();
+  }
+}
+
 abstract class _State<T> {
   late final T? previous;
   late final T current;
@@ -682,90 +841,21 @@ class _NamefullyState extends _State<Namefully> {
     ));
   }
 
+  void rollback() => history.remove(history.last);
+
   @override
   void dispose() => history.clear();
 }
 
-/// Build of name on the fly.
-class NameBuilder {
-  /// The state of the changing name.
-  final _NamefullyState _state;
+final _builderClosedError = NotAllowedError('builder has been closed');
 
-  /// The controller providing the on-the-fly updates of the changing name.
-  final _controller = StreamController<Namefully>();
+/// Error thrown by operations that are no longer allowed.
+class NotAllowedError extends Error {
+  NotAllowedError([this.message]);
+  final String? message;
 
-  /// The name changes made available for listeners.
-  Stream<Namefully> get stream => _controller.stream.asBroadcastStream();
-
-  NameBuilder._(Namefully name, [String? stateName])
-      : _state = _NamefullyState(initialState: name, name: stateName) {
-    _controller.sink.add(name);
-  }
-
-  factory NameBuilder(String names, {Config? config}) {
-    return NameBuilder._(Namefully(names, config: config));
-  }
-
-  factory NameBuilder.fromList(List<String> names, {Config? config}) {
-    return NameBuilder._(Namefully.fromList(names, config: config));
-  }
-
-  factory NameBuilder.of(List<Name> names, {Config? config}) {
-    return NameBuilder._(Namefully.of(names, config: config));
-  }
-
-  factory NameBuilder.from(FullName names, {Config? config}) {
-    return NameBuilder._(Namefully.from(names, config: config));
-  }
-
-  factory NameBuilder.fromJson(Map<String, String> names, {Config? config}) {
-    return NameBuilder._(Namefully.fromJson(names, config: config));
-  }
-
-  factory NameBuilder.fromParser(Parser<dynamic> names, {Config? config}) {
-    return NameBuilder._(Namefully.fromParser(names, config: config));
-  }
-
-  /// Arranges the name [by] the specified order: [NameOrder.firstName] or
-  /// [NameOrder.lastName].
-  void order(NameOrder by) {
-    var name = Namefully(
-      _state.last.fullName(by),
-      config: _state.last._config.copyWith(orderedBy: by),
-    );
-    _state.add(name, name: 'order');
-    _controller.sink.add(name);
-  }
-
-  /// Shortens a complex full name to a simple typical name, a combination of
-  /// [firstName] and [lastName].
-  ///
-  /// See [Namefully.shorten()] for more info.
-  void shorten() {
-    var name = Namefully(_state.last.shorten(), config: _state.last._config);
-    _state.add(name, name: 'shorten');
-    _controller.sink.add(name);
-  }
-
-  /// Transforms a [birthName] to UPPERCASE.
-  void upper() {
-    var name = Namefully(_state.last.upper(), config: _state.last._config);
-    _state.add(name, name: 'upper');
-    _controller.sink.add(name);
-  }
-
-  /// Transforms a [birthName] to lowercase.
-  void lower() {
-    var name = Namefully(_state.last.lower(), config: _state.last._config);
-    _state.add(name, name: 'lower');
-    _controller.sink.add(name);
-  }
-
-  /// Returns the final state of the changing name.
-  Namefully build() => _state.last;
-
-  void close() {
-    _controller.close();
-    _state.dispose();
+  @override
+  String toString() {
+    return (message != null) ? 'NotAllowedError: $message' : 'NotAllowedError';
   }
 }
