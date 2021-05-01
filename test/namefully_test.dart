@@ -416,6 +416,53 @@ void main() {
     });
   });
 
+  group('can be built on the fly', () {
+    Config? config;
+
+    setUp(() => config = Config('NameBuilder'));
+
+    test('for basic nesting operations', () {
+      var builder = NameBuilder('Jane Mari Doe', config: config)..shorten();
+      var name = builder.build();
+      expect(builder.isClosed, equals(true));
+
+      expect(name.toString(), equals('Jane Doe'));
+      expect(name.toList(), equals([null, 'Jane', '', 'Doe', null]));
+
+      expect(builder.asString, equals('Jane Doe'));
+      expect(() => builder.lower(), throwsNotAllowedError);
+    });
+
+    test('and roll back on demand', () {
+      var builder = NameBuilder('Jane Mari Doe', config: config)
+        ..shorten()
+        ..upper();
+      expect(builder.isClosed, equals(false));
+      expect(builder.asString, equals('JANE DOE'));
+      builder.rollback();
+      expect(builder.asString, equals('Jane Doe'));
+      builder.rollback();
+      expect(builder.asString, equals('Jane Mari Doe'));
+      builder.close();
+      expect(builder.isClosed, equals(true));
+    });
+
+    test('while broadcasting its name states', () {
+      var builder = NameBuilder('Jane Mari Doe', config: config);
+      var stream = builder.stream;
+      builder
+        ..shorten()
+        ..upper()
+        ..close();
+      stream.listen(
+        expectAsync1<void, Namefully>(
+          (name) => expect(name.toString(), isNotEmpty), // TODO: check value.
+          max: 3,
+        ),
+      );
+    }, skip: true);
+  });
+
   group('Config', () {
     test('creates a default configuration', () {
       var config = Config();

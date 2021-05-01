@@ -89,10 +89,7 @@ class Namefully {
     _build(parser, config);
   }
 
-  Namefully.builder({
-    Config? config,
-    Namefully Function(String names)? builder,
-  });
+  factory Namefully.builder(NameBuilder builder) => builder.build();
 
   /// The number of characters of the [birthName] without spaces.
   int get count => _summary.count;
@@ -644,7 +641,7 @@ class Namefully {
 ///
 /// This builder knows how to take a [name] from distinct raw forms and build it
 /// through a state management mechanism. That is, as the name changes, its
-/// states  are persisted and notified to any subscriber listening to those
+/// states are persisted and notified to any subscriber listening to those
 /// changes, thanks to a stream controller that broadcasts them.
 ///
 /// The builder starts by creating an initial state of the created name. If a
@@ -668,8 +665,7 @@ class Namefully {
 ///   ..upper() // stream name: 'JANE DOE'
 ///   ..order(NameOrder.lastName) // stream name: 'DOE JANE'
 ///   ..lower() // stream name: 'doe jane'
-///   ..build();
-/// print(builder.asString); // 'doe jane'
+/// print(builder.build()); // 'doe jane'
 ///
 /// NOTE: Most of the operations supported in the name builder can be performed
 /// with [Namefully.format]. This builder is an expensive operation and should
@@ -698,6 +694,9 @@ class NameBuilder {
   /// The name for the current context as a string.
   String get asString => _context.toString();
 
+  /// Whether the builder can perform more nesting operations.
+  bool get isClosed => !_canBuild;
+
   /// Creates the initial state of the given [name] under a specific [stateName]
   /// if provided.
   NameBuilder._(Namefully name, [String? stateName])
@@ -706,56 +705,63 @@ class NameBuilder {
     _controller.sink.add(_context);
   }
 
-  factory NameBuilder(String names, {Config? config}) {
-    return NameBuilder._(Namefully(names, config: config));
-  }
+  factory NameBuilder(String names, {Config? config}) =>
+      NameBuilder._(Namefully(
+        names,
+        config: config,
+      ));
 
   factory NameBuilder.only({
     required String firstName,
     List<String>? middleName,
     required String lastName,
     Config? config,
-  }) {
-    var names = FullName.raw(
-      firstName: firstName,
-      middleName: middleName,
-      lastName: lastName,
-      config: config,
-    );
-    return NameBuilder._(Namefully.from(names, config: config));
-  }
+  }) =>
+      NameBuilder._(Namefully.from(
+        FullName.raw(
+          firstName: firstName,
+          middleName: middleName,
+          lastName: lastName,
+          config: config,
+        ),
+        config: config,
+      ));
 
-  factory NameBuilder.fromList(List<String> names, {Config? config}) {
-    return NameBuilder._(Namefully.fromList(names, config: config));
-  }
+  factory NameBuilder.fromList(List<String> names, {Config? config}) =>
+      NameBuilder._(Namefully.fromList(
+        names,
+        config: config,
+      ));
 
-  factory NameBuilder.of(List<Name> names, {Config? config}) {
-    return NameBuilder._(Namefully.of(names, config: config));
-  }
+  factory NameBuilder.of(List<Name> names, {Config? config}) =>
+      NameBuilder._(Namefully.of(
+        names,
+        config: config,
+      ));
 
-  factory NameBuilder.from(FullName names, {Config? config}) {
-    return NameBuilder._(Namefully.from(names, config: config));
-  }
+  factory NameBuilder.from(FullName names, {Config? config}) =>
+      NameBuilder._(Namefully.from(
+        names,
+        config: config,
+      ));
 
-  factory NameBuilder.fromJson(Map<String, String> names, {Config? config}) {
-    return NameBuilder._(Namefully.fromJson(names, config: config));
-  }
+  factory NameBuilder.fromJson(Map<String, String> names, {Config? config}) =>
+      NameBuilder._(Namefully.fromJson(
+        names,
+        config: config,
+      ));
 
-  factory NameBuilder.fromParser(Parser names, {Config? config}) {
-    return NameBuilder._(Namefully.fromParser(names, config: config));
-  }
+  factory NameBuilder.fromParser(Parser names, {Config? config}) =>
+      NameBuilder._(Namefully.fromParser(
+        names,
+        config: config,
+      ));
 
-  /// Arranges the name [by] the specified order: [NameOrder.firstName] or
-  /// [NameOrder.lastName].
-  void order(NameOrder by) {
-    if (!_canBuild) throw _builderClosedError;
-    _context = Namefully(
-      _state.last.fullName(by),
-      config: _state.last._config.copyWith(orderedBy: by),
-    );
-    _state.add(_context, name: 'order');
-    _controller.sink.add(_context);
-  }
+  /// Arranges the name by [NameOrder.firstName].
+  void byFirstName() => _order(NameOrder.firstName);
+
+  /// Arranges the name by [NameOrder.lastName].
+  void byLastName() => _order(NameOrder.lastName);
 
   /// Shortens a full name to a typical name, a combination of [firstName] and
   /// [lastName].
@@ -797,12 +803,32 @@ class NameBuilder {
     _controller.close();
     _state.dispose();
   }
+
+  /// Rolls back to the previous context.
+  void rollback() {
+    if (!_canBuild) throw _builderClosedError;
+    _context = _state.rollback();
+    _controller.sink.add(_context);
+  }
+
+  /// Arranges the name [by] the specified order: [NameOrder.firstName] or
+  /// [NameOrder.lastName].
+  void _order(NameOrder by) {
+    if (!_canBuild) throw _builderClosedError;
+    _context = Namefully(
+      _state.last.fullName(by),
+      config: _state.last._config.copyWith(orderedBy: by),
+    );
+    _state.add(_context, name: 'order');
+    _controller.sink.add(_context);
+  }
 }
 
 abstract class _State<T> {
   late final T? previous;
   late final T current;
   void add(T state);
+  T rollback();
   void dispose();
 }
 
@@ -841,7 +867,15 @@ class _NamefullyState extends _State<Namefully> {
     ));
   }
 
-  void rollback() => history.remove(history.last);
+  /// Performs rollback on existing values only until the very first one.
+  @override
+  Namefully rollback() {
+    if (history.length > 1) {
+      history.remove(history.last);
+      return history.last.current;
+    }
+    return history.first.current;
+  }
 
   @override
   void dispose() => history.clear();

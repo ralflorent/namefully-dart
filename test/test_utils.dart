@@ -3,6 +3,7 @@ import 'package:namefully/src/validators.dart';
 import 'package:test/test.dart';
 
 final Matcher throwsValidationError = throwsA(TypeMatcher<ValidationError>());
+final Matcher throwsNotAllowedError = throwsA(TypeMatcher<NotAllowedError>());
 
 class SimpleParser implements Parser<String> {
   @override
