@@ -468,12 +468,16 @@ class Namefully {
     if (how == 'long') return birthName();
     if (how == 'official') how = 'o';
 
+    var set = ''; // set of chars.
     final formatted = <String>[];
     for (var c in how.split('')) {
       if (!kAllowedTokens.contains(c)) {
         throw ArgumentError('<$c> is an invalid character for the formatting.');
       }
-      formatted.add(_map(c) ?? '');
+      set += c;
+      if (c == r'$') continue;
+      formatted.add(_map(set) ?? '');
+      set = '';
     }
     return formatted.join().trim();
   }
@@ -631,6 +635,15 @@ class Namefully {
         return _fullName.suffix?.toString();
       case 'S':
         return _fullName.suffix?.toString().toUpperCase();
+      case r'$f':
+      case r'$F':
+        return _fullName.firstName.initials().first;
+      case r'$l':
+      case r'$L':
+        return _fullName.lastName.initials().first;
+      case r'$m':
+      case r'$M':
+        return _fullName.middleName.map((n) => n.initials().first).first;
       default:
         return null;
     }
@@ -872,9 +885,9 @@ class _NamefullyState extends _State<Namefully> {
   Namefully rollback() {
     if (history.length > 1) {
       history.remove(history.last);
-      return history.last.current;
+      return last;
     }
-    return history.first.current;
+    return first;
   }
 
   @override

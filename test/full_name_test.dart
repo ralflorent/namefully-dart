@@ -11,8 +11,7 @@ void main() {
 
     expect(fullName.prefix.toString(), equals('Mr'));
     expect(fullName.firstName.toString(), equals('John'));
-    expect(fullName.middleName.map((n) => n.toString()).join(' '),
-        equals('Ben Carl'));
+    expect(fullName.middleName.map((n) => n.toString()).join(' '), 'Ben Carl');
     expect(fullName.lastName.toString(), equals('Smith'));
     expect(fullName.suffix.toString(), equals('Ph.D'));
   }
