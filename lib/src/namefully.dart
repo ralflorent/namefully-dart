@@ -457,12 +457,17 @@ class Namefully {
   /// * ' ': space
   /// * '-': hyphen
   /// * '_': underscore
+  /// * '$': an escape character to select only the initial of the next char.
   ///
   /// Given the name `Joe Jim Smith`, call [format] with the [how] string.
   /// - format('l f') => 'Smith Joe'
   /// - format('L, f') => 'SMITH, Joe'
   /// - format('short') => 'Joe Smith'
   /// - format() => 'SMITH, Joe Jim'
+  /// - format(r'f $l.') => 'Joe S.'.
+  ///
+  /// Do note that the escape character is only valid for the birth name parts:
+  /// first, middle, and last names.
   String format([String how = 'official']) {
     if (how == 'short') return shorten();
     if (how == 'long') return birthName();
@@ -854,44 +859,44 @@ class _NamefullyState extends _State<Namefully> {
 
   final String name;
 
-  static final Set<_NamefullyState> history = {};
+  static final Set<_NamefullyState> _history = {};
 
-  Namefully get last => history.last.current;
+  Namefully get last => _history.last.current;
 
-  Namefully get first => history.first.current;
+  Namefully get first => _history.first.current;
 
   _NamefullyState._(this.name, this.current, this.previous);
 
   factory _NamefullyState({String? name, required Namefully initialState}) {
-    history.add(_NamefullyState._(
-      name ?? 'state_${history.length}',
+    _history.add(_NamefullyState._(
+      name ?? 'state_${_history.length}',
       initialState,
       null,
     ));
-    return history.last;
+    return _history.last;
   }
 
   @override
   void add(Namefully current, {String? name}) {
-    history.add(_NamefullyState._(
-      name ?? 'state_${history.length}',
+    _history.add(_NamefullyState._(
+      name ?? 'state_${_history.length}',
       current,
-      history.last.current,
+      _history.last.current,
     ));
   }
 
   /// Performs rollback on existing values only until the very first one.
   @override
   Namefully rollback() {
-    if (history.length > 1) {
-      history.remove(history.last);
+    if (_history.length > 1) {
+      _history.remove(_history.last);
       return last;
     }
     return first;
   }
 
   @override
-  void dispose() => history.clear();
+  void dispose() => _history.clear();
 }
 
 final _builderClosedError = NotAllowedError('builder has been closed');
