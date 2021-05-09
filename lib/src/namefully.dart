@@ -1,5 +1,3 @@
-import 'dart:async';
-
 /// Welcome to namefully!
 ///
 /// `namefully` is a Dart utility for handling person names.
@@ -8,6 +6,8 @@ import 'dart:async';
 /// - repo: https://github.com/ralflorent/namefully-dart
 /// - pub:  https://pub.dev/packages/namefully
 /// - license: MIT
+import 'dart:async';
+
 import 'config.dart';
 import 'constants.dart';
 import 'enums.dart';
@@ -62,11 +62,11 @@ class Namefully {
   /// A copy of high-quality name data.
   late final FullName _fullName;
 
-  /// The statistical information on the birth name.
-  late final Summary _summary;
-
   /// A copy of the default configuration (combined with a custom one if any).
   late final Config _config;
+
+  /// The statistical information on the birth name.
+  late final Summary _summary;
 
   Namefully(String names, {Config? config}) {
     _build(StringParser(names), config);
@@ -88,8 +88,6 @@ class Namefully {
   Namefully.fromParser(Parser<dynamic> parser, {Config? config}) {
     _build(parser, config);
   }
-
-  factory Namefully.builder(NameBuilder builder) => builder.build();
 
   /// The number of characters of the [birthName] without spaces.
   int get count => _summary.count;
@@ -194,7 +192,7 @@ class Namefully {
   /// Gets the [suffix] part of the [fullName].
   String? suffix() => _fullName.suffix?.toString();
 
-  /// Gets the [initials] of the [fullName].
+  /// Gets the initials of the [fullName].
   ///
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
@@ -575,7 +573,7 @@ class Namefully {
   /// Builds the core elements for name data.
   void _build<T>(Parser<T> parser, [Config? options]) {
     _config = Config.mergeWith(options);
-    _fullName = parser.parse(options: options);
+    _fullName = parser.parse(options: _config);
     _summary = Summary(birthName());
   }
 
@@ -678,11 +676,11 @@ class Namefully {
 ///
 /// ```dart
 /// var builder = NameBuilder('Jane Ann Doe', config: Config('NameBuilder'))
-///   ..stream.listen((e) => print('stream name: $e'))
-///   ..shorten() // stream name: 'Jane Doe'
-///   ..upper() // stream name: 'JANE DOE'
-///   ..order(NameOrder.lastName) // stream name: 'DOE JANE'
-///   ..lower() // stream name: 'doe jane'
+///   ..stream.listen((d) => print('stream name: $d'))
+///   ..shorten()     // stream name: 'Jane Doe'
+///   ..upper()       // stream name: 'JANE DOE'
+///   ..byLastName()  // stream name: 'DOE JANE'
+///   ..lower();      // stream name: 'doe jane'
 /// print(builder.build()); // 'doe jane'
 ///
 /// NOTE: Most of the operations supported in the name builder can be performed
@@ -701,10 +699,10 @@ class NameBuilder {
   final _NamefullyState _state;
 
   /// The controller providing the on-the-fly updates of the changing name.
-  final _controller = StreamController<Namefully>();
+  final _streamer = StreamController<Namefully>();
 
   /// The name changes made available for listeners.
-  Stream<Namefully> get stream => _controller.stream.asBroadcastStream();
+  Stream<Namefully> get stream => _streamer.stream.asBroadcastStream();
 
   /// The name for the current context.
   Namefully get name => _context;
@@ -720,7 +718,7 @@ class NameBuilder {
   NameBuilder._(Namefully name, [String? stateName])
       : _context = name,
         _state = _NamefullyState(initialState: name, name: stateName) {
-    _controller.sink.add(_context);
+    _streamer.sink.add(_context);
   }
 
   factory NameBuilder(String names, {Config? config}) =>
@@ -775,6 +773,13 @@ class NameBuilder {
         config: config,
       ));
 
+  @override
+  String toString() {
+    return "NameBuilder's current context[" +
+        (isClosed ? 'closed' : 'open') +
+        ']: $asString';
+  }
+
   /// Arranges the name by [NameOrder.firstName].
   void byFirstName() => _order(NameOrder.firstName);
 
@@ -788,24 +793,24 @@ class NameBuilder {
   void shorten() {
     if (!_canBuild) throw _builderClosedError;
     _context = Namefully(_state.last.shorten(), config: _state.last._config);
-    _state.add(_context, name: 'shorten');
-    _controller.sink.add(_context);
+    _state.add(_context, id: 'shorten');
+    _streamer.sink.add(_context);
   }
 
   /// Transforms a [birthName] to UPPERCASE.
   void upper() {
     if (!_canBuild) throw _builderClosedError;
     _context = Namefully(_state.last.upper(), config: _state.last._config);
-    _state.add(_context, name: 'upper');
-    _controller.sink.add(_context);
+    _state.add(_context, id: 'upper');
+    _streamer.sink.add(_context);
   }
 
   /// Transforms a [birthName] to lowercase.
   void lower() {
     if (!_canBuild) throw _builderClosedError;
     _context = Namefully(_state.last.lower(), config: _state.last._config);
-    _state.add(_context, name: 'lower');
-    _controller.sink.add(_context);
+    _state.add(_context, id: 'lower');
+    _streamer.sink.add(_context);
   }
 
   /// Returns the final state of the changing name.
@@ -818,7 +823,7 @@ class NameBuilder {
   /// Closes this builder on demand.
   void close() {
     _canBuild = false;
-    _controller.close();
+    _streamer.close();
     _state.dispose();
   }
 
@@ -826,7 +831,7 @@ class NameBuilder {
   void rollback() {
     if (!_canBuild) throw _builderClosedError;
     _context = _state.rollback();
-    _controller.sink.add(_context);
+    _streamer.sink.add(_context);
   }
 
   /// Arranges the name [by] the specified order: [NameOrder.firstName] or
@@ -837,8 +842,8 @@ class NameBuilder {
       _state.last.fullName(by),
       config: _state.last._config.copyWith(orderedBy: by),
     );
-    _state.add(_context, name: 'order');
-    _controller.sink.add(_context);
+    _state.add(_context, id: 'order');
+    _streamer.sink.add(_context);
   }
 }
 
@@ -857,7 +862,7 @@ class _NamefullyState extends _State<Namefully> {
   @override
   final Namefully current;
 
-  final String name;
+  final String id;
 
   static final Set<_NamefullyState> _history = {};
 
@@ -865,7 +870,7 @@ class _NamefullyState extends _State<Namefully> {
 
   Namefully get first => _history.first.current;
 
-  _NamefullyState._(this.name, this.current, this.previous);
+  _NamefullyState._(this.id, this.current, this.previous);
 
   factory _NamefullyState({String? name, required Namefully initialState}) {
     _history.add(_NamefullyState._(
@@ -877,9 +882,9 @@ class _NamefullyState extends _State<Namefully> {
   }
 
   @override
-  void add(Namefully current, {String? name}) {
+  void add(Namefully current, {String? id}) {
     _history.add(_NamefullyState._(
-      name ?? 'state_${_history.length}',
+      id ?? 'state_${_history.length}',
       current,
       _history.last.current,
     ));
