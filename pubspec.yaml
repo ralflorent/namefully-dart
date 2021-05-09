@@ -1,5 +1,5 @@
 name: namefully
-version: 0.1.1
+version: 0.1.2
 description: >-
   A Dart utility for handling person names in a particular order, way, or shape.
 repository: https://github.com/ralflorent/namefully-dart
