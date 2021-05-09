@@ -15,6 +15,7 @@ void main() {
   print(name.initials(withMid: true)); // ['J', 'S', 'S']
   // Formats as desired.
   print(name.format('L, f m')); // SNOW, Jon Stark
+  print(name.format(r'f $l.')); // Jon S.
   // Make it short.
   print(name.shorten()); // Jon Snow
   // Make it flat.

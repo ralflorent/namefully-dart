@@ -12,30 +12,36 @@ void main() {
 
     test('is thrown if any part of a first name breaks the validation rules',
         () {
-      expect(() => FirstNameValidator().validate(FirstName('J4ne')),
-          throwsValidationError);
-      expect(() => FirstNameValidator().validate(FirstName('J4ne', ['Ka7e'])),
-          throwsValidationError);
+      expect(
+        () => FirstNameValidator().validate(FirstName('J4ne')),
+        throwsValidationError,
+      );
+      expect(
+        () => FirstNameValidator().validate(FirstName('J4ne', ['Ka7e'])),
+        throwsValidationError,
+      );
       expect(
           () => FirstNameValidator().validate('Jane;'), throwsValidationError);
     });
 
     test('is thrown if any middle name breaks the validation rules', () {
       expect(
-          () => MiddleNameValidator().validate([
-                Name('ka7e', Namon.firstName),
-              ]),
-          throwsValidationError);
+        () => MiddleNameValidator().validate([
+          Name('ka7e', Namon.firstName),
+        ]),
+        throwsValidationError,
+      );
       expect(
-          () =>
-              MiddleNameValidator().validate([Name('kate;', Namon.middleName)]),
-          throwsValidationError);
+        () => MiddleNameValidator().validate([Name('kate;', Namon.middleName)]),
+        throwsValidationError,
+      );
       expect(
-          () => MiddleNameValidator().validate([
-                Name('Jack', Namon.middleName),
-                Name('kate;', Namon.middleName),
-              ]),
-          throwsValidationError);
+        () => MiddleNameValidator().validate([
+          Name('Jack', Namon.middleName),
+          Name('kate;', Namon.middleName),
+        ]),
+        throwsValidationError,
+      );
     });
 
     test('is thrown if any part of a last name breaks the validation rules',
@@ -61,61 +67,71 @@ void main() {
 
     test('is thrown if the json name keys are not as expected', () {
       expect(() => NamaValidator().validate({}), throwsValidationError);
-      expect(() => NamaValidator().validate({Namon.prefix: ''}),
-          throwsValidationError);
       expect(
-          () => NamaValidator().validate({
-                Namon.prefix: 'Mr',
-                Namon.firstName: 'John',
-              }),
-          throwsValidationError);
+        () => NamaValidator().validate({Namon.prefix: ''}),
+        throwsValidationError,
+      );
       expect(
-          () => NamaValidator().validate({
-                Namon.prefix: 'Mr',
-                Namon.lastName: 'Smith',
-              }),
-          throwsValidationError);
+        () => NamaValidator().validate({
+          Namon.prefix: 'Mr',
+          Namon.firstName: 'John',
+        }),
+        throwsValidationError,
+      );
+      expect(
+        () => NamaValidator().validate({
+          Namon.prefix: 'Mr',
+          Namon.lastName: 'Smith',
+        }),
+        throwsValidationError,
+      );
     });
 
     test('is thrown if the json name values are incorrect', () {
       expect(
-          () => NamaValidator().validate({
-                Namon.firstName: 'J4ne',
-                Namon.lastName: 'Doe',
-              }),
-          throwsValidationError);
+        () => NamaValidator().validate({
+          Namon.firstName: 'J4ne',
+          Namon.lastName: 'Doe',
+        }),
+        throwsValidationError,
+      );
       expect(
-          () => NamaValidator().validate({
-                Namon.prefix: '',
-                Namon.firstName: 'Jane',
-                Namon.lastName: 'Smith',
-              }),
-          throwsValidationError);
+        () => NamaValidator().validate({
+          Namon.prefix: '',
+          Namon.firstName: 'Jane',
+          Namon.lastName: 'Smith',
+        }),
+        throwsValidationError,
+      );
     });
 
     test('is thrown if a string list has an unsupported number of entries', () {
       expect(() => ListStringValidator().validate([]), throwsValidationError);
-      expect(() => ListStringValidator().validate(['jane']),
-          throwsValidationError);
       expect(
-          () => ListStringValidator().validate([
-                'ms',
-                'jane',
-                'jane',
-                'janet',
-                'doe',
-                'III',
-              ]),
-          throwsValidationError);
+        () => ListStringValidator().validate(['jane']),
+        throwsValidationError,
+      );
+      expect(
+        () => ListStringValidator().validate([
+          'ms',
+          'jane',
+          'jane',
+          'janet',
+          'doe',
+          'III',
+        ]),
+        throwsValidationError,
+      );
     });
 
     test('is thrown if a string list breaks the validation rules', () {
       expect(
-          () => ListStringValidator().validate([
-                'jane,',
-                'doe',
-              ]),
-          throwsValidationError);
+        () => ListStringValidator().validate([
+          'jane,',
+          'doe',
+        ]),
+        throwsValidationError,
+      );
     });
 
     test('is thrown if a name list has an unsupported number of entries', () {
@@ -123,15 +139,16 @@ void main() {
       expect(() => ListNameValidator().validate([]), throwsValidationError);
       expect(() => ListNameValidator().validate([name]), throwsValidationError);
       expect(
-          () => ListNameValidator().validate([
-                name,
-                name,
-                name,
-                name,
-                name,
-                name,
-              ]),
-          throwsValidationError);
+        () => ListNameValidator().validate([
+          name,
+          name,
+          name,
+          name,
+          name,
+          name,
+        ]),
+        throwsValidationError,
+      );
     });
   });
 

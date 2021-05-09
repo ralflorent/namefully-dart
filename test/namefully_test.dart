@@ -104,6 +104,10 @@ void main() {
         expect(name.format('o'), equals('Mr SMITH, John Ben Ph.D'));
         expect(name.format('p'), equals('Mr'));
         expect(name.format('s'), equals('Ph.D'));
+
+        expect(name.format(r'f $l'), equals('John S'));
+        expect(name.format(r'f $l.'), equals('John S.'));
+        expect(name.format(r'f $m. l'), equals('John B. Smith'));
       });
 
       test('throws error for wrong key params when formatting', () {
@@ -189,9 +193,13 @@ void main() {
         expect(name.initials(), equals(['J', 'S']));
         expect(name.initials(withMid: true), equals(['J', 'B', 'S']));
         expect(
-            name.initials(orderedBy: NameOrder.lastName), equals(['S', 'J']));
-        expect(name.initials(orderedBy: NameOrder.lastName, withMid: true),
-            equals(['S', 'J', 'B']));
+          name.initials(orderedBy: NameOrder.lastName),
+          equals(['S', 'J']),
+        );
+        expect(
+          name.initials(orderedBy: NameOrder.lastName, withMid: true),
+          equals(['S', 'J', 'B']),
+        );
       });
 
       test('.shorten() shortens a full name to a first and last name', () {
@@ -200,12 +208,18 @@ void main() {
       });
 
       test('.flatten() flattens a full name based on specs', () {
-        expect(name.flatten(limit: 12, by: FlattenedBy.middleName),
-            equals('John B. Smith'));
         expect(
-            name.flatten(
-                limit: 12, by: FlattenedBy.middleName, withPeriod: false),
-            equals('John B Smith'));
+          name.flatten(limit: 10, by: FlattenedBy.middleName),
+          equals('John B. Smith'),
+        );
+        expect(
+          name.flatten(
+            limit: 10,
+            by: FlattenedBy.middleName,
+            withPeriod: false,
+          ),
+          equals('John B Smith'),
+        );
       });
 
       test('.zip() flattens a full name', () {
@@ -253,24 +267,33 @@ void main() {
         expect(name.initials(), equals(['S', 'J']));
         expect(name.initials(withMid: true), equals(['S', 'J', 'B']));
         expect(
-            name.initials(orderedBy: NameOrder.firstName), equals(['J', 'S']));
-        expect(name.initials(orderedBy: NameOrder.firstName, withMid: true),
-            equals(['J', 'B', 'S']));
+          name.initials(orderedBy: NameOrder.firstName),
+          equals(['J', 'S']),
+        );
+        expect(
+          name.initials(orderedBy: NameOrder.firstName, withMid: true),
+          equals(['J', 'B', 'S']),
+        );
       });
 
       test('.shorten() shortens a full name to a first and last name', () {
         expect(name.shorten(), 'Smith John');
-        expect(
-            name.shorten(orderedBy: NameOrder.firstName), equals('John Smith'));
+        expect(name.shorten(orderedBy: NameOrder.firstName), 'John Smith');
       });
 
       test('.flatten() flattens a full name based on specs', () {
-        expect(name.flatten(limit: 12, by: FlattenedBy.middleName),
-            equals('Smith John B.'));
         expect(
-            name.flatten(
-                limit: 12, by: FlattenedBy.middleName, withPeriod: false),
-            equals('Smith John B'));
+          name.flatten(limit: 10, by: FlattenedBy.middleName),
+          equals('Smith John B.'),
+        );
+        expect(
+          name.flatten(
+            limit: 10,
+            by: FlattenedBy.middleName,
+            withPeriod: false,
+          ),
+          equals('Smith John B'),
+        );
       });
 
       test('.zip() flattens a full name', () {
@@ -290,44 +313,51 @@ void main() {
       });
 
       test('List<String>', () {
-        expect(Namefully.fromList(['John', 'Smith']).toString(),
-            equals('John Smith'));
+        expect(Namefully.fromList(['John', 'Smith']).toString(), 'John Smith');
       });
 
       test('Map<String, String>', () {
         expect(
-            Namefully.fromJson({'firstName': 'John', 'lastName': 'Smith'})
-                .toString(),
-            equals('John Smith'));
+          Namefully.fromJson({
+            'firstName': 'John',
+            'lastName': 'Smith',
+          }).toString(),
+          equals('John Smith'),
+        );
       });
 
       test('List<Name>', () {
-        expect(Namefully.of([FirstName('John'), LastName('Smith')]).toString(),
-            equals('John Smith'));
         expect(
-            Namefully.of([
-              Name('John', Namon.firstName),
-              Name('Smith', Namon.lastName),
-            ]).toString(),
-            equals('John Smith'));
+          Namefully.of([FirstName('John'), LastName('Smith')]).toString(),
+          equals('John Smith'),
+        );
+        expect(
+          Namefully.of([
+            Name('John', Namon.firstName),
+            Name('Smith', Namon.lastName),
+          ]).toString(),
+          equals('John Smith'),
+        );
       });
 
       test('FullName', () {
         expect(
-            Namefully.from(FullName()
-                  ..rawFirstName('John')
-                  ..rawLastName('Smith'))
-                .toString(),
-            equals('John Smith'));
+          Namefully.from(FullName()
+                ..rawFirstName('John')
+                ..rawLastName('Smith'))
+              .toString(),
+          equals('John Smith'),
+        );
       });
 
       test('Parser<dynamic> (Custom Parser)', () {
         expect(
-            Namefully.fromParser(
-              SimpleParser('John#Smith'), // simple parsing logic :P
-              config: Config.inline(name: 'simpleParser'),
-            ).toString(),
-            equals('John Smith'));
+          Namefully.fromParser(
+            SimpleParser('John#Smith'), // simple parsing logic :P
+            config: Config.inline(name: 'simpleParser'),
+          ).toString(),
+          equals('John Smith'),
+        );
       });
     });
 
@@ -414,6 +444,53 @@ void main() {
         expect(name.suffix(), equals('M.Sc.'));
       });
     });
+  });
+
+  group('can be built on the fly', () {
+    Config? config;
+
+    setUp(() => config = Config('NameBuilder'));
+
+    test('for basic nesting operations', () {
+      var builder = NameBuilder('Jane Mari Doe', config: config)..shorten();
+      var name = builder.build();
+      expect(builder.isClosed, equals(true));
+
+      expect(name.toString(), equals('Jane Doe'));
+      expect(name.toList(), equals([null, 'Jane', '', 'Doe', null]));
+
+      expect(builder.asString, equals('Jane Doe'));
+      expect(() => builder.lower(), throwsNotAllowedError);
+    });
+
+    test('and roll back on demand', () {
+      var builder = NameBuilder('Jane Mari Doe', config: config)
+        ..shorten()
+        ..upper();
+      expect(builder.isClosed, equals(false));
+      expect(builder.asString, equals('JANE DOE'));
+      builder.rollback();
+      expect(builder.asString, equals('Jane Doe'));
+      builder.rollback();
+      expect(builder.asString, equals('Jane Mari Doe'));
+      builder.close();
+      expect(builder.isClosed, equals(true));
+    });
+
+    test('and broadcasts its name states', () {
+      var builder = NameBuilder('Jane Mari Doe', config: config);
+      var stream = builder.stream;
+      builder
+        ..shorten()
+        ..upper()
+        ..close();
+      stream.listen(
+        expectAsync1<void, Namefully>(
+          (name) => expect(name.toString(), isNotEmpty), // TODO: check value.
+          max: 3,
+        ),
+      );
+    }, skip: true);
   });
 
   group('Config', () {

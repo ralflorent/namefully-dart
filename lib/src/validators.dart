@@ -56,11 +56,11 @@ class ValidationRule {
   /// - with space
   ///
   /// For example, this rule matches the following use cases:
-  ///   prefix: `Mr`
-  ///   firstName: `Jean-Baptiste`,
-  ///   middleName`Jane Doe`
-  ///   lastName: `O'connor`,
-  ///   suffix: `Ph.D`,
+  /// - prefix: `Mr`
+  /// - firstName: `Jean-Baptiste`,
+  /// - middleName`Jane Doe`
+  /// - lastName: `O'connor`,
+  /// - suffix: `Ph.D`,
   static final namon = RegExp("^${base.pattern}+(([' -.]${base.pattern})?"
       '${base.pattern}*)*\$');
 
@@ -92,6 +92,7 @@ class ValidationRule {
 
 /// A validator knows how to validate.
 abstract class Validator<T> {
+  /// Validates the content [value].
   void validate(T value);
 }
 

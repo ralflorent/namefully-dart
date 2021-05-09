@@ -19,7 +19,8 @@ const List<String> kAllowedTokens = [
   'p',
   'P',
   's',
-  'S'
+  'S',
+  '\$',
 ];
 const int kMinNumberOfNameParts = 2;
 const int kMaxNumberOfNameParts = 5;

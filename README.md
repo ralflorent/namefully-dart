@@ -11,6 +11,13 @@ A Dart utility for handling person names.
 Have you ever had to format a user's name in a particular order, way, or shape?
 Probably yes. If not, it will come at some point. Be patient.
 
+You may want to use this library if:
+
+* you've been repeatedly dealing with users' given names and surnames;
+* you need to occasionally format a name in a particular order, way, or shape;
+* you keep copy-pasting your name-related business logic for every project;
+* you're curious about trying new, cool stuff.
+
 ## Key features
 
 1. Offer supports for many writing systems, including Latin and European ones
@@ -25,9 +32,10 @@ Probably yes. If not, it will come at some point. Be patient.
 ## Advanced features
 
 1. Alter the order of appearance of a name: by given name or surname
-2. Handle various subparts of a surname and given name
+2. Handle various parts of a surname and given name
 3. Use tokens (separators) to reshape prefixes and suffixes
 4. Accept customized parsers (do it yourself)
+5. Build a name on the fly (via a builder)
 
 ## Dependencies
 

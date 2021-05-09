@@ -9,18 +9,18 @@ class Name {
   late String _initial;
   late String _body;
   late bool _isEmpty;
-  final CapsRange _cap;
+  final CapsRange _capRange;
   final Namon type;
 
   /// Creates augmented names by adding extra functionality to a string name.
   ///
   /// A name [type] must be indicated to categorize [this] name so it can be
-  /// treated accordingly. [cap] determines how [this] name should be
+  /// treated accordingly. [capRange] determines how [this] name should be
   /// capitalized.
-  Name(String namon, this.type, [CapsRange? cap])
-      : _cap = cap ?? CapsRange.initial {
+  Name(String namon, this.type, [CapsRange? capRange])
+      : _capRange = capRange ?? CapsRange.initial {
     this.namon = namon;
-    if (cap != null) caps(cap);
+    if (capRange != null) caps(capRange);
   }
 
   /// The piece of string treated as a name.
@@ -34,7 +34,7 @@ class Name {
   }
 
   /// The capitalization range.
-  CapsRange get capitalized => _cap;
+  CapsRange get capitalized => _capRange;
 
   /// Returns whether this name is empty.
   bool get isEmpty => _isEmpty;
@@ -61,11 +61,11 @@ class Name {
   List<String> initials() => [_initial];
 
   /// Capitalizes [this].
-  void caps([CapsRange? option]) {
-    option ??= _cap;
-    if (option == CapsRange.initial) {
+  void caps([CapsRange? range]) {
+    range ??= _capRange;
+    if (range == CapsRange.initial) {
       namon = '${_initial.toUpperCase()}$_body';
-    } else if (option == CapsRange.all) {
+    } else if (range == CapsRange.all) {
       namon = '${_initial.toUpperCase()}${_body.toUpperCase()}';
     } else {
       namon = _namon.toLowerCase();
@@ -73,11 +73,11 @@ class Name {
   }
 
   /// De-capitalizes [this].
-  void decaps([CapsRange? option]) {
-    option ??= _cap;
-    if (option == CapsRange.initial) {
+  void decaps([CapsRange? range]) {
+    range ??= _capRange;
+    if (range == CapsRange.initial) {
       namon = '${_initial.toLowerCase()}$_body';
-    } else if (option == CapsRange.all) {
+    } else if (range == CapsRange.all) {
       namon = '${_initial.toLowerCase()}${_body.toLowerCase()}';
     } else {
       namon = _namon.toUpperCase();
@@ -141,17 +141,17 @@ class FirstName extends Name {
   /// Gets the initials of [this].
   @override
   List<String> initials({bool includeAll = false}) {
-    return [namon[0], if (includeAll && hasMore()) ..._more.map((n) => n[0])];
+    return [_initial, if (includeAll && hasMore()) ..._more.map((n) => n[0])];
   }
 
   /// Capitalizes [this].
   @override
-  void caps([CapsRange? option]) {
-    option ??= capitalized;
-    if (option == CapsRange.initial) {
+  void caps([CapsRange? range]) {
+    range ??= capitalized;
+    if (range == CapsRange.initial) {
       namon = capitalize(namon);
       if (hasMore()) _more = _more.map(capitalize).toList();
-    } else if (option == CapsRange.all) {
+    } else if (range == CapsRange.all) {
       namon = namon.toUpperCase();
       if (hasMore()) _more = _more.map((n) => n.toUpperCase()).toList();
     }
@@ -159,12 +159,12 @@ class FirstName extends Name {
 
   /// De-capitalizes [this].
   @override
-  void decaps([CapsRange? option]) {
-    option ??= capitalized;
-    if (option == CapsRange.initial) {
+  void decaps([CapsRange? range]) {
+    range ??= capitalized;
+    if (range == CapsRange.initial) {
       namon = decapitalize(namon);
       if (hasMore()) _more = _more.map(decapitalize).toList();
-    } else if (option == CapsRange.all) {
+    } else if (range == CapsRange.all) {
       namon = namon.toLowerCase();
       if (hasMore()) _more = _more.map((n) => n.toLowerCase()).toList();
     }
@@ -180,7 +180,7 @@ class FirstName extends Name {
   /// Creates a password-like representation of [this].
   @override
   String passwd({bool includeAll = false}) {
-    return generatePassword(toString(includeAll: true));
+    return generatePassword(toString(includeAll: includeAll));
   }
 }
 
@@ -260,12 +260,12 @@ class LastName extends Name {
 
   /// Capitalizes [this].
   @override
-  void caps([CapsRange? option]) {
-    option ??= capitalized;
-    if (option == CapsRange.initial) {
+  void caps([CapsRange? range]) {
+    range ??= capitalized;
+    if (range == CapsRange.initial) {
       namon = capitalize(namon);
       if (hasMother()) _mother = capitalize(_mother!);
-    } else if (option == CapsRange.all) {
+    } else if (range == CapsRange.all) {
       namon = namon.toUpperCase();
       if (hasMother()) _mother = _mother!.toUpperCase();
     }
@@ -273,12 +273,12 @@ class LastName extends Name {
 
   /// De-capitalizes [this].
   @override
-  void decaps([CapsRange? option]) {
-    option ??= capitalized;
-    if (option == CapsRange.initial) {
+  void decaps([CapsRange? range]) {
+    range ??= capitalized;
+    if (range == CapsRange.initial) {
       namon = decapitalize(namon);
       if (hasMother()) _mother = decapitalize(_mother!);
-    } else if (option == CapsRange.all) {
+    } else if (range == CapsRange.all) {
       namon = namon.toLowerCase();
       if (hasMother()) _mother = _mother!.toLowerCase();
     }

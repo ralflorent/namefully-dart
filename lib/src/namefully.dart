@@ -6,6 +6,8 @@
 /// - repo: https://github.com/ralflorent/namefully-dart
 /// - pub:  https://pub.dev/packages/namefully
 /// - license: MIT
+import 'dart:async';
+
 import 'config.dart';
 import 'constants.dart';
 import 'enums.dart';
@@ -60,11 +62,11 @@ class Namefully {
   /// A copy of high-quality name data.
   late final FullName _fullName;
 
-  /// The statistical information on the birth name.
-  late final Summary _summary;
-
   /// A copy of the default configuration (combined with a custom one if any).
   late final Config _config;
+
+  /// The statistical information on the birth name.
+  late final Summary _summary;
 
   Namefully(String names, {Config? config}) {
     _build(StringParser(names), config);
@@ -92,6 +94,10 @@ class Namefully {
 
   /// The number of characters of the [birthName], including spaces.
   int get length => _summary.length;
+
+  /// Returns a full name as set.
+  @override
+  String toString() => fullName();
 
   /// Gets the full name ordered as configured.
   ///
@@ -123,10 +129,6 @@ class Namefully {
     if (_fullName.suffix != null) nama.add(_fullName.suffix.toString());
     return nama.join(' ').trim();
   }
-
-  /// Returns a full name as set.
-  @override
-  String toString() => fullName();
 
   /// Gets a Map or json-like representation of the [fullName].
   Map<String, String?> toMap() => {
@@ -170,7 +172,7 @@ class Namefully {
 
   /// Gets the [lastName] part of the [fullName].
   ///
-  /// the last name [format] overrides the how-to formatting of a surname
+  /// The last name [format] overrides the how-to formatting of a surname
   /// output, considering its sub-parts.
   String lastName([LastNameFormat? format]) {
     return _fullName.lastName.toString(format: format);
@@ -182,7 +184,7 @@ class Namefully {
   }
 
   /// Returns true if any [middleName]'s set.
-  bool hasMiddleName() => has(Namon.middleName);
+  bool hasMiddleName() => _fullName.has(Namon.middleName);
 
   /// Gets the [prefix] part of the [fullName].
   String? prefix() => _fullName.prefix?.toString();
@@ -190,17 +192,18 @@ class Namefully {
   /// Gets the [suffix] part of the [fullName].
   String? suffix() => _fullName.suffix?.toString();
 
-  /// Gets the [initials] of the [fullName].
+  /// Gets the initials of the [fullName].
   ///
   /// The name order [orderedBy] forces to order by [firstName] or [lastName]
   /// by overriding the preset configuration.
+  ///
   /// [withMid] determines whether to include the initials of [middleName].
   ///
   /// For example, given the names:
   /// - `John Smith` => ['J', 'S']
-  /// - `John Ben Smith` => ['J', 'S']
+  /// - `John Ben Smith` => ['J', 'S'].
   /// when [withMid] is set to true:
-  /// - `John Ben Smith` => ['J', 'B', 'S']
+  /// - `John Ben Smith` => ['J', 'B', 'S'].
   ///
   /// **Note**:
   /// Ordered by last name obeys the following format:
@@ -234,20 +237,20 @@ class Namefully {
   /// [what] indicates which variant to use when describing a name part.
   ///
   /// Treated as a categorical dataset, the summary contains the following info:
-  /// `count`: the number of *unrestricted* characters of the name;
-  /// `frequency`: the highest frequency within the characters;
-  /// `top`: the character with the highest frequency;
-  /// `unique`: the count of unique characters of the name;
-  /// `distribution`: the characters' distribution.
+  /// - `count`: the number of *unrestricted* characters of the name;
+  /// - `frequency`: the highest frequency within the characters;
+  /// - `top`: the character with the highest frequency;
+  /// - `unique`: the count of unique characters of the name;
+  /// - `distribution`: the characters' distribution.
   ///
   /// Given the name `Thomas Alva Edison`, the summary will output as follows:
   ///
   /// Descriptive statistics for "Thomas Alva Edison"
-  ///  count    : 16
-  ///  frequency: 3
-  ///  top      : A
-  ///  unique   : 12
-  ///  distribution: { T: 1, H: 1, O: 2, M: 1, A: 2, S: 2, ' ': 2, L: 1, V: 1,
+  ///  - count    : 16
+  ///  - frequency: 3
+  ///  - top      : A
+  ///  - unique   : 12
+  ///  - distribution: { T: 1, H: 1, O: 2, M: 1, A: 2, S: 2, ' ': 2, L: 1, V: 1,
   ///  E: 1, D: 1, I: 1, N: 1 }
   ///
   /// **Note:**
@@ -331,7 +334,7 @@ class Namefully {
     bool withPeriod = true,
     bool warning = true,
   }) {
-    if (fullName().length <= limit) return fullName();
+    if (count <= limit) return fullName();
 
     var sep = withPeriod ? '.' : '',
         fn = _fullName.firstName,
@@ -425,50 +428,59 @@ class Namefully {
   /// [how] to format it?
   /// string format
   /// -------------
-  /// 'short': typical first + last name
-  /// 'long': birth name (without prefix and suffix)
+  /// * 'short': typical first + last name
+  /// * 'long': birth name (without prefix and suffix)
   ///
   /// char format
   /// -----------
-  /// 'b': birth name
-  /// 'B': capitalized birth name
-  /// 'f': first name
-  /// 'F': capitalized first name
-  /// 'l': last name (official)
-  /// 'L': capitalized last name
-  /// 'm': middle names
-  /// 'M': capitalized middle names
-  /// 'o': official document format
-  /// 'O': official document format in capital letters
-  /// 'p': prefix
-  /// 'P': capitalized prefix
-  /// 's': suffix
-  /// 'S': capitalized suffix
+  /// * 'b': birth name
+  /// * 'B': capitalized birth name
+  /// * 'f': first name
+  /// * 'F': capitalized first name
+  /// * 'l': last name (official)
+  /// * 'L': capitalized last name
+  /// * 'm': middle names
+  /// * 'M': capitalized middle names
+  /// * 'o': official document format
+  /// * 'O': official document format in capital letters
+  /// * 'p': prefix
+  /// * 'P': capitalized prefix
+  /// * 's': suffix
+  /// * 'S': capitalized suffix
   ///
   /// punctuations
   /// ------------
-  /// '.': period
-  /// ',': comma
-  /// ' ': space
-  /// '-': hyphen
-  /// '_': underscore
+  /// * '.': period
+  /// * ',': comma
+  /// * ' ': space
+  /// * '-': hyphen
+  /// * '_': underscore
+  /// * '$': an escape character to select only the initial of the next char.
   ///
-  /// Given the name `Joe Jim Smith`, call [format] with the how string.
+  /// Given the name `Joe Jim Smith`, call [format] with the [how] string.
   /// - format('l f') => 'Smith Joe'
   /// - format('L, f') => 'SMITH, Joe'
   /// - format('short') => 'Joe Smith'
   /// - format() => 'SMITH, Joe Jim'
+  /// - format(r'f $l.') => 'Joe S.'.
+  ///
+  /// Do note that the escape character is only valid for the birth name parts:
+  /// first, middle, and last names.
   String format([String how = 'official']) {
     if (how == 'short') return shorten();
     if (how == 'long') return birthName();
     if (how == 'official') how = 'o';
 
+    var set = ''; // set of chars.
     final formatted = <String>[];
     for (var c in how.split('')) {
       if (!kAllowedTokens.contains(c)) {
         throw ArgumentError('<$c> is an invalid character for the formatting.');
       }
-      formatted.add(_map(c) ?? '');
+      set += c;
+      if (c == r'$') continue;
+      formatted.add(_map(set) ?? '');
+      set = '';
     }
     return formatted.join().trim();
   }
@@ -561,7 +573,7 @@ class Namefully {
   /// Builds the core elements for name data.
   void _build<T>(Parser<T> parser, [Config? options]) {
     _config = Config.mergeWith(options);
-    _fullName = parser.parse(options: options);
+    _fullName = parser.parse(options: _config);
     _summary = Summary(birthName());
   }
 
@@ -626,8 +638,281 @@ class Namefully {
         return _fullName.suffix?.toString();
       case 'S':
         return _fullName.suffix?.toString().toUpperCase();
+      case r'$f':
+      case r'$F':
+        return _fullName.firstName.initials().first;
+      case r'$l':
+      case r'$L':
+        return _fullName.lastName.initials().first;
+      case r'$m':
+      case r'$M':
+        return _fullName.middleName.map((n) => n.initials().first).first;
       default:
         return null;
     }
+  }
+}
+
+/// An on-the-fly name builder.
+///
+/// This builder knows how to take a [name] from distinct raw forms and build it
+/// through a state management mechanism. That is, as the name changes, its
+/// states are persisted and notified to any subscriber listening to those
+/// changes, thanks to a stream controller that broadcasts them.
+///
+/// The builder starts by creating an initial state of the created name. If a
+/// change event occurs to this name, this change is hence viewed as the current
+/// name state to consider, and the previous one becomes history. As this works
+/// like a state store, this gives a rollback flexibility in case an undesirable
+/// change is made.
+///
+/// Once the builder finishes building up the name, the changes are committed
+/// and the store is freed as well as the stream controller for performance
+/// purposes. That means, the builder may no longer change the final name state
+/// and should live up to that last change.
+///
+/// In the following example, a listener prints out the different states of the
+/// name: `Jane Ann Doe`.
+///
+/// ```dart
+/// var builder = NameBuilder('Jane Ann Doe', config: Config('NameBuilder'))
+///   ..stream.listen((d) => print('stream name: $d'))
+///   ..shorten()     // stream name: 'Jane Doe'
+///   ..upper()       // stream name: 'JANE DOE'
+///   ..byLastName()  // stream name: 'DOE JANE'
+///   ..lower();      // stream name: 'doe jane'
+/// print(builder.build()); // 'doe jane'
+///
+/// NOTE: Most of the operations supported in the name builder can be performed
+/// with [Namefully.format]. This builder is an expensive operation and should
+/// be used in specific use cases, or when judged extremely necessary. Otherwise,
+/// keep it sane and simple using the traditional `Namefully`.
+/// ```
+class NameBuilder {
+  /// The context in which the name is being built up.
+  Namefully _context;
+
+  /// Whether this builder can continue building additional name states.
+  bool _canBuild = true;
+
+  /// The state of the changing name.
+  final _NamefullyState _state;
+
+  /// The controller providing the on-the-fly updates of the changing name.
+  final _streamer = StreamController<Namefully>();
+
+  /// The name changes made available for listeners.
+  Stream<Namefully> get stream => _streamer.stream.asBroadcastStream();
+
+  /// The name for the current context.
+  Namefully get name => _context;
+
+  /// The name for the current context as a string.
+  String get asString => _context.toString();
+
+  /// Whether the builder can perform more nesting operations.
+  bool get isClosed => !_canBuild;
+
+  /// Creates the initial state of the given [name] under a specific [stateName]
+  /// if provided.
+  NameBuilder._(Namefully name, [String? stateName])
+      : _context = name,
+        _state = _NamefullyState(initialState: name, name: stateName) {
+    _streamer.sink.add(_context);
+  }
+
+  factory NameBuilder(String names, {Config? config}) =>
+      NameBuilder._(Namefully(
+        names,
+        config: config,
+      ));
+
+  factory NameBuilder.only({
+    required String firstName,
+    List<String>? middleName,
+    required String lastName,
+    Config? config,
+  }) =>
+      NameBuilder._(Namefully.from(
+        FullName.raw(
+          firstName: firstName,
+          middleName: middleName,
+          lastName: lastName,
+          config: config,
+        ),
+        config: config,
+      ));
+
+  factory NameBuilder.fromList(List<String> names, {Config? config}) =>
+      NameBuilder._(Namefully.fromList(
+        names,
+        config: config,
+      ));
+
+  factory NameBuilder.of(List<Name> names, {Config? config}) =>
+      NameBuilder._(Namefully.of(
+        names,
+        config: config,
+      ));
+
+  factory NameBuilder.from(FullName names, {Config? config}) =>
+      NameBuilder._(Namefully.from(
+        names,
+        config: config,
+      ));
+
+  factory NameBuilder.fromJson(Map<String, String> names, {Config? config}) =>
+      NameBuilder._(Namefully.fromJson(
+        names,
+        config: config,
+      ));
+
+  factory NameBuilder.fromParser(Parser names, {Config? config}) =>
+      NameBuilder._(Namefully.fromParser(
+        names,
+        config: config,
+      ));
+
+  @override
+  String toString() {
+    return "NameBuilder's current context[" +
+        (isClosed ? 'closed' : 'open') +
+        ']: $asString';
+  }
+
+  /// Arranges the name by [NameOrder.firstName].
+  void byFirstName() => _order(NameOrder.firstName);
+
+  /// Arranges the name by [NameOrder.lastName].
+  void byLastName() => _order(NameOrder.lastName);
+
+  /// Shortens a full name to a typical name, a combination of [firstName] and
+  /// [lastName].
+  ///
+  /// See [Namefully.shorten] for more info.
+  void shorten() {
+    if (!_canBuild) throw _builderClosedError;
+    _context = Namefully(_state.last.shorten(), config: _state.last._config);
+    _state.add(_context, id: 'shorten');
+    _streamer.sink.add(_context);
+  }
+
+  /// Transforms a [birthName] to UPPERCASE.
+  void upper() {
+    if (!_canBuild) throw _builderClosedError;
+    _context = Namefully(_state.last.upper(), config: _state.last._config);
+    _state.add(_context, id: 'upper');
+    _streamer.sink.add(_context);
+  }
+
+  /// Transforms a [birthName] to lowercase.
+  void lower() {
+    if (!_canBuild) throw _builderClosedError;
+    _context = Namefully(_state.last.lower(), config: _state.last._config);
+    _state.add(_context, id: 'lower');
+    _streamer.sink.add(_context);
+  }
+
+  /// Returns the final state of the changing name.
+  Namefully build() {
+    if (!_canBuild) throw _builderClosedError;
+    close();
+    return _context;
+  }
+
+  /// Closes this builder on demand.
+  void close() {
+    _canBuild = false;
+    _streamer.close();
+    _state.dispose();
+  }
+
+  /// Rolls back to the previous context.
+  void rollback() {
+    if (!_canBuild) throw _builderClosedError;
+    _context = _state.rollback();
+    _streamer.sink.add(_context);
+  }
+
+  /// Arranges the name [by] the specified order: [NameOrder.firstName] or
+  /// [NameOrder.lastName].
+  void _order(NameOrder by) {
+    if (!_canBuild) throw _builderClosedError;
+    _context = Namefully(
+      _state.last.fullName(by),
+      config: _state.last._config.copyWith(orderedBy: by),
+    );
+    _state.add(_context, id: 'order');
+    _streamer.sink.add(_context);
+  }
+}
+
+abstract class _State<T> {
+  late final T? previous;
+  late final T current;
+  void add(T state);
+  T rollback();
+  void dispose();
+}
+
+class _NamefullyState extends _State<Namefully> {
+  @override
+  final Namefully? previous;
+
+  @override
+  final Namefully current;
+
+  final String id;
+
+  static final Set<_NamefullyState> _history = {};
+
+  Namefully get last => _history.last.current;
+
+  Namefully get first => _history.first.current;
+
+  _NamefullyState._(this.id, this.current, this.previous);
+
+  factory _NamefullyState({String? name, required Namefully initialState}) {
+    _history.add(_NamefullyState._(
+      name ?? 'state_${_history.length}',
+      initialState,
+      null,
+    ));
+    return _history.last;
+  }
+
+  @override
+  void add(Namefully current, {String? id}) {
+    _history.add(_NamefullyState._(
+      id ?? 'state_${_history.length}',
+      current,
+      _history.last.current,
+    ));
+  }
+
+  /// Performs rollback on existing values only until the very first one.
+  @override
+  Namefully rollback() {
+    if (_history.length > 1) {
+      _history.remove(_history.last);
+      return last;
+    }
+    return first;
+  }
+
+  @override
+  void dispose() => _history.clear();
+}
+
+final _builderClosedError = NotAllowedError('builder has been closed');
+
+/// Error thrown by operations that are no longer allowed.
+class NotAllowedError extends Error {
+  NotAllowedError([this.message]);
+  final String? message;
+
+  @override
+  String toString() {
+    return (message != null) ? 'NotAllowedError: $message' : 'NotAllowedError';
   }
 }

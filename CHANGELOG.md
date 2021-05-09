@@ -1,4 +1,9 @@
-# 0.1.1
+# 0.1.2
+
+* Add name builder
+* Add support for initials in `format`
+
+## 0.1.1
 
 * Extract a `Summarizable` mixin from `Summary`
 * Add `raw` constructor to `FullName`
