@@ -117,10 +117,10 @@ of a raw string name under the hood.
 
 ```dart
 var name = Namefully(
-  'Adam,Sandler',
+  'John,Smith',
   config: Config.inline(separator: Separator.comma),
 );
-print(name.fullName()); // Adam Sandler
+print(name.fullName()); // John Smith
 ```
 
 ### titling
@@ -171,15 +171,11 @@ Defines the distinct formats to output a compound surname (e.g., Hispanic
 surnames).
 
 ```dart
-var name = Namefully.fromJson(
-  {
-    'firstName': 'John',
-    'lastName': 'Smith',
-    'suffix': 'M.Sc.', // would fail the validation rule.
-  },
-  config: Config.inline(bypass: true, ending: true),
+var name = Namefully.of(
+  [FirstName('John'), LastName('Doe', 'Smith')],
+  config: Config.inline(lastNameFormat: LastNameFormat.hyphenated),
 );
-print(name.fullName()); // John Smith, M.Sc.
+print(name.fullName()); // John Doe-Smith
 ```
 
 ### bypass
@@ -273,24 +269,24 @@ Let us take a common example:
 
 So, this utility understands the name parts as follows:
 
-- typical name: `John Smith`
-- first name: `John`
-- middle name: `Joe`
-- last name: `Smith`
-- prefix: `Mr`
-- suffix: `PhD`
-- full name: `Mr John Joe Smith PhD`
-- birth name: `John Joe Smith`
-- flattened: `John J. S.`
-- initials: `J J S`
+* typical name: `John Smith`
+* first name: `John`
+* middle name: `Joe`
+* last name: `Smith`
+* prefix: `Mr`
+* suffix: `PhD`
+* full name: `Mr John Joe Smith PhD`
+* birth name: `John Joe Smith`
+* flattened: `John J. S.`
+* initials: `J J S`
 
 ### Limitations
 
 `namefully` does not have support for certain use cases:
 
-- mononame: `Plato`. A workaround to this is to set the mononame as both first
+* mononame: `Plato`. A workaround to this is to set the mononame as both first
 and last name;
-- multiple prefixes: `Prof. Dr. Einstein`. An alternative would be to use the
+* multiple prefixes: `Prof. Dr. Einstein`. An alternative would be to use the
 `bypass` option.
 
 See the [test cases](test) for further details or the
@@ -301,9 +297,9 @@ See the [test cases](test) for further details or the
 This package is also written in [TypeScript](https://www.typescriptlang.org/)
 and made available for:
 
-- [JavaScript](https://www.npmjs.com/package/namefully)
-- [React](https://www.npmjs.com/package/@namefully/react)
-- [Angular](https://www.npmjs.com/package/@namefully/ng)
+* [JavaScript](https://www.npmjs.com/package/namefully)
+* [React](https://www.npmjs.com/package/@namefully/react)
+* [Angular](https://www.npmjs.com/package/@namefully/ng)
 
 ## Author
 

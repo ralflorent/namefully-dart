@@ -96,7 +96,7 @@ String decapitalize(String string, [CapsRange range = CapsRange.initial]) {
 
 /// Toggles a [string] representation.
 String toggleCase(String string) {
-  var chars = [];
+  var chars = <String>[];
   for (final c in string.split('')) {
     chars.add(c == c.toUpperCase() ? c.toLowerCase() : c.toUpperCase());
   }
@@ -118,18 +118,23 @@ extension StringValidation on String {
   bool get isInvalid => !isValid;
 }
 
+/// Enable nullable check for first values on [Iterable]s.
+extension FirstOrNullIterable<E> on Iterable<E> {
+  /// The first value if any.
+  E? get firstOrNull => length == 0 ? null : elementAt(0);
+}
+
 /// Generates a password-like content from a [string].
 String generatePassword(String string) {
   var mapper = kPasswordMapper;
-  return string.split('').map((char) {
-    if (mapper.containsKey(char.toLowerCase())) {
-      return mapper[char.toLowerCase()]!.random();
-    }
-    return mapper['\$']!.random();
+  return string.toLowerCase().split('').map((char) {
+    return mapper.containsKey(char)
+        ? mapper[char]!.random()
+        : mapper['\$']!.random();
   }).join();
 }
 
-class SeparatorChar {
+abstract class SeparatorChar {
   static const comma = ',';
   static const colon = ':';
   static const empty = '';
@@ -164,7 +169,7 @@ class SeparatorChar {
   }
 }
 
-class NamonKey {
+abstract class NamonKey {
   static const prefix = 'prefix';
   static const firstName = 'firstName';
   static const middleName = 'middleName';

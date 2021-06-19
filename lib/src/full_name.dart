@@ -38,8 +38,10 @@ class FullName {
   Name? _suffix;
   final Config _config;
 
+  /// Creates a full name as it goes.
   FullName({Config? config}) : _config = config ?? Config();
 
+  /// Creates a full name json-like string content.
   FullName.fromJson(Map<String, String> jsonName, {Config? config})
       : _config = config ?? Config() {
     _parseJsonName(jsonName);

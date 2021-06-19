@@ -1,8 +1,11 @@
 /// The abbreviation type to indicate whether or not to add period to a prefix
 /// using the American or British way.
 enum AbbrTitle {
+  /// A period after the prefix.
   us,
-  uk,
+
+  /// No period after the prefix.
+  uk
 }
 
 /// An option indicating how to format a surname:
@@ -29,7 +32,7 @@ enum NameOrder {
   /// The first part of a full name, usually the first piece of a person name.
   firstName,
 
-  /// The first part of a full name, usually the last piece of a person name.
+  /// The last part of a full name, usually the last piece of a person name.
   lastName
 }
 
@@ -37,21 +40,65 @@ enum NameOrder {
 enum NameType { firstName, middleName, lastName, birthName }
 
 /// The distinct variants to indicate how to flatten a [FullName].
-enum FlattenedBy { firstName, middleName, lastName, firstMid, midLast, all }
+enum FlattenedBy {
+  /// Use the first name's initial combined the remaining parts.
+  firstName,
+
+  /// Use the middle name's initial combined the remaining parts.
+  middleName,
+
+  /// Use the last name's initial combined the remaining parts.
+  lastName,
+
+  /// Use both the first and middle names' initials combined the remaining parts.
+  firstMid,
+
+  /// Use both the last and middle names' initials combined the remaining parts.
+  midLast,
+
+  /// Use the first, middle and last names' initials combined the remaining parts.
+  all
+}
 
 /// The range to use when capitalizing a string content.
-enum CapsRange { none, initial, all }
+enum CapsRange {
+  /// No capitalization.
+  none,
+
+  /// Apply capitalization to the first letter.
+  initial,
+
+  /// Apply capitalization to all the letters.
+  all
+}
 
 /// The types of capitalization cases supported in this utility.
 enum Capitalization {
+  /// A camelCase transformation.
   camel,
+
+  /// A dot.case transformation.
   dot,
+
+  /// A hyphen-case transformation.
   hyphen,
+
+  /// A kebab-case transformation.
   kebab,
+
+  /// A lowerase transformation.
   lower,
+
+  /// A PascalCase transformation.
   pascal,
+
+  /// A snake_case transformation.
   snake,
+
+  /// A ToGgLe transformation.
   toggle,
+
+  /// An UPPERCASE transformation.
   upper
 }
 

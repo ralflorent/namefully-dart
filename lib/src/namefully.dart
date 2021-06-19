@@ -68,23 +68,43 @@ class Namefully {
   /// The statistical information on the birth name.
   late final Summary _summary;
 
+  /// Creates a name with distinguishable parts from a raw string content.
+  ///
+  /// An optional [Config]uration may be provided with specifics on how to treat
+  /// a full name during its course. By default, all name parts are validated
+  /// against some basic validation rules to avoid common runtime exceptions.
   Namefully(String names, {Config? config}) {
     _build(StringParser(names), config);
   }
+
+  /// Creates a name from a list of distinguishable parts.
   Namefully.fromList(List<String> names, {Config? config}) {
     _build(ListStringParser(names), config);
   }
+
+  /// Creates a name from a json-like distinguishable name parts.
   Namefully.fromJson(Map<String, String> names, {Config? config}) {
     _build(JsonNameParser(names), config);
   }
+
+  /// Creates a name from a list of [Name]s.
+  ///
+  /// [Name] is provided by this utility, representing a namon with some extra
+  /// capabilities, compared to a simple string name. This class helps to define
+  /// the role of a name part (e.g, prefix) beforehand, which, as a consequence,
+  /// gives more flexibility at the time of creating an instance of Namefully.
   Namefully.of(List<Name> names, {Config? config}) {
     _build(ListNameParser(names), config);
   }
+
+  /// Creates a name from a [FullName].
   Namefully.from(FullName fullName, {Config? config}) {
     _config = Config.mergeWith(config);
     _fullName = fullName;
     _summary = Summary(birthName());
   }
+
+  /// Creates a name from a customized [Parser].
   Namefully.fromParser(Parser<dynamic> parser, {Config? config}) {
     _build(parser, config);
   }
@@ -95,7 +115,34 @@ class Namefully {
   /// The number of characters of the [birthName], including spaces.
   int get length => _summary.length;
 
-  /// Returns a full name as set.
+  /// The prefix part.
+  String? get prefix => _fullName.prefix?.toString();
+
+  /// The first name.
+  String get first => firstName();
+
+  /// The first middle name if any.
+  String? get middle => middleName().firstOrNull;
+
+  /// The last name.
+  String get last => lastName();
+
+  /// The suffix part.
+  String? get suffix => _fullName.suffix?.toString();
+
+  /// The birth name.
+  String get birth => birthName();
+
+  /// The shortest version of a person name.
+  String get short => shorten();
+
+  /// The longest version of a person name.
+  String get long => birth;
+
+  /// The first name combined with the last name's initial.
+  String get public => format(r'f $l');
+
+  /// Returns the full name as set.
   @override
   String toString() => fullName();
 
@@ -132,20 +179,20 @@ class Namefully {
 
   /// Gets a Map or json-like representation of the [fullName].
   Map<String, String?> toMap() => {
-        'prefix': prefix(),
-        'firstName': firstName(),
+        'prefix': prefix,
+        'firstName': first,
         'middleName': middleName().join(' '),
-        'lastName': lastName(),
-        'suffix': suffix(),
+        'lastName': last,
+        'suffix': suffix,
       };
 
-  /// Gets an array-like representation of the [fullName].
+  /// Gets a list representation of the [fullName].
   List<String?> toList() => [
-        prefix(),
-        firstName(),
+        prefix,
+        first,
         middleName().join(' '),
-        lastName(),
-        suffix(),
+        last,
+        suffix,
       ];
 
   /// Confirms that a name part has been set.
@@ -183,14 +230,8 @@ class Namefully {
     return _fullName.middleName.map((n) => n.namon).toList();
   }
 
-  /// Returns true if any [middleName]'s set.
+  /// Returns true if any [middleName]'s been set.
   bool hasMiddleName() => _fullName.has(Namon.middleName);
-
-  /// Gets the [prefix] part of the [fullName].
-  String? prefix() => _fullName.prefix?.toString();
-
-  /// Gets the [suffix] part of the [fullName].
-  String? suffix() => _fullName.suffix?.toString();
 
   /// Gets the initials of the [fullName].
   ///
@@ -682,12 +723,12 @@ class Namefully {
 ///   ..byLastName()  // stream name: 'DOE JANE'
 ///   ..lower();      // stream name: 'doe jane'
 /// print(builder.build()); // 'doe jane'
+/// ```
 ///
 /// NOTE: Most of the operations supported in the name builder can be performed
 /// with [Namefully.format]. This builder is an expensive operation and should
 /// be used in specific use cases, or when judged extremely necessary. Otherwise,
 /// keep it sane and simple using the traditional `Namefully`.
-/// ```
 class NameBuilder {
   /// The context in which the name is being built up.
   Namefully _context;
@@ -717,16 +758,22 @@ class NameBuilder {
   /// if provided.
   NameBuilder._(Namefully name, [String? stateName])
       : _context = name,
-        _state = _NamefullyState(initialState: name, name: stateName) {
+        _state = _NamefullyState(name, id: stateName) {
     _streamer.sink.add(_context);
   }
 
+  /// Creates a name with distinguishable parts from a raw string content.
+  ///
+  /// An optional [Config]uration may be provided with specifics on how to treat
+  /// a full name during its course. By default, all name parts are validated
+  /// against some basic validation rules to avoid common runtime exceptions.
   factory NameBuilder(String names, {Config? config}) =>
       NameBuilder._(Namefully(
         names,
         config: config,
       ));
 
+  /// Creates a name on the fly.
   factory NameBuilder.only({
     required String firstName,
     List<String>? middleName,
@@ -743,30 +790,39 @@ class NameBuilder {
         config: config,
       ));
 
+  /// Creates a name from a list of distinguishable parts.
   factory NameBuilder.fromList(List<String> names, {Config? config}) =>
       NameBuilder._(Namefully.fromList(
         names,
         config: config,
       ));
 
+  /// Creates a name from a list of [Name]s.
+  ///
+  /// [Name] is provided by this utility, representing a namon with some extra
+  /// capabilities, compared to a simple string name. This class helps to define
+  /// the role of a name part (e.g, prefix) beforehand, which, as a consequence,
+  /// gives more flexibility at the time of creating an instance of Namefully.
   factory NameBuilder.of(List<Name> names, {Config? config}) =>
       NameBuilder._(Namefully.of(
         names,
         config: config,
       ));
-
+// Creates a name from a [FullName].
   factory NameBuilder.from(FullName names, {Config? config}) =>
       NameBuilder._(Namefully.from(
         names,
         config: config,
       ));
 
+  /// Creates a name from a json-like distinguishable name parts.
   factory NameBuilder.fromJson(Map<String, String> names, {Config? config}) =>
       NameBuilder._(Namefully.fromJson(
         names,
         config: config,
       ));
 
+  /// Creates a name from a customized [Parser].
   factory NameBuilder.fromParser(Parser names, {Config? config}) =>
       NameBuilder._(Namefully.fromParser(
         names,
@@ -847,40 +903,60 @@ class NameBuilder {
   }
 }
 
-abstract class _State<T> {
-  late final T? previous;
-  late final T current;
-  void add(T state);
-  T rollback();
-  void dispose();
+final _builderClosedError = NotAllowedError('builder has been closed');
+
+/// Error thrown by operations that are no longer allowed.
+class NotAllowedError extends Error {
+  NotAllowedError([this.message]);
+  final String? message;
+
+  @override
+  String toString() {
+    return (message != null) ? 'NotAllowedError: $message' : 'NotAllowedError';
+  }
 }
 
+/// An in-memory name state management.
+///
+/// The [current] and [previous] states of a name built on the fly are saved in
+/// memory, and can be easily access through historical data as long as the
+/// object persists in memory. An [id] is automatically generated, if none has
+/// been provided during its creation.
 class _NamefullyState extends _State<Namefully> {
+  /// The previous name state.
   @override
   final Namefully? previous;
 
+  /// The current name state.
   @override
   final Namefully current;
 
+  /// A generated state id, if not provided.
   final String id;
 
+  /// The historical name states.
   static final Set<_NamefullyState> _history = {};
 
+  /// The very first name state.
   Namefully get last => _history.last.current;
 
+  /// The very last name state.
   Namefully get first => _history.first.current;
 
+  /// Convenient generative constructor.
   _NamefullyState._(this.id, this.current, this.previous);
 
-  factory _NamefullyState({String? name, required Namefully initialState}) {
+  /// Creates an in-memory name state management.
+  factory _NamefullyState(Namefully initialState, {String? id}) {
     _history.add(_NamefullyState._(
-      name ?? 'state_${_history.length}',
+      id ?? 'state_${_history.length}',
       initialState,
       null,
     ));
     return _history.last;
   }
 
+  /// Adds a new name state.
   @override
   void add(Namefully current, {String? id}) {
     _history.add(_NamefullyState._(
@@ -900,19 +976,20 @@ class _NamefullyState extends _State<Namefully> {
     return first;
   }
 
+  /// Clears the memory.
   @override
   void dispose() => _history.clear();
 }
 
-final _builderClosedError = NotAllowedError('builder has been closed');
+/// A lightweight state management approach.
+abstract class _State<T> {
+  late final T? previous;
 
-/// Error thrown by operations that are no longer allowed.
-class NotAllowedError extends Error {
-  NotAllowedError([this.message]);
-  final String? message;
+  late final T current;
 
-  @override
-  String toString() {
-    return (message != null) ? 'NotAllowedError: $message' : 'NotAllowedError';
-  }
+  void add(T state);
+
+  T rollback();
+
+  void dispose();
 }

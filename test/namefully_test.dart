@@ -178,11 +178,11 @@ void main() {
       });
 
       test('creates a full name', () {
-        expect(name.prefix(), 'Mr');
-        expect(name.firstName(), 'John');
-        expect(name.middleName(), equals(['Ben']));
-        expect(name.lastName(), 'Smith');
-        expect(name.suffix(), 'Ph.D');
+        expect(name.prefix, 'Mr');
+        expect(name.first, 'John');
+        expect(name.middle, equals('Ben'));
+        expect(name.last, 'Smith');
+        expect(name.suffix, 'Ph.D');
         expect(name.fullName(), 'Mr John Ben Smith Ph.D');
         expect(name.fullName(NameOrder.lastName), 'Mr Smith John Ben Ph.D');
         expect(name.birthName(), 'John Ben Smith');
@@ -252,11 +252,11 @@ void main() {
       });
 
       test('creates a full name', () {
-        expect(name.prefix(), 'Mr');
-        expect(name.firstName(), 'John');
-        expect(name.middleName(), equals(['Ben']));
-        expect(name.lastName(), 'Smith');
-        expect(name.suffix(), 'Ph.D');
+        expect(name.prefix, 'Mr');
+        expect(name.first, 'John');
+        expect(name.middle, equals('Ben'));
+        expect(name.last, 'Smith');
+        expect(name.suffix, 'Ph.D');
         expect(name.fullName(), 'Mr Smith John Ben Ph.D');
         expect(name.fullName(NameOrder.firstName), 'Mr John Ben Smith Ph.D');
         expect(name.birthName(), 'Smith John Ben');
@@ -411,7 +411,7 @@ void main() {
           config: nameCase.config,
         );
         expect(name.toString(), 'Dr. Albert Einstein');
-        expect(name.prefix(), equals('Dr.'));
+        expect(name.prefix, equals('Dr.'));
       });
 
       test('separated by commas', () {
@@ -429,7 +429,7 @@ void main() {
         );
         expect(name.toString(), 'Fabrice Piazza, Ph.D');
         expect(name.birthName(), equals('Fabrice Piazza'));
-        expect(name.suffix(), equals('Ph.D'));
+        expect(name.suffix, equals('Ph.D'));
       });
 
       test('bypassing validation rules', () {
@@ -439,9 +439,9 @@ void main() {
           config: nameCase.config,
         );
         expect(name.toString(), 'Mme. Marine Le Pen, M.Sc.');
-        expect(name.prefix(), equals('Mme.'));
+        expect(name.prefix, equals('Mme.'));
         expect(name.birthName(), equals('Marine Le Pen'));
-        expect(name.suffix(), equals('M.Sc.'));
+        expect(name.suffix, equals('M.Sc.'));
       });
     });
   });
