@@ -622,15 +622,11 @@ class Namefully {
   String? _map(String char) {
     switch (char) {
       case '.':
-        return '.';
       case ',':
-        return ',';
       case ' ':
-        return ' ';
       case '-':
-        return '-';
       case '_':
-        return '_';
+        return char;
       case 'b':
         return birthName();
       case 'B':
@@ -654,7 +650,7 @@ class Namefully {
             : _fullName.middleName.map((n) => n.namon.toUpperCase()).join(' ');
       case 'o':
       case 'O':
-        var sxSep = _config.ending ? ',' : '';
+        final sxSep = _config.ending ? ',' : '';
         final nama = <String>[];
 
         if (_fullName.prefix != null) {
@@ -808,7 +804,8 @@ class NameBuilder {
         names,
         config: config,
       ));
-// Creates a name from a [FullName].
+
+  /// Creates a name from a [FullName].
   factory NameBuilder.from(FullName names, {Config? config}) =>
       NameBuilder._(Namefully.from(
         names,

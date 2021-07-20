@@ -1,4 +1,10 @@
-# 0.1.2
+# 0.1.3
+
+* Improve API documentation
+* Apply small refactoring
+* Breaking changes: `prefix` and `suffix` are now available as class members.
+
+## 0.1.2
 
 * Add name builder
 * Add support for initials in `format`
