@@ -6,13 +6,7 @@ import 'test_utils.dart';
 void main() {
   group('Namefully', () {
     group('(default settings)', () {
-      var name = Namefully(
-        'Mr John Ben Smith Ph.D',
-        config: Config.inline(
-          name: 'generic',
-          orderedBy: NameOrder.firstName,
-        ),
-      );
+      late Namefully name;
 
       setUp(() {
         name = Namefully(
@@ -159,13 +153,7 @@ void main() {
     });
 
     group('(by first name)', () {
-      var name = Namefully(
-        'Mr John Ben Smith Ph.D',
-        config: Config.inline(
-          name: 'byFirstName',
-          orderedBy: NameOrder.firstName,
-        ),
-      );
+      late Namefully name;
 
       setUp(() {
         name = Namefully(
@@ -233,13 +221,7 @@ void main() {
     });
 
     group('(by last name)', () {
-      var name = Namefully(
-        'Mr Smith John Ben Ph.D',
-        config: Config.inline(
-          name: 'byLastName',
-          orderedBy: NameOrder.lastName,
-        ),
-      );
+      late Namefully name;
 
       setUp(() {
         name = Namefully(

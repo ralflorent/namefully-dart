@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Name', () {
-    var name = Name('John', Namon.middleName);
+    late Name name;
 
     setUp(() => name = Name('John', Namon.middleName));
 
@@ -62,7 +62,8 @@ void main() {
   });
 
   group('FirstName', () {
-    var firstName = FirstName('John', ['Ben', 'Carl']);
+    late FirstName firstName;
+
     setUp(() => firstName = FirstName('John', ['Ben', 'Carl']));
 
     test('creates a first name', () {
@@ -156,7 +157,8 @@ void main() {
   });
 
   group('LastName', () {
-    var lastName = LastName('Smith', 'Doe');
+    late LastName lastName;
+
     setUp(() => lastName = LastName('Smith', 'Doe'));
 
     test('creates a last name with a father surname only', () {

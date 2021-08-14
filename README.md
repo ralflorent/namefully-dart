@@ -140,7 +140,7 @@ var name = Namefully.fromJson({
   'lastName': 'Smith',
 }, config: Config.inline(titling: AbbrTitle.us));
 print(name.fullName()); // Mr. John Smith
-print(name.prefix()); // Mr.
+print(name.prefix); // Mr.
 ```
 
 ### ending
@@ -160,7 +160,7 @@ var name = Namefully.fromJson(
   config: Config.inline(ending: true),
 );
 print(name.fullName()); // John Smith, Ph.D
-print(name.suffix()); // Ph.D
+print(name.suffix); // Ph.D
 ```
 
 ### lastNameFormat

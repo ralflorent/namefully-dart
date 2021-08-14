@@ -17,15 +17,13 @@ void main() {
   }
 
   group('FullName', () {
-    var prefix = Name('Mr', Namon.prefix),
-        firstName = FirstName('John'),
-        middleName = [
-          Name('Ben', Namon.middleName),
-          Name('Carl', Namon.middleName),
-        ],
-        lastName = LastName('Smith'),
-        suffix = Name('Ph.D', Namon.suffix),
-        fullName = FullName();
+    late Name prefix;
+    late Name suffix;
+    late FirstName firstName;
+    late List<Name> middleName;
+    late LastName lastName;
+    late FullName fullName;
+
     setUp(() {
       prefix = Name('Mr', Namon.prefix);
       firstName = FirstName('John');
