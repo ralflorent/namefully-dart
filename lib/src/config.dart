@@ -1,5 +1,8 @@
 import 'enums.dart';
 
+const String _kDefaultName = 'default';
+const String _kCopyAlias = '_copy';
+
 /// A single [Config]uration to use across the other components.
 ///
 /// A singleton pattern is used to keep one configuration across the [Namefully]
@@ -26,23 +29,23 @@ import 'enums.dart';
 ///
 /// Additionally, [mergeWith] combines an existing configuration with a new one,
 /// prioritizing the new one's values.
-class Config {
+abstract class Config {
   /// The order of appearance of a full name.
-  NameOrder orderedBy;
+  NameOrder get orderedBy;
 
   /// The token used to indicate how to split string values.
-  Separator separator;
+  Separator get separator;
 
   /// The abbreviation type to indicate whether or not to add period to a prefix
   /// using the American or British way.
-  AbbrTitle titling;
+  AbbrTitle get titling;
 
-  /// The option indicating if an [ending] suffix is used in a formal way.
-  bool ending;
+  /// The option indicating if an ending suffix is used in a formal way.
+  bool get ending;
 
-  /// A [bypass] of the validation rules with this option. This option is ideal
+  /// A bypass of the validation rules with this option. This option is ideal
   /// to avoid checking their validity.
-  bool bypass;
+  bool get bypass;
 
   /// An option indicating how to format a surname:
   /// - `father` name only
@@ -51,41 +54,22 @@ class Config {
   /// - `all`, joining both father and mother names with a space.
   ///
   /// Note that this option can be set when creating a [LastName]. As this can
-  /// become ambiguous at the time of handling it, the value set in [this] is
+  /// become ambiguous at the time of handling it, the value set in this is
   /// prioritized and viewed as the source of truth for future considerations.
-  LastNameFormat lastNameFormat;
+  LastNameFormat get lastNameFormat;
 
-  /// The name of the cached [Config].
-  final String name;
+  /// The name of the cached configuration.
+  String get name;
 
-  /// Cache for multiple instances.
-  static final Map<String, Config> _cache = {};
-
-  /// Returns a single [Config] with default values.
-  factory Config([String name = 'default']) {
-    if (_cache.containsKey(name)) {
-      return _cache[name]!;
-    } else {
-      _cache[name] = Config._default(name);
-      return _cache[name]!;
-    }
-  }
-
-  /// Self instantiation with default props.
-  Config._default(this.name)
-      : orderedBy = NameOrder.firstName,
-        separator = Separator.space,
-        titling = AbbrTitle.uk,
-        ending = false,
-        bypass = false,
-        lastNameFormat = LastNameFormat.father;
+  /// Returns a single configuration with default values.
+  factory Config([String name = _kDefaultName]) => _Config._default(name);
 
   /// Returns a unified version of default values of this [Config] and the
   /// optional values to consider.
   ///
   /// This allows an override of some properties.
   factory Config.inline({
-    String name = 'default',
+    String name = _kDefaultName,
     NameOrder? orderedBy,
     Separator? separator,
     AbbrTitle? titling,
@@ -93,20 +77,22 @@ class Config {
     bool? bypass,
     LastNameFormat? lastNameFormat,
   }) {
-    return Config(name)
-      ..orderedBy = orderedBy ?? NameOrder.firstName
-      ..separator = separator ?? Separator.space
-      ..titling = titling ?? AbbrTitle.uk
-      ..ending = ending ?? false
-      ..bypass = bypass ?? false
-      ..lastNameFormat = lastNameFormat ?? LastNameFormat.father;
+    return _Config.inline(
+      name: name,
+      orderedBy: orderedBy,
+      separator: separator,
+      titling: titling,
+      ending: ending,
+      bypass: bypass,
+      lastNameFormat: lastNameFormat,
+    );
   }
 
   /// Returns a unified version of existing values of [Config] and the [other]
   /// provided values.
   factory Config.mergeWith(Config? other) {
-    if (other == null) return Config();
-    return Config.inline(
+    if (other == null) return _Config();
+    return _Config.inline(
       name: other.name,
       orderedBy: other.orderedBy,
       separator: other.separator,
@@ -132,8 +118,90 @@ class Config {
     bool? ending,
     bool? bypass,
     LastNameFormat? lastNameFormat,
+  });
+
+  /// Alters the [nameOrder] between first and last name, and rearrange the order
+  /// of appearance of a name set.
+  void updateOrder(NameOrder nameOrder);
+}
+
+/// Concrete configuration with internal settings and operations.
+///
+/// This is to avoid manipulating the internal values of Config locally, and
+/// abstract out its class members. The actual [config] only exposes the available
+/// props in a read-only mode, which should allow more control on the concrete
+/// implementation.
+class _Config implements Config {
+  @override
+  NameOrder orderedBy;
+
+  @override
+  Separator separator;
+
+  @override
+  AbbrTitle titling;
+
+  @override
+  bool ending;
+
+  @override
+  bool bypass;
+
+  @override
+  LastNameFormat lastNameFormat;
+
+  @override
+  final String name;
+
+  /// Cache for multiple instances.
+  static final Map<String, _Config> _cache = {};
+
+  _Config._default(this.name)
+      : orderedBy = NameOrder.firstName,
+        separator = Separator.space,
+        titling = AbbrTitle.uk,
+        ending = false,
+        bypass = false,
+        lastNameFormat = LastNameFormat.father;
+
+  factory _Config([String name = _kDefaultName]) {
+    if (_cache.containsKey(name)) {
+      return _cache[name]!;
+    } else {
+      _cache[name] = _Config._default(name);
+      return _cache[name]!;
+    }
+  }
+
+  factory _Config.inline({
+    String name = _kDefaultName,
+    NameOrder? orderedBy,
+    Separator? separator,
+    AbbrTitle? titling,
+    bool? ending,
+    bool? bypass,
+    LastNameFormat? lastNameFormat,
   }) {
-    return Config(_getNewName(name ?? this.name + '_copy'))
+    return _Config(name)
+      ..orderedBy = orderedBy ?? NameOrder.firstName
+      ..separator = separator ?? Separator.space
+      ..titling = titling ?? AbbrTitle.uk
+      ..ending = ending ?? false
+      ..bypass = bypass ?? false
+      ..lastNameFormat = lastNameFormat ?? LastNameFormat.father;
+  }
+
+  @override
+  _Config copyWith({
+    String? name,
+    NameOrder? orderedBy,
+    Separator? separator,
+    AbbrTitle? titling,
+    bool? ending,
+    bool? bypass,
+    LastNameFormat? lastNameFormat,
+  }) {
+    return _Config(getNewName(name ?? this.name + _kCopyAlias))
       ..orderedBy = orderedBy ?? this.orderedBy
       ..separator = separator ?? this.separator
       ..titling = titling ?? this.titling
@@ -142,10 +210,16 @@ class Config {
       ..lastNameFormat = lastNameFormat ?? this.lastNameFormat;
   }
 
+  @override
+  String toString() => _cache.keys.join(' ');
+
+  @override
+  void updateOrder(NameOrder nameOrder) => _cache[name]!.orderedBy = nameOrder;
+
   /// Returns a unique new name.
-  String _getNewName(String name) {
+  String getNewName(String name) {
     return name == this.name || _cache.containsKey(name)
-        ? _getNewName(name + '_copy')
+        ? getNewName(name + _kCopyAlias)
         : name;
   }
 }

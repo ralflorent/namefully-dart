@@ -1,3 +1,4 @@
+import 'package:namefully/name_builder.dart';
 import 'package:namefully/namefully.dart';
 import 'package:test/test.dart';
 
