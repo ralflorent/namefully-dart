@@ -20,19 +20,19 @@ You may want to use this library if:
 
 ## Key features
 
-1. Offer supports for many writing systems, including Latin and European ones
-(e.g., German, Greek, Cyrillic, Icelandic characters)
-2. Accept different data shapes as input
-3. Use of optional parameters to access advanced features
-4. Format a name as desired
-5. Offer support for prefixes and suffixes
-6. Access to names' initials
-7. Support hyphenated names, including with apostrophes
+1. Accept different data shapes as input
+2. Use of optional parameters to access advanced features
+3. Format a name as desired
+4. Offer support for prefixes and suffixes
+5. Access to names' initials
+6. Support hyphenated names (and other special characters)
+7. Offer predefined validation rules for many writing systems, including the
+Latin and European ones (e.g., German, Greek, Cyrillic, Icelandic characters)
 
 ## Advanced features
 
-1. Alter the order of appearance of a name: by given name or surname
-2. Handle various parts of a surname and given name
+1. Alter the name order anytime
+2. Handle various parts of a surname and a given name
 3. Use tokens (separators) to reshape prefixes and suffixes
 4. Accept customized parsers (do it yourself)
 5. Build a name on the fly (via a builder)
@@ -180,7 +180,7 @@ print(name.fullName()); // John Doe-Smith
 
 ### bypass
 
-`bool` - default: `false`
+`bool` - default: `true`
 
 Skips all the validators (i.e., validation rules, regular expressions).
 
@@ -189,9 +189,9 @@ var name = Namefully.fromJson(
   {
     'firstName': 'John',
     'lastName': 'Smith',
-    'suffix': 'M.Sc.', // would fail the validation rule.
+    'suffix': 'M.Sc.', // will fail the validation rule.
   },
-  config: Config.inline(bypass: true, ending: true),
+  config: Config.inline(bypass: false, ending: true),
 );
 print(name.fullName()); // John Smith, M.Sc.
 ```
@@ -204,7 +204,7 @@ Config._default(this.name)
       separator = Separator.space,
       titling = AbbrTitle.uk,
       ending = false,
-      bypass = false,
+      bypass = true,
       lastNameFormat = LastNameFormat.father;
 ```
 
@@ -269,14 +269,14 @@ Let us take a common example:
 
 So, this utility understands the name parts as follows:
 
-* typical name: `John Smith`
+* prefix: `Mr`
 * first name: `John`
 * middle name: `Joe`
 * last name: `Smith`
-* prefix: `Mr`
 * suffix: `PhD`
 * full name: `Mr John Joe Smith PhD`
 * birth name: `John Joe Smith`
+* short version: `John Smith`
 * flattened: `John J. S.`
 * initials: `J J S`
 
