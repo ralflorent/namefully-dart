@@ -23,12 +23,13 @@ const String _kCopyAlias = '_copy';
 ///
 /// ```dart
 /// var defaultConfig = Config();
-/// var otherConfig = Config('other'); // still has the default props
-/// var inlineConfig = Config.inline(name: 'other', bypass: true);
+/// var otherConfig = Config.inline(name: 'other', titling: AbbrTitle.us);
+/// var mergedConfig = Config.merge(otherConfig);
+/// var copyConfig = mergedConfig.copyWith(ending: true);
 /// ```
 ///
-/// Additionally, [mergeWith] combines an existing configuration with a new one,
-/// prioritizing the new one's values.
+/// Additionally, a configuration may be [merge]d with or copied from an existing
+/// configuration, prioritizing the new one's values;
 abstract class Config {
   /// The order of appearance of a full name.
   NameOrder get orderedBy;
@@ -47,7 +48,9 @@ abstract class Config {
   /// to avoid checking their validity.
   bool get bypass;
 
-  /// An option indicating how to format a surname:
+  /// An option indicating how to format a surname.
+  ///
+  /// The supported formats are:
   /// - `father` name only
   /// - `mother` name only
   /// - `hyphenated`, joining both father and mother names with a hyphen
@@ -64,10 +67,17 @@ abstract class Config {
   /// Returns a single configuration with default values.
   factory Config([String name = _kDefaultName]) => _Config._default(name);
 
-  /// Returns a unified version of default values of this [Config] and the
+  /// Returns a combined version of the existing values the default configuration
+  /// and the provided values of an[other] configuration.
+  @Deprecated('Use [Config.merge] instead')
+  factory Config.mergeWith(Config? other) => _Config.merge(other);
+
+  /// Returns a combined version of the existing values the default configuration
+  /// and the provided values of an[other] configuration.
+  factory Config.merge(Config? other) => _Config.merge(other);
+
+  /// Returns a unified version of default values of the configuration and the
   /// optional values to consider.
-  ///
-  /// This allows an override of some properties.
   factory Config.inline({
     String name = _kDefaultName,
     NameOrder? orderedBy,
@@ -88,21 +98,6 @@ abstract class Config {
     );
   }
 
-  /// Returns a unified version of existing values of [Config] and the [other]
-  /// provided values.
-  factory Config.mergeWith(Config? other) {
-    if (other == null) return _Config();
-    return _Config.inline(
-      name: other.name,
-      orderedBy: other.orderedBy,
-      separator: other.separator,
-      titling: other.titling,
-      ending: other.ending,
-      bypass: other.bypass,
-      lastNameFormat: other.lastNameFormat,
-    );
-  }
-
   /// Returns a copy of this configuration merged with the provided values.
   ///
   /// The word `_copy` is added to the existing config's name to create the new
@@ -120,15 +115,15 @@ abstract class Config {
     LastNameFormat? lastNameFormat,
   });
 
-  /// Alters the [nameOrder] between first and last name, and rearrange the order
-  /// of appearance of a name set.
+  /// Alters the [nameOrder] between the first and last name, and rearrange the
+  /// order of appearance of a name set.
   void updateOrder(NameOrder nameOrder);
 }
 
 /// Concrete configuration with internal settings and operations.
 ///
-/// This is to avoid manipulating the internal values of Config locally, and
-/// abstract out its class members. The actual [config] only exposes the available
+/// This is to avoid manipulating the internal values of [Config] locally, and
+/// abstract out its class members. The actual config only exposes the available
 /// props in a read-only mode, which should allow more control on the concrete
 /// implementation.
 class _Config implements Config {
@@ -153,7 +148,7 @@ class _Config implements Config {
   @override
   final String name;
 
-  /// Cache for multiple instances.
+  // Cache for multiple instances.
   static final Map<String, _Config> _cache = {};
 
   _Config._default(this.name)
@@ -161,7 +156,7 @@ class _Config implements Config {
         separator = Separator.space,
         titling = AbbrTitle.uk,
         ending = false,
-        bypass = false,
+        bypass = true,
         lastNameFormat = LastNameFormat.father;
 
   factory _Config([String name = _kDefaultName]) {
@@ -187,8 +182,22 @@ class _Config implements Config {
       ..separator = separator ?? Separator.space
       ..titling = titling ?? AbbrTitle.uk
       ..ending = ending ?? false
-      ..bypass = bypass ?? false
+      ..bypass = bypass ?? true
       ..lastNameFormat = lastNameFormat ?? LastNameFormat.father;
+  }
+
+  factory _Config.merge(Config? other) {
+    return other == null
+        ? _Config()
+        : _Config.inline(
+            name: other.name,
+            orderedBy: other.orderedBy,
+            separator: other.separator,
+            titling: other.titling,
+            ending: other.ending,
+            bypass: other.bypass,
+            lastNameFormat: other.lastNameFormat,
+          );
   }
 
   @override
@@ -209,9 +218,6 @@ class _Config implements Config {
       ..bypass = bypass ?? this.bypass
       ..lastNameFormat = lastNameFormat ?? this.lastNameFormat;
   }
-
-  @override
-  String toString() => _cache.keys.join(' ');
 
   @override
   void updateOrder(NameOrder nameOrder) => _cache[name]!.orderedBy = nameOrder;

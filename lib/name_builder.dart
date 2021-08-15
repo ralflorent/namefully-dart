@@ -62,6 +62,9 @@ class NameBuilder {
   /// Whether the builder can perform more nesting operations.
   bool get isClosed => !_canBuild;
 
+  /// Whether the builder is still open for more nesting operations.
+  bool get isOpen => _canBuild;
+
   /// Creates the initial state of the given [name] under a specific [stateName]
   /// if provided.
   NameBuilder._(Namefully name, [String? stateName])
@@ -145,7 +148,7 @@ class NameBuilder {
   ///
   /// See [Namefully.shorten] for more info.
   void shorten() {
-    if (!_canBuild) throw _builderException(asString);
+    if (!_canBuild) throw _builderException(asString, 'shorten');
     _context = Namefully(_state.last.shorten(), config: _state.last.config);
     _state.add(_context, id: 'shorten');
     _streamer.sink.add(_context);
@@ -153,7 +156,7 @@ class NameBuilder {
 
   /// Transforms a [birthName] to UPPERCASE.
   void upper() {
-    if (!_canBuild) throw _builderException(asString);
+    if (!_canBuild) throw _builderException(asString, 'upper');
     _context = Namefully(_state.last.upper(), config: _state.last.config);
     _state.add(_context, id: 'upper');
     _streamer.sink.add(_context);
@@ -161,7 +164,7 @@ class NameBuilder {
 
   /// Transforms a [birthName] to lowercase.
   void lower() {
-    if (!_canBuild) throw _builderException(asString);
+    if (!_canBuild) throw _builderException(asString, 'lower');
     _context = Namefully(_state.last.lower(), config: _state.last.config);
     _state.add(_context, id: 'lower');
     _streamer.sink.add(_context);
@@ -169,7 +172,7 @@ class NameBuilder {
 
   /// Returns the final state of the changing name.
   Namefully build() {
-    if (!_canBuild) throw _builderException(asString);
+    if (!_canBuild) throw _builderException(asString, 'build');
     close();
     return _context;
   }
@@ -183,7 +186,7 @@ class NameBuilder {
 
   /// Rolls back to the previous context.
   void rollback() {
-    if (!_canBuild) throw _builderException(asString);
+    if (!_canBuild) throw _builderException(asString, 'rollback');
     _context = _state.rollback();
     _streamer.sink.add(_context);
   }
@@ -191,7 +194,7 @@ class NameBuilder {
   /// Arranges the name [by] the specified order: [NameOrder.firstName] or
   /// [NameOrder.lastName].
   void _order(NameOrder by) {
-    if (!_canBuild) throw _builderException(asString);
+    if (!_canBuild) throw _builderException(asString, 'order');
     _context = Namefully(
       _state.last.fullName(by),
       config: _state.last.config.copyWith(orderedBy: by),
@@ -201,10 +204,11 @@ class NameBuilder {
   }
 }
 
-NameException _builderException(String source) {
+NameException _builderException(String source, [String ops = '']) {
   return NotAllowedException(
     source: source,
-    message: 'builder has been closed',
+    message: 'name builder has been closed',
+    operation: ops,
   );
 }
 

@@ -78,8 +78,13 @@ abstract class NameException implements Exception {
   factory NameException.notAllowed({
     required Object source,
     String message = '',
+    String operation = '',
   }) {
-    return NotAllowedException(source: source, message: message);
+    return NotAllowedException(
+      source: source,
+      message: message,
+      operation: operation,
+    );
   }
 
   /// Creates a new `UnknownException` with an optional error [message].
@@ -210,7 +215,11 @@ class ValidationException extends NameException {
 /// current status is marked as closed.
 class NotAllowedException extends NameException {
   /// Creates a new `NotAllowedException` with an optional error [message].
-  const NotAllowedException({required this.source, this.message = ''});
+  const NotAllowedException({
+    required this.source,
+    this.message = '',
+    this.operation = '',
+  });
 
   @override
   final String message;
@@ -218,8 +227,19 @@ class NotAllowedException extends NameException {
   @override
   final Object source;
 
+  /// The revoked operation name.
+  final String operation;
+
   @override
   NameExceptionType get type => NameExceptionType.notAllowed;
+
+  @override
+  String toString() {
+    var report = 'NotAllowedException ($sourceAsString)';
+    if (operation.isNotEmpty) report = '$report - $operation';
+    if (message.isNotEmpty) report = '$report: $message';
+    return report;
+  }
 }
 
 /// A fallback exception thrown by any unknown sources or unexpected failure
@@ -260,8 +280,6 @@ class UnknownException extends NameException {
   String toString() {
     var report = super.toString();
     if (error != null) report += '\n$error';
-    if (stackTrace != null) report += '\n$stackTrace';
-
     return report;
   }
 }

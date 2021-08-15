@@ -333,7 +333,7 @@ void main() {
         );
       });
 
-      test('Parser<dynamic> (Custom Parser)', () {
+      test('Parser<T> (Custom Parser)', () {
         expect(
           Namefully.fromParser(
             SimpleParser('John#Smith'), // simple parsing logic :P
@@ -415,16 +415,17 @@ void main() {
         expect(name.suffix, equals('Ph.D'));
       });
 
-      test('bypassing validation rules', () {
-        var nameCase = findName('withBypass');
-        var name = Namefully.fromJson(
-          nameCase.name as Map<String, String>,
-          config: nameCase.config,
+      test('with validation rules', () {
+        var nameCase = findName('noBypass');
+        expect(
+          () {
+            Namefully.fromJson(
+              nameCase.name as Map<String, String>,
+              config: nameCase.config,
+            );
+          },
+          throwsNameException,
         );
-        expect(name.toString(), 'Mme. Marine Le Pen, M.Sc.');
-        expect(name.prefix, equals('Mme.'));
-        expect(name.birthName(), equals('Marine Le Pen'));
-        expect(name.suffix, equals('M.Sc.'));
       });
     });
   });
@@ -443,7 +444,7 @@ void main() {
       expect(name.toList(), equals([null, 'Jane', '', 'Doe', null]));
 
       expect(builder.asString, equals('Jane Doe'));
-      // expect(() => builder.lower(), throwsNotAllowedError);
+      expect(() => builder.lower(), throwsNotAllowedException);
     });
 
     test('and roll back on demand', () {
@@ -469,7 +470,7 @@ void main() {
         ..close();
       stream.listen(
         expectAsync1<void, Namefully>(
-          (name) => expect(name.toString(), isNotEmpty), // TODO: check value.
+          (name) => expect(name.toString(), isNotEmpty),
           max: 3,
         ),
       );
@@ -483,7 +484,7 @@ void main() {
       expect(config.orderedBy, equals(NameOrder.firstName));
       expect(config.separator, equals(Separator.space));
       expect(config.titling, equals(AbbrTitle.uk));
-      expect(config.bypass, equals(false));
+      expect(config.bypass, equals(true));
       expect(config.ending, equals(false));
       expect(config.lastNameFormat, equals(LastNameFormat.father));
     });
@@ -513,12 +514,12 @@ void main() {
         lastNameFormat: LastNameFormat.hyphenated,
         ending: true,
       );
-      var mergedConfig = Config.mergeWith(other);
+      var mergedConfig = Config.merge(other);
       expect(mergedConfig.name, equals('default'));
       expect(mergedConfig.orderedBy, equals(NameOrder.firstName));
       expect(mergedConfig.separator, equals(Separator.colon));
       expect(mergedConfig.titling, equals(AbbrTitle.us));
-      expect(mergedConfig.bypass, equals(false));
+      expect(mergedConfig.bypass, equals(true));
       expect(mergedConfig.ending, equals(true));
       expect(mergedConfig.lastNameFormat, equals(LastNameFormat.hyphenated));
     });
@@ -529,7 +530,7 @@ void main() {
         name: 'otherConfig',
         orderedBy: NameOrder.lastName,
         lastNameFormat: LastNameFormat.mother,
-        bypass: true,
+        bypass: false,
       );
 
       // Check the other config is set as defined.
@@ -537,7 +538,7 @@ void main() {
       expect(otherConfig.orderedBy, equals(NameOrder.lastName));
       expect(otherConfig.separator, equals(Separator.space));
       expect(otherConfig.titling, equals(AbbrTitle.uk));
-      expect(otherConfig.bypass, equals(true));
+      expect(otherConfig.bypass, equals(false));
       expect(otherConfig.ending, equals(false));
       expect(otherConfig.lastNameFormat, equals(LastNameFormat.mother));
 
@@ -546,7 +547,7 @@ void main() {
       expect(defaultConfig.orderedBy, equals(NameOrder.firstName));
       expect(defaultConfig.separator, equals(Separator.space));
       expect(defaultConfig.titling, equals(AbbrTitle.uk));
-      expect(defaultConfig.bypass, equals(false));
+      expect(defaultConfig.bypass, equals(true));
       expect(defaultConfig.ending, equals(false));
       expect(defaultConfig.lastNameFormat, equals(LastNameFormat.father));
     });
@@ -557,7 +558,7 @@ void main() {
         name: 'copyConfig',
         orderedBy: NameOrder.lastName,
         lastNameFormat: LastNameFormat.mother,
-        bypass: true,
+        bypass: false,
       );
 
       // Check the copied config is set as defined.
@@ -565,7 +566,7 @@ void main() {
       expect(copyConfig.orderedBy, equals(NameOrder.lastName));
       expect(copyConfig.separator, equals(Separator.space));
       expect(copyConfig.titling, equals(AbbrTitle.uk));
-      expect(copyConfig.bypass, equals(true));
+      expect(copyConfig.bypass, equals(false));
       expect(copyConfig.ending, equals(false));
       expect(copyConfig.lastNameFormat, equals(LastNameFormat.mother));
 
@@ -574,7 +575,7 @@ void main() {
       expect(config.orderedBy, equals(NameOrder.firstName));
       expect(config.separator, equals(Separator.space));
       expect(config.titling, equals(AbbrTitle.uk));
-      expect(config.bypass, equals(false));
+      expect(config.bypass, equals(true));
       expect(config.ending, equals(false));
       expect(config.lastNameFormat, equals(LastNameFormat.father));
     });

@@ -29,7 +29,7 @@ class StringParser implements Parser<String> {
 
   @override
   FullName parse({Config? options}) {
-    config = Config.mergeWith(options);
+    config = Config.merge(options);
     final names = raw.split(SeparatorChar.extract(config!.separator));
     return ListStringParser(names).parse(options: options);
   }
@@ -48,7 +48,7 @@ class ListStringParser implements Parser<List<String>> {
   @override
   FullName parse({Config? options}) {
     /// Given this setting;
-    config = Config.mergeWith(options);
+    config = Config.merge(options);
 
     /// Try to validate first (if enabled);
     final raw = this.raw.map((n) => n.trim()).toList();
@@ -108,7 +108,7 @@ class JsonNameParser implements Parser<Map<String, String>> {
   @override
   FullName parse({Config? options}) {
     /// Given this setting;
-    config = Config.mergeWith(options);
+    config = Config.merge(options);
 
     /// Try to validate first;
     if (!config!.bypass) NamaValidator().validate(_nama);
@@ -121,11 +121,14 @@ class JsonNameParser implements Parser<Map<String, String>> {
     for (var entry in raw.entries) {
       var namon = NamonKey.castTo(entry.key);
       if (namon == null) {
-        throw InputException(source: 'null', message: 'unacceptable key');
+        throw InputException(
+          source: raw.values.join(' '),
+          message: 'unsupported key "${entry.key}"',
+        );
       }
       if (_nama.containsKey(namon)) {
         throw InputException(
-          source: namon,
+          source: raw.values.join(' '),
           message: 'duplicate keys "${entry.key}"',
         );
       } else {
@@ -147,7 +150,7 @@ class ListNameParser implements Parser<List<Name>> {
   @override
   FullName parse({Config? options}) {
     /// Given this setting;
-    config = Config.mergeWith(options);
+    config = Config.merge(options);
 
     /// Try to validate first;
     if (!config!.bypass) ListNameValidator().validate(raw);

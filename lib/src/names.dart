@@ -9,14 +9,14 @@ class Name {
   late String _namon;
   late String _initial;
   late String _body;
-  late bool _isEmpty;
+
   final CapsRange _capRange;
   final Namon type;
 
   /// Creates augmented names by adding extra functionality to a string name.
   ///
-  /// A name [type] must be indicated to categorize [this] name so it can be
-  /// treated accordingly. [capRange] determines how [this] name should be
+  /// A name [type] must be indicated to categorize the name so it can be
+  /// treated accordingly. [capRange] determines how the name should be
   /// capitalized.
   Name(String namon, this.type, [CapsRange? capRange])
       : _capRange = capRange ?? CapsRange.initial {
@@ -28,27 +28,24 @@ class Name {
   String get namon => _namon;
   set namon(String namon) {
     if (namon.isInvalid) {
-      throw InputException(source: namon, message: 'invalid content');
+      throw InputException(source: namon, message: 'must be 2+ characters');
     }
+
     _namon = namon;
-    _isEmpty = _namon.isEmpty;
     _initial = _namon[0];
     _body = _namon.substring(1);
   }
 
+  /// The length of the name.
+  int get length => _namon.length;
+
   /// The capitalization range.
   CapsRange get capitalized => _capRange;
-
-  /// Returns whether this name is empty.
-  bool get isEmpty => _isEmpty;
-
-  /// Returns whether this name is not empty.
-  bool get isNotEmpty => !_isEmpty;
 
   @override
   String toString() => _namon;
 
-  /// Returns true if [other] is equal to [this].
+  /// Returns true if [other] is equal to this name.
   @override
   bool operator ==(other) {
     return other is Name && other.namon == namon && other.type == type;
@@ -111,14 +108,17 @@ class FirstName extends Name {
   List<String> get more => _more;
 
   @override
+  int get length => _namon.length + (_more.reduce((acc, n) => acc + n)).length;
+
+  @override
   String toString({bool includeAll = false}) {
     return includeAll && hasMore() ? '$namon ${_more.join(" ")}'.trim() : namon;
   }
 
-  /// Determines whether a [FirstName] has [more] name parts.
+  /// Determines whether a first name has [more] name parts.
   bool hasMore() => _more.isNotEmpty;
 
-  /// Returns a combined version of [this] and [more] if any.
+  /// Returns a combined version of the [namon] and [more] if any.
   List<Name> asNames() {
     return [
       Name(namon, Namon.firstName),
@@ -141,13 +141,13 @@ class FirstName extends Name {
     );
   }
 
-  /// Gets the initials of [this].
+  /// Gets the initials of the first name.
   @override
   List<String> initials({bool includeAll = false}) {
     return [_initial, if (includeAll && hasMore()) ..._more.map((n) => n[0])];
   }
 
-  /// Capitalizes [this].
+  /// Capitalizes the first name.
   @override
   void caps([CapsRange? range]) {
     range ??= capitalized;
@@ -160,7 +160,7 @@ class FirstName extends Name {
     }
   }
 
-  /// De-capitalizes [this].
+  /// De-capitalizes the first name.
   @override
   void decaps([CapsRange? range]) {
     range ??= capitalized;
@@ -173,7 +173,7 @@ class FirstName extends Name {
     }
   }
 
-  /// Normalizes [this] as it should be.
+  /// Normalizes the first name as it should be.
   @override
   void normalize() {
     namon = capitalize(namon);
@@ -201,13 +201,16 @@ class LastName extends Name {
   LastName(String father, [this._mother, this.format = LastNameFormat.father])
       : super(father, Namon.lastName);
 
+  @override
+  int get length => _namon.length + (_mother?.length ?? 0);
+
   /// The surname inherited from a father side.
-  String get father => namon;
+  String get father => _namon;
 
   /// The surname inherited from a mother side.
   String? get mother => _mother;
 
-  /// Returns a string representation of [this] last name.
+  /// Returns a string representation of the last name.
   @override
   String toString({LastNameFormat? format}) {
     format = format ?? this.format;
@@ -224,7 +227,7 @@ class LastName extends Name {
   }
 
   /// Returns `true` if the [mother]'s surname is defined.
-  bool hasMother() => _mother?.isNotEmpty == true;
+  bool hasMother() => _mother?.isNotEmpty ?? false;
 
   /// Gives some descriptive statistics.
   ///
@@ -238,7 +241,7 @@ class LastName extends Name {
     return Summary(toString(format: format), restrictions: restrictions);
   }
 
-  /// Gets the initials of [this].
+  /// Gets the initials of the last name.
   @override
   List<String> initials({LastNameFormat? format}) {
     format ??= this.format;
@@ -261,7 +264,7 @@ class LastName extends Name {
     return initials;
   }
 
-  /// Capitalizes [this].
+  /// Capitalizes the last name.
   @override
   void caps([CapsRange? range]) {
     range ??= capitalized;
@@ -274,7 +277,7 @@ class LastName extends Name {
     }
   }
 
-  /// De-capitalizes [this].
+  /// De-capitalizes the last name.
   @override
   void decaps([CapsRange? range]) {
     range ??= capitalized;
@@ -287,14 +290,14 @@ class LastName extends Name {
     }
   }
 
-  /// Normalizes [this] as it should be.
+  /// Normalizes the last name as it should be.
   @override
   void normalize() {
     namon = capitalize(namon);
     if (hasMother()) _mother = capitalize(_mother!);
   }
 
-  /// Creates a password-like representation of [this] last name.
+  /// Creates a password-like representation of the last name.
   @override
   String passwd({LastNameFormat? format}) {
     return generatePassword(toString(format: format));
@@ -344,7 +347,7 @@ mixin Summarizable {
     _restrictions = restrictions ?? const [' '];
 
     if (string.isInvalid) {
-      throw InputException(source: string, message: 'invalid content');
+      throw InputException(source: string, message: 'must be 2+ characters');
     }
 
     _distribution = _groupByChar();

@@ -88,7 +88,7 @@ final nameCases = {
       separator: Separator.comma,
     ),
   },
-  'withBypass': {
+  'noBypass': {
     'name': {
       'prefix': 'Mme',
       'firstName': 'Marine',
@@ -96,8 +96,8 @@ final nameCases = {
       'suffix': 'M.Sc.'
     },
     'options': Config.inline(
-      name: 'withBypass',
-      bypass: true,
+      name: 'noBypass',
+      bypass: false,
       ending: true,
       titling: AbbrTitle.us,
     )

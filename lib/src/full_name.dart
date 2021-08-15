@@ -109,13 +109,11 @@ class FullName {
 
   /// Returns true if a [namon] has been set.
   bool has(Namon namon) {
-    if (namon == Namon.prefix) return prefix?.isNotEmpty == true;
-    if (namon == Namon.firstName) return firstName.isNotEmpty;
-    if (namon == Namon.lastName) return lastName.isNotEmpty;
-    if (namon == Namon.suffix) return suffix?.isNotEmpty == true;
-    if (namon == Namon.middleName) {
-      return middleName.isNotEmpty && middleName.every((n) => n.isNotEmpty);
-    }
+    if (namon == Namon.prefix) return prefix != null;
+    if (namon == Namon.firstName || namon == Namon.lastName) return true;
+    if (namon == Namon.suffix) return suffix != null;
+    if (namon == Namon.middleName) return middleName.isNotEmpty;
+
     return false;
   }
 

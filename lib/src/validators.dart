@@ -70,7 +70,7 @@ abstract class Validator<T> {
 }
 
 /// A list of validators for a specific namon.
-class Validators {
+abstract class Validators {
   static final namon = NamonValidator();
   static final prefix = NameValidator();
   static final firstName = FirstNameValidator();
@@ -129,7 +129,7 @@ class FirstNameValidator implements Validator<dynamic> {
     } else {
       throw InputException(
         source: value.runtimeType.toString(),
-        message: 'expecting String | FirstName',
+        message: 'expecting types String | FirstName',
       );
     }
   }
@@ -180,7 +180,7 @@ class MiddleNameValidator implements Validator<dynamic> {
     } else {
       throw InputException(
         source: value.runtimeType.toString(),
-        message: 'expecting String | List<String> | List<Name>',
+        message: 'expecting types String | List<String> | List<Name>',
       );
     }
   }
@@ -217,7 +217,7 @@ class LastNameValidator implements Validator<dynamic> {
     } else {
       throw InputException(
         source: value.runtimeType.toString(),
-        message: 'expecting String | LastName',
+        message: 'expecting types String | LastName',
       );
     }
   }

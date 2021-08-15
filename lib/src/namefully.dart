@@ -99,7 +99,7 @@ class Namefully {
 
   /// Creates a name from a [FullName].
   Namefully.from(FullName fullName, {Config? config}) {
-    _config = Config.mergeWith(config);
+    _config = Config.merge(config);
     _fullName = fullName;
     _summary = Summary(birthName());
   }
@@ -524,7 +524,8 @@ class Namefully {
       if (!kAllowedTokens.contains(c)) {
         throw NotAllowedException(
           source: full,
-          message: '<$c> is an invalid character for the formatting.',
+          operation: 'format',
+          message: 'unsupported character <$c> from $how.',
         );
       }
       set += c;
@@ -622,7 +623,7 @@ class Namefully {
 
   /// Builds the core elements for name data.
   void _build<T>(Parser<T> parser, [Config? options]) {
-    _config = Config.mergeWith(options);
+    _config = Config.merge(options);
     _fullName = parser.parse(options: _config);
     _summary = Summary(birthName());
   }
