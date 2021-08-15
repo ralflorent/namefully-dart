@@ -10,18 +10,18 @@ class Name {
   late String _initial;
   late String _body;
 
-  final CapsRange _capRange;
+  final CapsRange _capsRange;
   final Namon type;
 
   /// Creates augmented names by adding extra functionality to a string name.
   ///
   /// A name [type] must be indicated to categorize the name so it can be
-  /// treated accordingly. [capRange] determines how the name should be
+  /// treated accordingly. [capsRange] determines how the name should be
   /// capitalized.
-  Name(String namon, this.type, [CapsRange? capRange])
-      : _capRange = capRange ?? CapsRange.initial {
+  Name(String namon, this.type, [CapsRange? capsRange])
+      : _capsRange = capsRange ?? CapsRange.initial {
     this.namon = namon;
-    if (capRange != null) caps(capRange);
+    if (capsRange != null) caps(capsRange);
   }
 
   /// The piece of string treated as a name.
@@ -39,9 +39,6 @@ class Name {
   /// The length of the name.
   int get length => _namon.length;
 
-  /// The capitalization range.
-  CapsRange get capitalized => _capRange;
-
   @override
   String toString() => _namon;
 
@@ -57,12 +54,12 @@ class Name {
   /// and shape of the characters' distribution. See [Summary] for more details.
   Summary stats() => Summary(_namon);
 
-  /// Gets the initials (first character) of [this].
-  List<String> initials() => [_initial];
+  /// Gets the initials (first character) of this name.
+  List<String> initials() => List.unmodifiable([_initial]);
 
-  /// Capitalizes [this].
+  /// Capitalizes the name.
   void caps([CapsRange? range]) {
-    range ??= _capRange;
+    range ??= _capsRange;
     if (range == CapsRange.initial) {
       namon = '${_initial.toUpperCase()}$_body';
     } else if (range == CapsRange.all) {
@@ -72,9 +69,9 @@ class Name {
     }
   }
 
-  /// De-capitalizes [this].
+  /// De-capitalizes the name.
   void decaps([CapsRange? range]) {
-    range ??= _capRange;
+    range ??= _capsRange;
     if (range == CapsRange.initial) {
       namon = '${_initial.toLowerCase()}$_body';
     } else if (range == CapsRange.all) {
@@ -84,10 +81,10 @@ class Name {
     }
   }
 
-  /// Normalizes [this] as it should be.
+  /// Normalizes the name as it should be.
   void normalize() => _namon = _initial.toUpperCase() + _body.toLowerCase();
 
-  /// Creates a password-like representation of [this].
+  /// Creates a password-like representation of the name.
   String passwd() => generatePassword(namon);
 }
 
@@ -104,7 +101,7 @@ class FirstName extends Name {
       : _more = more ?? [],
         super(namon, Namon.firstName);
 
-  /// The additional name parts of [this] first name.
+  /// The additional name parts of the first name.
   List<String> get more => _more;
 
   @override
@@ -144,13 +141,16 @@ class FirstName extends Name {
   /// Gets the initials of the first name.
   @override
   List<String> initials({bool includeAll = false}) {
-    return [_initial, if (includeAll && hasMore()) ..._more.map((n) => n[0])];
+    return List.unmodifiable([
+      _initial,
+      if (includeAll && hasMore()) ..._more.map((n) => n[0]),
+    ]);
   }
 
   /// Capitalizes the first name.
   @override
   void caps([CapsRange? range]) {
-    range ??= capitalized;
+    range ??= _capsRange;
     if (range == CapsRange.initial) {
       namon = capitalize(namon);
       if (hasMore()) _more = _more.map(capitalize).toList();
@@ -163,7 +163,7 @@ class FirstName extends Name {
   /// De-capitalizes the first name.
   @override
   void decaps([CapsRange? range]) {
-    range ??= capitalized;
+    range ??= _capsRange;
     if (range == CapsRange.initial) {
       namon = decapitalize(namon);
       if (hasMore()) _more = _more.map(decapitalize).toList();
@@ -180,7 +180,7 @@ class FirstName extends Name {
     if (hasMore()) _more = _more.map(capitalize).toList();
   }
 
-  /// Creates a password-like representation of [this].
+  /// Creates a password-like representation of the first name.
   @override
   String passwd({bool includeAll = false}) {
     return generatePassword(toString(includeAll: includeAll));
@@ -245,7 +245,7 @@ class LastName extends Name {
   @override
   List<String> initials({LastNameFormat? format}) {
     format ??= this.format;
-    final initials = <String>[];
+    var initials = <String>[];
     switch (format) {
       case LastNameFormat.father:
         initials.add(namon[0]);
@@ -261,13 +261,13 @@ class LastName extends Name {
       default:
         initials.add(namon[0]);
     }
-    return initials;
+    return List.unmodifiable(initials);
   }
 
   /// Capitalizes the last name.
   @override
   void caps([CapsRange? range]) {
-    range ??= capitalized;
+    range ??= _capsRange;
     if (range == CapsRange.initial) {
       namon = capitalize(namon);
       if (hasMother()) _mother = capitalize(_mother!);
@@ -280,7 +280,7 @@ class LastName extends Name {
   /// De-capitalizes the last name.
   @override
   void decaps([CapsRange? range]) {
-    range ??= capitalized;
+    range ??= _capsRange;
     if (range == CapsRange.initial) {
       namon = decapitalize(namon);
       if (hasMother()) _mother = decapitalize(_mother!);
@@ -307,7 +307,7 @@ class LastName extends Name {
 /// Summary of descriptive (categorical) statistics of name components.
 class Summary with Summarizable {
   Summary(String namon, {List<String>? restrictions}) {
-    super.summarize(namon, restrictions: restrictions);
+    summarize(namon, restrictions: restrictions);
   }
 }
 
@@ -319,6 +319,7 @@ mixin Summarizable {
   int _frequency = 0;
   String _top = '';
   int _unique = 0;
+
   late final String _string;
   late final List<String> _restrictions;
 
@@ -360,13 +361,16 @@ mixin Summarizable {
         _top = entry.key;
       }
     }
+
     return this;
   }
 
   /// Creates the distribution, taking the restricted characters into account.
   Map<String, int> _groupByChar() {
     final frequencies = <String, int>{};
+
     var restrictions = _restrictions.map((n) => n.toUpperCase());
+
     for (var char in _string.toUpperCase().split('')) {
       if (restrictions.contains(char)) continue;
       if (frequencies.containsKey(char)) {
@@ -375,6 +379,7 @@ mixin Summarizable {
         frequencies[char] = 1;
       }
     }
+
     return frequencies;
   }
 }
