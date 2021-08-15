@@ -1,9 +1,11 @@
 import 'package:namefully/namefully.dart';
-import 'package:namefully/src/validators.dart';
 import 'package:test/test.dart';
 
-final Matcher throwsValidationError = throwsA(TypeMatcher<ValidationError>());
-final Matcher throwsNotAllowedError = throwsA(TypeMatcher<NotAllowedError>());
+final throwsNameException = throwsA(TypeMatcher<NameException>());
+final throwsInputException = throwsA(TypeMatcher<InputException>());
+final throwsValidationException = throwsA(TypeMatcher<ValidationException>());
+final throwsNotAllowedException = throwsA(TypeMatcher<NotAllowedException>());
+final throwsUnknownException = throwsA(TypeMatcher<UnknownException>());
 
 class SimpleParser implements Parser<String> {
   @override

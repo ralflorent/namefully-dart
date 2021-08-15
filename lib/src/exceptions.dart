@@ -53,6 +53,8 @@ abstract class NameException implements Exception {
   /// Enables const constructors.
   const NameException([this.source, this.message = '']);
 
+  factory NameException.empty([String message = '']) => _NameException(message);
+
   /// Creates a new `InputException` with an optional error [message].
   factory NameException.input({required Object source, String message = ''}) {
     return InputException(source: source, message: message);
@@ -128,6 +130,20 @@ abstract class NameException implements Exception {
     if (message.isNotEmpty) report = '$report: $message';
     return report;
   }
+}
+
+/// Concrete name exception for convenience with a [message].
+class _NameException extends NameException {
+  const _NameException(this.message);
+
+  @override
+  final String message;
+
+  @override
+  NameExceptionType get type => NameExceptionType.unknown;
+
+  @override
+  String toString() => 'NameException: $message';
 }
 
 /// An exception thrown when a name source input is incorrect.
@@ -218,12 +234,12 @@ class UnknownException extends NameException {
   ///
   /// Optionally, a [stackTrace] and an [error] revealing the true nature of
   /// the failure.
-  const UnknownException({
+  UnknownException({
     required this.source,
-    this.stackTrace,
+    StackTrace? stackTrace,
     this.error,
     this.message = '',
-  });
+  }) : stackTrace = error != null && error is Error ? error.stackTrace : null;
 
   @override
   final String message;

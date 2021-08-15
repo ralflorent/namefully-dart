@@ -11,6 +11,7 @@ import 'dart:async';
 import 'config.dart';
 import 'constants.dart';
 import 'enums.dart';
+import 'exceptions.dart';
 import 'full_name.dart';
 import 'names.dart';
 import 'parsers.dart';
@@ -138,6 +139,9 @@ class Namefully {
 
   /// The longest version of a person name.
   String get long => birth;
+
+  /// The entire name set.
+  String get full => fullName();
 
   /// The first name combined with the last name's initial.
   String get public => format(r'f $l');
@@ -516,7 +520,10 @@ class Namefully {
     final formatted = <String>[];
     for (var c in how.split('')) {
       if (!kAllowedTokens.contains(c)) {
-        throw ArgumentError('<$c> is an invalid character for the formatting.');
+        throw NotAllowedException(
+          source: full,
+          message: '<$c> is an invalid character for the formatting.',
+        );
       }
       set += c;
       if (c == r'$') continue;
@@ -844,7 +851,7 @@ class NameBuilder {
   ///
   /// See [Namefully.shorten] for more info.
   void shorten() {
-    if (!_canBuild) throw _builderClosedError;
+    if (!_canBuild) throw _builderException(asString);
     _context = Namefully(_state.last.shorten(), config: _state.last._config);
     _state.add(_context, id: 'shorten');
     _streamer.sink.add(_context);
@@ -852,7 +859,7 @@ class NameBuilder {
 
   /// Transforms a [birthName] to UPPERCASE.
   void upper() {
-    if (!_canBuild) throw _builderClosedError;
+    if (!_canBuild) throw _builderException(asString);
     _context = Namefully(_state.last.upper(), config: _state.last._config);
     _state.add(_context, id: 'upper');
     _streamer.sink.add(_context);
@@ -860,7 +867,7 @@ class NameBuilder {
 
   /// Transforms a [birthName] to lowercase.
   void lower() {
-    if (!_canBuild) throw _builderClosedError;
+    if (!_canBuild) throw _builderException(asString);
     _context = Namefully(_state.last.lower(), config: _state.last._config);
     _state.add(_context, id: 'lower');
     _streamer.sink.add(_context);
@@ -868,7 +875,7 @@ class NameBuilder {
 
   /// Returns the final state of the changing name.
   Namefully build() {
-    if (!_canBuild) throw _builderClosedError;
+    if (!_canBuild) throw _builderException(asString);
     close();
     return _context;
   }
@@ -882,7 +889,7 @@ class NameBuilder {
 
   /// Rolls back to the previous context.
   void rollback() {
-    if (!_canBuild) throw _builderClosedError;
+    if (!_canBuild) throw _builderException(asString);
     _context = _state.rollback();
     _streamer.sink.add(_context);
   }
@@ -890,7 +897,7 @@ class NameBuilder {
   /// Arranges the name [by] the specified order: [NameOrder.firstName] or
   /// [NameOrder.lastName].
   void _order(NameOrder by) {
-    if (!_canBuild) throw _builderClosedError;
+    if (!_canBuild) throw _builderException(asString);
     _context = Namefully(
       _state.last.fullName(by),
       config: _state.last._config.copyWith(orderedBy: by),
@@ -900,17 +907,11 @@ class NameBuilder {
   }
 }
 
-final _builderClosedError = NotAllowedError('builder has been closed');
-
-/// Error thrown by operations that are no longer allowed.
-class NotAllowedError extends Error {
-  NotAllowedError([this.message]);
-  final String? message;
-
-  @override
-  String toString() {
-    return (message != null) ? 'NotAllowedError: $message' : 'NotAllowedError';
-  }
+NameException _builderException(String source) {
+  return NotAllowedException(
+    source: source,
+    message: 'builder has been closed',
+  );
 }
 
 /// An in-memory name state management.

@@ -1,6 +1,8 @@
 import 'package:namefully/namefully.dart';
 import 'package:test/test.dart';
 
+import 'test_utils.dart';
+
 void main() {
   group('Name', () {
     late Name name;
@@ -8,7 +10,7 @@ void main() {
     setUp(() => name = Name('John', Namon.middleName));
 
     test('throws an exception if a name is less than 2 characters', () {
-      expect(() => Name('', Namon.firstName), throwsArgumentError);
+      expect(() => Name('', Namon.firstName), throwsInputException);
     });
 
     test('creates a name marked with a specific type', () {
@@ -271,7 +273,7 @@ void main() {
 
   group('Summary', () {
     test('throws an exception if a value is less than 2 characters', () {
-      expect(() => Summary('a'), throwsArgumentError);
+      expect(() => Summary('a'), throwsInputException);
     });
 
     test('creates a statistically descriptive summary of a string', () {

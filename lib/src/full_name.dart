@@ -1,5 +1,6 @@
 import 'config.dart';
 import 'enums.dart';
+import 'exceptions.dart';
 import 'names.dart';
 import 'validators.dart';
 
@@ -149,8 +150,14 @@ class FullName {
       if (json['suffix'] != null) rawSuffix(json['suffix']!);
       rawFirstName(json['firstName']!);
       rawLastName(json['lastName']!);
+    } on NameException {
+      rethrow; // Let a name exception run its course.
     } catch (error) {
-      throw ValidationError('invalid content! \n$error');
+      throw UnknownException(
+        source: json.values.join(' '),
+        message: 'could not parse Map<String,String> content',
+        error: error,
+      );
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'config.dart';
 import 'enums.dart';
+import 'exceptions.dart';
 import 'full_name.dart';
 import 'names.dart';
 import 'utils.dart';
@@ -119,9 +120,14 @@ class JsonNameParser implements Parser<Map<String, String>> {
   void _asNama() {
     for (var entry in raw.entries) {
       var namon = NamonKey.castTo(entry.key);
-      if (namon == null) throw UnsupportedError('unacceptable key');
+      if (namon == null) {
+        throw InputException(source: 'null', message: 'unacceptable key');
+      }
       if (_nama.containsKey(namon)) {
-        throw ArgumentError('duplicate keys "${entry.key}"');
+        throw InputException(
+          source: namon,
+          message: 'duplicate keys "${entry.key}"',
+        );
       } else {
         _nama[namon] = entry.value;
       }

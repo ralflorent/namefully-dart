@@ -1,35 +1,8 @@
 import 'constants.dart';
 import 'enums.dart';
+import 'exceptions.dart';
 import 'names.dart';
 import 'utils.dart';
-
-/// An error thrown to indicate that a namon fails the validation rules.
-class ValidationError extends Error implements Exception {
-  /// Name of the invalid [name] type, if available.
-  final String? name;
-
-  /// Message describing the problem.
-  final String? message;
-
-  /// Creates error indicating with a [message] describing the problem.
-  ///
-  /// For example:
-  ///     "Validation failed (firstName)."
-  ValidationError([this.message]) : name = null;
-
-  /// Creates error containing the invalid [name] type and a [message] that
-  /// briefly describes the problem, if provided. For example:
-  ///     "Validation failed (firstName): Must be provided"
-  ///     "Validation failed (firstName)"
-  ValidationError.name(this.name, [this.message]);
-
-  @override
-  String toString() {
-    var nameString = name == null ? '' : ' ($name)';
-    var messageString = message == null ? '' : ': $message';
-    return 'Validation failed$nameString$messageString';
-  }
-}
 
 /// Set of [ValidationRule]s (or [RegExp]).
 ///
@@ -116,7 +89,11 @@ class NamonValidator implements Validator<String> {
   @override
   void validate(String value) {
     if (!ValidationRule.namon.hasMatch(value)) {
-      throw ValidationError.name('namon', 'invalid content: "$value"');
+      throw ValidationException(
+        source: value,
+        nameType: 'namon',
+        message: 'invalid content',
+      );
     }
   }
 }
@@ -130,11 +107,19 @@ class FirstNameValidator implements Validator<dynamic> {
   @override
   void validate(dynamic /** String | FirstName */ value) {
     if (value == null) {
-      throw ValidationError.name('firstName', 'field required');
+      throw ValidationException(
+        source: 'null',
+        nameType: 'firstName',
+        message: 'field required',
+      );
     }
     if (value is String) {
       if (!ValidationRule.firstName.hasMatch(value)) {
-        throw ValidationError.name('firstName', 'invalid content: "$value"');
+        throw ValidationException(
+          source: value,
+          nameType: 'firstName',
+          message: 'invalid content',
+        );
       }
     } else if (value is FirstName) {
       Validators.firstName.validate(value.namon);
@@ -142,7 +127,10 @@ class FirstNameValidator implements Validator<dynamic> {
         value.more.forEach(Validators.firstName.validate);
       }
     } else {
-      throw ArgumentError('expecting String | FirstName');
+      throw InputException(
+        source: value.runtimeType.toString(),
+        message: 'expecting String | FirstName',
+      );
     }
   }
 }
@@ -158,25 +146,42 @@ class MiddleNameValidator implements Validator<dynamic> {
     var namonValidator = NamonValidator();
     if (value is String) {
       if (!ValidationRule.middleName.hasMatch(value)) {
-        throw ValidationError.name('middleName', 'invalid content: "$value"');
+        throw ValidationException(
+          source: value,
+          nameType: 'middleName',
+          message: 'invalid content',
+        );
       }
     } else if (value is List<String>) {
       try {
         value.forEach(namonValidator.validate);
-      } on ValidationError catch (_) {
-        throw ValidationError.name('middleName', 'invalid content');
+      } on ValidationException {
+        throw ValidationException(
+          source: value,
+          nameType: 'middleName',
+          message: 'invalid content',
+        );
       }
     } else if (value is List<Name>) {
       try {
         value.forEach((n) {
           namonValidator.validate(n.namon);
-          if (n.type != Namon.middleName) throw ValidationError();
+          if (n.type != Namon.middleName) {
+            throw NameException.empty('wrong type');
+          }
         });
-      } on ValidationError catch (_) {
-        throw ValidationError.name('middleName', 'invalid content');
+      } on NameException catch (exception) {
+        throw ValidationException(
+          source: value,
+          nameType: 'middleName',
+          message: exception.message,
+        );
       }
     } else {
-      throw ArgumentError('expecting String | List<String> | List<Name>');
+      throw InputException(
+        source: value.runtimeType.toString(),
+        message: 'expecting String | List<String> | List<Name>',
+      );
     }
   }
 }
@@ -190,11 +195,19 @@ class LastNameValidator implements Validator<dynamic> {
   @override
   void validate(dynamic /** String | LastName */ value) {
     if (value == null) {
-      throw ValidationError.name('lastName', 'field required');
+      throw ValidationException(
+        source: 'null',
+        nameType: 'lastName',
+        message: 'field required',
+      );
     }
     if (value is String) {
       if (!ValidationRule.lastName.hasMatch(value)) {
-        throw ValidationError.name('lastName', 'invalid content: "$value"');
+        throw ValidationException(
+          source: value,
+          nameType: 'lastName',
+          message: 'invalid content',
+        );
       }
     } else if (value is LastName) {
       Validators.lastName.validate(value.father);
@@ -202,7 +215,10 @@ class LastNameValidator implements Validator<dynamic> {
         Validators.lastName.validate(value.mother);
       }
     } else {
-      throw ArgumentError('expecting String | LastName');
+      throw InputException(
+        source: value.runtimeType.toString(),
+        message: 'expecting String | LastName',
+      );
     }
   }
 }
@@ -216,8 +232,11 @@ class NameValidator implements Validator<Name> {
   @override
   void validate(Name name) {
     if (!ValidationRule.namon.hasMatch(name.namon)) {
-      throw ValidationError.name(
-          name.type.toString(), 'invalid content: "${name.namon}"');
+      throw ValidationException(
+        source: name,
+        nameType: name.type.toString(),
+        message: 'invalid content',
+      );
     }
   }
 }
@@ -229,19 +248,33 @@ class NamaValidator implements Validator<Map<Namon, String>> {
 
   @override
   void validate(Map<Namon, String> nama) {
-    if (nama.isEmpty) throw ValidationError('must not be empty');
+    if (nama.isEmpty) {
+      throw InputException(
+        source: 'null',
+        message: 'Map<k,v> must not be empty',
+      );
+    }
     if (nama.length < kMinNumberOfNameParts ||
         nama.length > kMaxNumberOfNameParts) {
-      throw ValidationError(
-          'expecting $kMinNumberOfNameParts-$kMaxNumberOfNameParts fields');
+      throw InputException(
+        source: nama.values.join(' '),
+        message: 'expecting $kMinNumberOfNameParts-'
+            '$kMaxNumberOfNameParts fields',
+      );
     }
     if (!nama.containsKey(Namon.firstName)) {
-      throw ValidationError('"firstName" is a required key');
+      throw InputException(
+        source: nama.values.join(' '),
+        message: '"firstName" is a required key',
+      );
     } else {
       Validators.firstName.validate(nama[Namon.firstName]);
     }
     if (!nama.containsKey(Namon.lastName)) {
-      throw ValidationError('"lastName" is a required field');
+      throw InputException(
+        source: nama.values.join(' '),
+        message: '"lastName" is a required key',
+      );
     } else {
       Validators.lastName.validate(nama[Namon.lastName]);
     }
@@ -263,9 +296,11 @@ class ListStringValidator implements Validator<List<String>> {
     if (values.isEmpty ||
         values.length < kMinNumberOfNameParts ||
         values.length > kMaxNumberOfNameParts) {
-      throw ValidationError(
-          'expecting a list of $kMinNumberOfNameParts-$kMaxNumberOfNameParts '
-          'elements');
+      throw InputException(
+        source: values,
+        message: 'expecting a list of $kMinNumberOfNameParts-'
+            '$kMaxNumberOfNameParts elements',
+      );
     }
 
     switch (values.length) {
@@ -305,9 +340,11 @@ class ListNameValidator implements Validator<List<Name>> {
     if (values.isEmpty ||
         values.length < kMinNumberOfNameParts ||
         values.length > kMaxNumberOfNameParts) {
-      throw ValidationError(
-          'expecting a list of $kMinNumberOfNameParts-$kMaxNumberOfNameParts '
-          'elements');
+      throw InputException(
+        source: values,
+        message: 'expecting a list of $kMinNumberOfNameParts-'
+            '$kMaxNumberOfNameParts elements',
+      );
     }
   }
 }

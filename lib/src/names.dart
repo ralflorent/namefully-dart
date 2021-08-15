@@ -1,4 +1,5 @@
 import 'enums.dart';
+import 'exceptions.dart';
 import 'utils.dart';
 
 /// Representation of a string type name with some extra capabilities.
@@ -26,7 +27,9 @@ class Name {
   /// The piece of string treated as a name.
   String get namon => _namon;
   set namon(String namon) {
-    if (namon.isInvalid) throw ArgumentError('invalid string value');
+    if (namon.isInvalid) {
+      throw InputException(source: namon, message: 'invalid content');
+    }
     _namon = namon;
     _isEmpty = _namon.isEmpty;
     _initial = _namon[0];
@@ -339,7 +342,11 @@ mixin Summarizable {
   Summarizable summarize(String string, {List<String>? restrictions}) {
     _string = string;
     _restrictions = restrictions ?? const [' '];
-    if (string.isInvalid) throw ArgumentError('invalid string value');
+
+    if (string.isInvalid) {
+      throw InputException(source: string, message: 'invalid content');
+    }
+
     _distribution = _groupByChar();
     _unique = _distribution.keys.length;
     _count = _distribution.values.reduce((acc, val) => acc + val);
