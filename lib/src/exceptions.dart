@@ -17,11 +17,12 @@ enum NameExceptionType {
   ///   * [Validators]
   validation,
 
-  /// Thrown when a closed name builder tries to perform an operation.
+  /// Thrown by not allowed operations such as in NameBuilder or name formatting.
   ///
   /// See also:
   ///   * [NotAllowedException]
   ///   * [NameBuilder]
+  ///   * [Namefully.format]
   notAllowed,
 
   /// Thrown by any other unknown sources or unexpected situation.
@@ -37,10 +38,10 @@ enum NameExceptionType {
 /// failure. Au contraire, it is expected that a programmer using this utility
 /// would consider validating a name using its own business rules. That is not
 /// this utility's job to guess those rules. So, the predefined [ValidationRule]s
-/// obey to some common validation techniques when it comes to sanitizing a
-/// person name. For this reason, the [Config.bypass] is set to `true` by
-/// default, indicating that those predefined rules should be skipped for the
-/// sake of the program.
+/// obey some common validation techniques when it comes to sanitizing a person
+/// name. For this reason, the [Config.bypass] is set to `true` by default,
+/// indicating that those predefined rules should be skipped for the sake of the
+/// program.
 ///
 /// A programmer may leverage [Parser]s to indicate business-tailored rules if
 /// he or she wants this utility to perform those safety checks behind the
@@ -53,39 +54,29 @@ abstract class NameException implements Exception {
   /// Enables const constructors.
   const NameException([this.source, this.message = '']);
 
-  factory NameException.empty([String message = '']) => _NameException(message);
+  /// Creates a concrete `NameException` with an optional error [message].
+  factory NameException.empty([String message]) = _NameException;
 
   /// Creates a new `InputException` with an optional error [message].
-  factory NameException.input({required Object source, String message = ''}) {
-    return InputException(source: source, message: message);
-  }
+  factory NameException.input({
+    required Object source,
+    String message,
+  }) = InputException;
 
   /// Creates an error containing the invalid [nameType] and a [message] that
   /// briefly describes the problem if provided.
   factory NameException.validation({
     required Object source,
     required String nameType,
-    String message = '',
-  }) {
-    return ValidationException(
-      source: source,
-      nameType: nameType,
-      message: message,
-    );
-  }
+    String message,
+  }) = ValidationException;
 
   /// Creates a new `NotAllowedException` with an optional error [message].
   factory NameException.notAllowed({
     required Object source,
-    String message = '',
-    String operation = '',
-  }) {
-    return NotAllowedException(
-      source: source,
-      message: message,
-      operation: operation,
-    );
-  }
+    String message,
+    String operation,
+  }) = NotAllowedException;
 
   /// Creates a new `UnknownException` with an optional error [message].
   ///
@@ -95,15 +86,8 @@ abstract class NameException implements Exception {
     required Object source,
     StackTrace? stackTrace,
     Object? error,
-    String message = '',
-  }) {
-    return UnknownException(
-      source: source,
-      message: message,
-      error: error,
-      stackTrace: stackTrace,
-    );
-  }
+    String message,
+  }) = UnknownException;
 
   /// The message describing the failure.
   final String message;
@@ -139,7 +123,7 @@ abstract class NameException implements Exception {
 
 /// Concrete name exception for convenience with a [message].
 class _NameException extends NameException {
-  const _NameException(this.message);
+  const _NameException([this.message = '']);
 
   @override
   final String message;
@@ -148,7 +132,7 @@ class _NameException extends NameException {
   NameExceptionType get type => NameExceptionType.unknown;
 
   @override
-  String toString() => 'NameException: $message';
+  String toString() => 'NameException' + (message.isEmpty ? '' : ': $message');
 }
 
 /// An exception thrown when a name source input is incorrect.

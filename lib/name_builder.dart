@@ -215,7 +215,7 @@ NameException _builderException(String source, [String ops = '']) {
 /// An in-memory name state management.
 ///
 /// The [current] and [previous] states of a name built on the fly are saved in
-/// memory, and can be easily access through historical data as long as the
+/// memory, and can be easily accessed through historical data as long as the
 /// object persists in memory. An [id] is automatically generated, if none has
 /// been provided during its creation.
 class _NamefullyState extends _State<Namefully> {

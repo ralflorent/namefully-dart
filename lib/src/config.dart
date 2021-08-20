@@ -65,38 +65,28 @@ abstract class Config {
   String get name;
 
   /// Returns a single configuration with default values.
-  factory Config([String name = _kDefaultName]) => _Config._default(name);
+  factory Config([String name = _kDefaultName]) => _Config(name);
 
   /// Returns a combined version of the existing values the default configuration
   /// and the provided values of an[other] configuration.
   @Deprecated('Use [Config.merge] instead')
-  factory Config.mergeWith(Config? other) => _Config.merge(other);
+  factory Config.mergeWith(Config? other) = _Config.merge;
 
   /// Returns a combined version of the existing values the default configuration
   /// and the provided values of an[other] configuration.
-  factory Config.merge(Config? other) => _Config.merge(other);
+  factory Config.merge(Config? other) = _Config.merge;
 
   /// Returns a unified version of default values of the configuration and the
   /// optional values to consider.
   factory Config.inline({
-    String name = _kDefaultName,
+    String name,
     NameOrder? orderedBy,
     Separator? separator,
     AbbrTitle? titling,
     bool? ending,
     bool? bypass,
     LastNameFormat? lastNameFormat,
-  }) {
-    return _Config.inline(
-      name: name,
-      orderedBy: orderedBy,
-      separator: separator,
-      titling: titling,
-      ending: ending,
-      bypass: bypass,
-      lastNameFormat: lastNameFormat,
-    );
-  }
+  }) = _Config.inline;
 
   /// Returns a copy of this configuration merged with the provided values.
   ///
