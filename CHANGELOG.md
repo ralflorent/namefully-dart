@@ -1,4 +1,11 @@
-# 0.1.4
+# 0.1.5
+
+* Fix bugs in `Config`
+* Add usage notes for `NameBuilder`
+* Update outdated dev dependencies
+* Reconfigure build setup.
+
+## 0.1.4
 
 * Improve error handling: `NameException` (includes breaking changes):
   * `ValidationError` has been removed and replaced by `ValidationException`
