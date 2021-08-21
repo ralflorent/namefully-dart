@@ -1,8 +1,8 @@
 # namefully
 
-[![pub version][version-img]][version-url]
-[![travisci][travisci-img]][travisci-url]
-[![Coverage Status][codecov-img]][codecov-url]
+[![Pub version][version-img]][version-url]
+[![CI build][ci-img]][ci-url]
+[![Coverage status][codecov-img]][codecov-url]
 
 A Dart utility for handling person names.
 
@@ -312,7 +312,7 @@ The underlying content of this utility is licensed under [MIT](LICENSE).
 <!-- References -->
 [version-img]: https://img.shields.io/pub/v/namefully
 [version-url]: https://pub.dev/packages/namefully
-[travisci-img]: https://travis-ci.com/ralflorent/namefully-dart.svg?style=shield
-[travisci-url]: https://travis-ci.com/ralflorent/namefully-dart.svg?branch=main
-[codecov-img]: https://raw.githubusercontent.com/ralflorent/namefully-dart/main/coverage_badge.svg?sanitize=true
+[ci-img]: https://github.com/ralflorent/namefully-dart/workflows/build/badge.svg
+[ci-url]: https://github.com/ralflorent/namefully-dart/actions/workflows/config.yml
+[codecov-img]: https://codecov.io/gh/ralflorent/namefully-dart/branch/main/graph/badge.svg?token=G4P25DZSIN
 [codecov-url]: https://codecov.io/gh/ralflorent/namefully-dart
