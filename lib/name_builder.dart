@@ -78,32 +78,25 @@ class NameBuilder {
   /// An optional [Config]uration may be provided with specifics on how to treat
   /// a full name during its course. By default, all name parts are validated
   /// against some basic validation rules to avoid common runtime exceptions.
-  factory NameBuilder(String names, {Config? config}) {
-    return NameBuilder._(Namefully(names, config: config));
-  }
+  NameBuilder(String names, {Config? config})
+      : this._(Namefully(names, config: config));
 
   /// Creates a name on the fly.
-  factory NameBuilder.only({
+  NameBuilder.only({
     required String firstName,
     List<String>? middleName,
     required String lastName,
     Config? config,
-  }) {
-    return NameBuilder._(Namefully.from(
-      FullName.raw(
-        firstName: firstName,
-        middleName: middleName,
-        lastName: lastName,
-        config: config,
-      ),
-      config: config,
-    ));
-  }
+  }) : this._(Namefully.from(FullName.raw(
+          firstName: firstName,
+          middleName: middleName,
+          lastName: lastName,
+          config: config,
+        )));
 
   /// Creates a name from a list of distinguishable parts.
-  factory NameBuilder.fromList(List<String> names, {Config? config}) {
-    return NameBuilder._(Namefully.fromList(names, config: config));
-  }
+  NameBuilder.fromList(List<String> names, {Config? config})
+      : this._(Namefully.fromList(names, config: config));
 
   /// Creates a name from a list of [Name]s.
   ///
@@ -111,24 +104,20 @@ class NameBuilder {
   /// capabilities, compared to a simple string name. This class helps to define
   /// the role of a name part (e.g, prefix) beforehand, which, as a consequence,
   /// gives more flexibility at the time of creating an instance of Namefully.
-  factory NameBuilder.of(List<Name> names, {Config? config}) {
-    return NameBuilder._(Namefully.of(names, config: config));
-  }
+  NameBuilder.of(List<Name> names, {Config? config})
+      : this._(Namefully.of(names, config: config));
 
   /// Creates a name from a [FullName].
-  factory NameBuilder.from(FullName names, {Config? config}) {
-    return NameBuilder._(Namefully.from(names, config: config));
-  }
+  NameBuilder.from(FullName names, {Config? config})
+      : this._(Namefully.from(names));
 
   /// Creates a name from a json-like distinguishable name parts.
-  factory NameBuilder.fromJson(Map<String, String> names, {Config? config}) {
-    return NameBuilder._(Namefully.fromJson(names, config: config));
-  }
+  NameBuilder.fromJson(Map<String, String> names, {Config? config})
+      : this._(Namefully.fromJson(names, config: config));
 
   /// Creates a name from a customized [Parser].
-  factory NameBuilder.fromParser(Parser names, {Config? config}) {
-    return NameBuilder._(Namefully.fromParser(names, config: config));
-  }
+  NameBuilder.fromParser(Parser names, {Config? config})
+      : this._(Namefully.fromParser(names, config: config));
 
   @override
   String toString() {
@@ -142,6 +131,14 @@ class NameBuilder {
 
   /// Arranges the name by [NameOrder.lastName].
   void byLastName() => _order(NameOrder.lastName);
+
+  /// Flips definitely the name order from the current config.
+  void flip() {
+    if (!_canBuild) throw _builderException(asString, 'flip');
+    _context = Namefully(_state.last.full, config: _state.last.config)..flip();
+    _state.add(_context, id: 'flip');
+    _streamer.sink.add(_context);
+  }
 
   /// Shortens a full name to a typical name, a combination of [firstName] and
   /// [lastName].
@@ -194,12 +191,13 @@ class NameBuilder {
   /// Arranges the name [by] the specified order: [NameOrder.firstName] or
   /// [NameOrder.lastName].
   void _order(NameOrder by) {
-    if (!_canBuild) throw _builderException(asString, 'order');
+    var ops = by == NameOrder.firstName ? 'byFirstName' : 'byLastName';
+    if (!_canBuild) throw _builderException(asString, ops);
     _context = Namefully(
       _state.last.fullName(by),
       config: _state.last.config.copyWith(orderedBy: by),
     );
-    _state.add(_context, id: 'order');
+    _state.add(_context, id: ops);
     _streamer.sink.add(_context);
   }
 }

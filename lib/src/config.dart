@@ -67,7 +67,7 @@ abstract class Config {
   /// Returns a single configuration with default values.
   factory Config([String name = _kDefaultName]) => _Config(name);
 
-  /// Returns a combined version of the existing values the default configuration
+  /// Returns a combined version of the existing values of the default configuration
   /// and the provided values of an[other] configuration.
   @Deprecated('Use [Config.merge] instead')
   factory Config.mergeWith(Config? other) = _Config.merge;

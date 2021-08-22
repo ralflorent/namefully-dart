@@ -30,7 +30,7 @@ class StringParser implements Parser<String> {
   @override
   FullName parse({Config? options}) {
     config = Config.merge(options);
-    final names = raw.split(SeparatorChar.extract(config!.separator));
+    final names = raw.split(config!.separator.token);
     return ListStringParser(names).parse(options: options);
   }
 }
@@ -99,11 +99,7 @@ class JsonNameParser implements Parser<Map<String, String>> {
   @override
   Config? config;
 
-  final Map<Namon, String> _nama = {};
-
-  JsonNameParser(this.raw) {
-    _asNama();
-  }
+  JsonNameParser(this.raw);
 
   @override
   FullName parse({Config? options}) {
@@ -111,30 +107,23 @@ class JsonNameParser implements Parser<Map<String, String>> {
     config = Config.merge(options);
 
     /// Try to validate first;
-    if (!config!.bypass) NamaValidator().validate(_nama);
+    if (!config!.bypass) NamaValidator().validate(_asNama());
 
     /// Then create a [FullName] from json.
     return FullName.fromJson(raw, config: config);
   }
 
-  void _asNama() {
-    for (var entry in raw.entries) {
-      var namon = NamonKey.castTo(entry.key);
+  Map<Namon, String> _asNama() {
+    return raw.map<Namon, String>((key, value) {
+      Namon? namon = NamonKey.cast(key);
       if (namon == null) {
         throw InputException(
           source: raw.values.join(' '),
-          message: 'unsupported key "${entry.key}"',
+          message: 'unsupported key "$key"',
         );
       }
-      if (_nama.containsKey(namon)) {
-        throw InputException(
-          source: raw.values.join(' '),
-          message: 'duplicate keys "${entry.key}"',
-        );
-      } else {
-        _nama[namon] = entry.value;
-      }
-    }
+      return MapEntry(namon, value);
+    });
   }
 }
 

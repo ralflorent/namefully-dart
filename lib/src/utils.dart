@@ -106,7 +106,7 @@ String toggleCase(String string) {
 /// Makes a [Set] capable of [random]izing its elements.
 extension CharSet<E> on Set<E> {
   /// Shuffles the elements within a set and returns a random one.
-  E random() => List.from(this).elementAt(Random().nextInt(length)) as E;
+  E random() => List<E>.from(this).elementAt(Random().nextInt(length));
 }
 
 /// Add validation capabilities to [String].
@@ -134,41 +134,6 @@ String generatePassword(String string) {
   }).join();
 }
 
-abstract class SeparatorChar {
-  static const comma = ',';
-  static const colon = ':';
-  static const empty = '';
-  static const doubleQuote = '"';
-  static const hyphen = '-';
-  static const period = '.';
-  static const singleQuote = "'";
-  static const space = ' ';
-  static const underscore = '_';
-
-  static String extract(Separator separator) {
-    switch (separator) {
-      case Separator.comma:
-        return SeparatorChar.comma;
-      case Separator.colon:
-        return SeparatorChar.colon;
-      case Separator.empty:
-        return SeparatorChar.empty;
-      case Separator.doubleQuote:
-        return SeparatorChar.doubleQuote;
-      case Separator.hyphen:
-        return SeparatorChar.hyphen;
-      case Separator.period:
-        return SeparatorChar.period;
-      case Separator.singleQuote:
-        return SeparatorChar.singleQuote;
-      case Separator.space:
-        return SeparatorChar.space;
-      case Separator.underscore:
-        return SeparatorChar.underscore;
-    }
-  }
-}
-
 abstract class NamonKey {
   static const prefix = 'prefix';
   static const firstName = 'firstName';
@@ -191,7 +156,7 @@ abstract class NamonKey {
     }
   }
 
-  static Namon? castTo(String string) {
+  static Namon? cast(String string) {
     switch (string) {
       case 'prefix':
         return Namon.prefix;

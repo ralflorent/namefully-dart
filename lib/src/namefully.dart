@@ -98,8 +98,8 @@ class Namefully {
   }
 
   /// Creates a name from a [FullName].
-  Namefully.from(FullName fullName, {Config? config}) {
-    _config = Config.merge(config);
+  Namefully.from(FullName fullName) {
+    _config = fullName.config;
     _fullName = fullName;
     _summary = Summary(birthName());
   }
@@ -184,22 +184,22 @@ class Namefully {
   }
 
   /// Gets a Map or json-like representation of the [fullName].
-  Map<String, String?> toMap() => {
+  Map<String, String?> toMap() => Map.unmodifiable({
         'prefix': prefix,
         'firstName': first,
         'middleName': middleName().join(' '),
         'lastName': last,
         'suffix': suffix,
-      };
+      });
 
   /// Gets a list representation of the [fullName].
-  List<String?> toList() => [
+  List<String?> toList() => List.unmodifiable([
         prefix,
         first,
         middleName().join(' '),
         last,
         suffix,
-      ];
+      ]);
 
   /// Confirms that a name part has been set.
   bool has(Namon namon) => _fullName.has(namon);
@@ -257,25 +257,40 @@ class Namefully {
   ///  `lastName firstName [middleName]`
   /// which means that if no middle name was set, setting [withMid] to true
   /// will output nothing and warn the end user about it.
-  List<String> initials({NameOrder? orderedBy, bool withMid = false}) {
-    orderedBy ??= _config.orderedBy;
-    var midInits = _fullName.middleName.map((n) => n.initials()).toList();
-    final initials = <String>[];
-
+  List<String> initials({
+    NameOrder? orderedBy,
+    bool withMid = false,
+    NameType only = NameType.birthName,
+  }) {
     if (withMid && !hasMiddleName()) {
       print('No initials for middleName since none was set.');
     }
 
-    if (orderedBy == NameOrder.firstName) {
-      initials.addAll(_fullName.firstName.initials());
+    orderedBy ??= _config.orderedBy;
+    var firstInits = _fullName.firstName.initials(),
+        midInits = _fullName.middleName.map((n) => n.initials()).toList(),
+        lastInits = _fullName.lastName.initials(),
+        initials = <String>[];
+
+    if (only != NameType.birthName) {
+      if (only == NameType.firstName) {
+        initials.addAll(firstInits);
+      } else if (only == NameType.middleName) {
+        midInits.forEach(initials.addAll);
+      } else {
+        initials.addAll(lastInits);
+      }
+    } else if (orderedBy == NameOrder.firstName) {
+      initials.addAll(firstInits);
       if (withMid) midInits.forEach(initials.addAll);
-      initials.addAll(_fullName.lastName.initials());
+      initials.addAll(lastInits);
     } else {
-      initials.addAll(_fullName.lastName.initials());
-      initials.addAll(_fullName.firstName.initials());
+      initials.addAll(lastInits);
+      initials.addAll(firstInits);
       if (withMid) midInits.forEach(initials.addAll);
     }
-    return initials;
+
+    return List.unmodifiable(initials);
   }
 
   /// Gives some descriptive statistics that summarize the central tendency,

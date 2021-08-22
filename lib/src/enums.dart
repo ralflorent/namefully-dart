@@ -110,14 +110,66 @@ enum Capitalization {
 enum Namon { prefix, firstName, middleName, lastName, suffix }
 
 /// The token used to indicate how to split string values.
-enum Separator {
-  comma,
-  colon,
-  empty,
-  doubleQuote,
-  hyphen,
-  period,
-  singleQuote,
-  space,
-  underscore
+class Separator {
+  const Separator._(this.index, this.name, this.token);
+
+  final int index;
+  final String name;
+  final String token;
+
+  static const Separator comma = Separator._(0, 'comma', ',');
+
+  static const Separator colon = Separator._(1, 'colon', ':');
+
+  static const Separator empty = Separator._(2, 'empty', '');
+
+  static const Separator doubleQuote = Separator._(3, 'doubleQuote', '"');
+
+  static const Separator hyphen = Separator._(4, 'hyphen', '-');
+
+  static const Separator period = Separator._(5, 'period', '.');
+
+  static const Separator semiColon = Separator._(6, 'semiColon', ';');
+
+  static const Separator singleQuote = Separator._(7, 'singleQuote', "'");
+
+  static const Separator space = Separator._(8, 'space', ' ');
+
+  static const Separator underscore = Separator._(9, 'underscore', '_');
+
+  /// All the available separators.
+  static const List<Separator> values = [
+    comma,
+    colon,
+    empty,
+    doubleQuote,
+    hyphen,
+    period,
+    semiColon,
+    singleQuote,
+    space,
+    underscore,
+  ];
+
+  /// All the available tokens.
+  static final tokens = List<String>.unmodifiable(values.map((s) => s.token));
+
+  @override
+  bool operator ==(Object? other) =>
+      other is Separator &&
+      other.index == index &&
+      other.name == name &&
+      other.token == token;
+
+  // Borrowed from the dart sdk: sdk/lib/math/jenkins_smi_hash.dart.
+  @override
+  int get hashCode {
+    int hash = index.hashCode + name.hashCode + token.hashCode;
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+
+  @override
+  String toString() => 'Separator.$name';
 }
