@@ -52,11 +52,11 @@ class ListStringParser implements Parser<List<String>> {
 
     /// Try to validate first (if enabled);
     final raw = this.raw.map((n) => n.trim()).toList();
-    final index = organizeNameIndex(config!.orderedBy, raw.length);
-    if (!config!.bypass) ListStringValidator(index).validate(raw);
+    final nameIndex = organizeNameIndex(config!.orderedBy, raw.length);
+    if (!config!.bypass) ListStringValidator(nameIndex).validate(raw);
 
     /// Then distribute all the elements accordingly to set [FullName].
-    return _distribute(raw, index);
+    return _distribute(raw, nameIndex);
   }
 
   FullName _distribute(List<String> raw, NameIndex index) {
@@ -68,22 +68,19 @@ class ListStringParser implements Parser<List<String>> {
         break;
       case 3:
         fullName.firstName = FirstName(raw.elementAt(index.firstName));
-        fullName.middleName
-            .add(Name(raw.elementAt(index.middleName), Namon.middleName));
+        fullName.middleName.add(Name(raw[index.middleName], Namon.middleName));
         fullName.lastName = LastName(raw.elementAt(index.lastName));
         break;
       case 4:
         fullName.prefix = Name(raw.elementAt(index.prefix), Namon.prefix);
         fullName.firstName = FirstName(raw.elementAt(index.firstName));
-        fullName.middleName
-            .add(Name(raw.elementAt(index.middleName), Namon.middleName));
+        fullName.middleName.add(Name(raw[index.middleName], Namon.middleName));
         fullName.lastName = LastName(raw.elementAt(index.lastName));
         break;
       case 5:
         fullName.prefix = Name(raw.elementAt(index.prefix), Namon.prefix);
         fullName.firstName = FirstName(raw.elementAt(index.firstName));
-        fullName.middleName
-            .add(Name(raw.elementAt(index.middleName), Namon.middleName));
+        fullName.middleName.add(Name(raw[index.middleName], Namon.middleName));
         fullName.lastName = LastName(raw.elementAt(index.lastName));
         fullName.suffix = Name(raw.elementAt(index.suffix), Namon.suffix);
         break;
@@ -115,7 +112,7 @@ class JsonNameParser implements Parser<Map<String, String>> {
 
   Map<Namon, String> _asNama() {
     return raw.map<Namon, String>((key, value) {
-      Namon? namon = NamonKey.cast(key);
+      Namon? namon = Namon.cast(key);
       if (namon == null) {
         throw InputException(
           source: raw.values.join(' '),
@@ -150,21 +147,13 @@ class ListNameParser implements Parser<List<Name>> {
       if (name.type == Namon.prefix) {
         fullName.prefix = name;
       } else if (name.type == Namon.firstName) {
-        if (name is FirstName) {
-          fullName.firstName = FirstName(name.namon, name.more);
-        } else {
-          fullName.firstName = FirstName(name.namon);
-        }
+        fullName.firstName = name is FirstName ? name : FirstName(name.namon);
       } else if (name.type == Namon.middleName) {
         fullName.middleName.add(name);
       } else if (name.type == Namon.lastName) {
-        if (name is LastName) {
-          fullName.lastName =
-              LastName(name.father, name.mother, config!.lastNameFormat);
-        } else {
-          fullName.lastName =
-              LastName(name.namon, null, config!.lastNameFormat);
-        }
+        fullName.lastName = name is LastName
+            ? LastName(name.namon, name.mother, config!.lastNameFormat)
+            : LastName(name.namon, null, config!.lastNameFormat);
       } else if (name.type == Namon.suffix) {
         fullName.suffix = name;
       }

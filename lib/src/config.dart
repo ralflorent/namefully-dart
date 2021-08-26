@@ -72,7 +72,7 @@ abstract class Config {
   @Deprecated('Use [Config.merge] instead')
   factory Config.mergeWith(Config? other) = _Config.merge;
 
-  /// Returns a combined version of the existing values the default configuration
+  /// Returns a combined version of the existing values of the default configuration
   /// and the provided values of an[other] configuration.
   factory Config.merge(Config? other) = _Config.merge;
 

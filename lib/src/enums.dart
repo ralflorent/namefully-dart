@@ -107,7 +107,55 @@ enum Capitalization {
 /// **Note**:
 /// The word `namon` does not exist. It is a singular form used to refer to a
 /// piece of name. And the plural form is `nama`.
-enum Namon { prefix, firstName, middleName, lastName, suffix }
+class Namon {
+  const Namon._(this.index, this.key);
+  final int index;
+  final String key;
+
+  static const Namon prefix = Namon._(0, 'prefix');
+
+  static const Namon firstName = Namon._(1, 'firstName');
+
+  static const Namon middleName = Namon._(2, 'middleName');
+
+  static const Namon lastName = Namon._(3, 'lastName');
+
+  static const Namon suffix = Namon._(4, 'suffix');
+
+  static const List<Namon> values = [
+    prefix,
+    firstName,
+    middleName,
+    lastName,
+    suffix,
+  ];
+
+  static Map<String, Namon> get nama => {
+        prefix.key: prefix,
+        firstName.key: firstName,
+        middleName.key: middleName,
+        lastName.key: lastName,
+        suffix.key: suffix,
+      };
+
+  @override
+  bool operator ==(Object? other) =>
+      other is Namon && other.index == index && other.key == key;
+
+  @override
+  int get hashCode {
+    int hash = index.hashCode + key.hashCode;
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+
+  @override
+  String toString() => 'Namon.$key';
+
+  static bool containsKey(String key) => nama.containsKey(key);
+
+  static Namon? cast(String key) => containsKey(key) ? nama[key] : null;
+}
 
 /// The token used to indicate how to split string values.
 class Separator {

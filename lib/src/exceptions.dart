@@ -167,7 +167,7 @@ class ValidationException extends NameException {
   /// briefly describes the problem if provided.
   ///
   /// For example, a validation error can be interpreted as:
-  ///     "ValidationException (nameType=='stringName')",
+  ///     "ValidationException (nameType='stringName')",
   ///     "ValidationException (nameType='stringName'): message"
   const ValidationException({
     required this.source,
