@@ -1,3 +1,5 @@
+import 'utils.dart';
+
 /// The abbreviation type to indicate whether or not to add period to a prefix
 /// using the American or British way.
 enum AbbrTitle {
@@ -109,7 +111,11 @@ enum Capitalization {
 /// piece of name. And the plural form is `nama`.
 class Namon {
   const Namon._(this.index, this.key);
+
+  /// The integer-based indexing factor.
   final int index;
+
+  /// The string name of a namon.
   final String key;
 
   static const Namon prefix = Namon._(0, 'prefix');
@@ -122,6 +128,7 @@ class Namon {
 
   static const Namon suffix = Namon._(4, 'suffix');
 
+  /// The list of supported name types.
   static const List<Namon> values = [
     prefix,
     firstName,
@@ -130,6 +137,7 @@ class Namon {
     suffix,
   ];
 
+  /// The predefined name types as a [Map].
   static Map<String, Namon> get nama => {
         prefix.key: prefix,
         firstName.key: firstName,
@@ -143,17 +151,15 @@ class Namon {
       other is Namon && other.index == index && other.key == key;
 
   @override
-  int get hashCode {
-    int hash = index.hashCode + key.hashCode;
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
+  int get hashCode => hashValues(index.hashCode, key.hashCode);
 
   @override
   String toString() => 'Namon.$key';
 
+  /// Whether this string [key] is part of the predefined keys.
   static bool containsKey(String key) => nama.containsKey(key);
 
+  /// Makes a string [key] a namon type.
   static Namon? cast(String key) => containsKey(key) ? nama[key] : null;
 }
 
@@ -161,8 +167,13 @@ class Namon {
 class Separator {
   const Separator._(this.index, this.name, this.token);
 
+  /// The integer-based indexing factor.
   final int index;
+
+  /// The name of the separator.
   final String name;
+
+  /// The character representative of the separator.
   final String token;
 
   static const Separator comma = Separator._(0, 'comma', ',');
@@ -209,13 +220,10 @@ class Separator {
       other.name == name &&
       other.token == token;
 
-  // Borrowed from the dart sdk: sdk/lib/math/jenkins_smi_hash.dart.
   @override
   int get hashCode {
-    int hash = index.hashCode + name.hashCode + token.hashCode;
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+    int hash = hashValues(index.hashCode, name.hashCode);
+    return hashValues(hash, token.hashCode);
   }
 
   @override

@@ -36,14 +36,9 @@ class NameIndex {
 }
 
 /// Reorganizes the existing global indexes for list of name parts:
-/// [orderedBy] first or last name, of [argLength] of the provided array, using
-/// [nameIndex] as a global preset of indexing.
-NameIndex organizeNameIndex(
-  NameOrder orderedBy,
-  int argLength, {
-  NameIndex? nameIndex,
-}) {
-  var out = nameIndex ?? const NameIndex(0, 1, 2, 3, 4);
+/// [orderedBy] first or last name, of [argLength] of the provided array.
+NameIndex organizeNameIndex(NameOrder orderedBy, int argLength) {
+  late NameIndex? out;
   if (orderedBy == NameOrder.firstName) {
     switch (argLength) {
       case 2: // first name + last name
@@ -75,7 +70,7 @@ NameIndex organizeNameIndex(
         break;
     }
   }
-  return out;
+  return out ?? const NameIndex(0, 1, 2, 3, 4);
 }
 
 /// Capitalizes a [string] via a [CapsRange] option.
@@ -132,4 +127,12 @@ String generatePassword(String string) {
         ? mapper[char]!.random()
         : mapper['\$']!.random();
   }).join();
+}
+
+// Borrowed from the dart sdk: sdk/lib/math/jenkins_smi_hash.dart.
+int hashValues(int arg01, int arg02) {
+  int hash = arg01.hashCode + arg02.hashCode;
+  hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+  hash = hash ^ (hash >> 11);
+  return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
 }
