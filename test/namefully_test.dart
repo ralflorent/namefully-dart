@@ -106,8 +106,9 @@ void main() {
       });
 
       test('throws error for wrong key params when formatting', () {
-        ['[', '{', '^', '!', '@', '#', 'a', 'c', 'd'].forEach(
-            (k) => expect(() => name.format(k), throwsNotAllowedException));
+        for (var k in ['[', '{', '^', '!', '@', '#', 'a', 'c', 'd']) {
+          expect(() => name.format(k), throwsNotAllowedException);
+        }
       });
 
       test('.to() converts a birth name to a specific capitalization case', () {

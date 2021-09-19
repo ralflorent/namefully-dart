@@ -164,12 +164,12 @@ class MiddleNameValidator implements Validator<dynamic> {
       }
     } else if (value is List<Name>) {
       try {
-        value.forEach((n) {
+        for (Name n in value) {
           namonValidator.validate(n.namon);
           if (n.type != Namon.middleName) {
             throw NameException.empty('wrong type');
           }
-        });
+        }
       } on NameException catch (exception) {
         throw ValidationException(
           source: value,

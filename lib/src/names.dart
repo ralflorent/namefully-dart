@@ -48,6 +48,9 @@ class Name {
     return other is Name && other.namon == namon && other.type == type;
   }
 
+  @override
+  int get hashCode => hashValues(namon.hashCode, type.hashCode);
+
   /// Gives some descriptive statistics.
   ///
   /// The statistical description summarizes the central tendency, dispersion
