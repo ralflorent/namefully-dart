@@ -1,4 +1,11 @@
-# 0.1.5
+# 0.1.5+1
+
+* Improve performance (See `Separator`, `Namon`, etc.)
+* Add hash utils
+* Upgrade dependencies
+* Migrate from `pedantic` to official Dart lint rules.
+
+## 0.1.5
 
 * Fix bugs in `Config`
 * Add usage notes for `NameBuilder`
