@@ -55,7 +55,7 @@ abstract class NameException implements Exception {
   const NameException([this.source, this.message = '']);
 
   /// Creates a concrete `NameException` with an optional error [message].
-  factory NameException.empty([String message]) = _NameException;
+  factory NameException.empty([String message, Object source]) = _NameException;
 
   /// Creates a new `InputException` with an optional error [message].
   factory NameException.input({
@@ -121,18 +121,18 @@ abstract class NameException implements Exception {
   }
 }
 
-/// Concrete name exception for convenience with a [message].
+/// Concrete name exception for convenience with a [message] and a [source].
 class _NameException extends NameException {
-  const _NameException([this.message = '']);
+  const _NameException([this.message = '', this.source]);
 
   @override
   final String message;
 
   @override
-  NameExceptionType get type => NameExceptionType.unknown;
+  final Object? source;
 
   @override
-  String toString() => 'NameException' + (message.isEmpty ? '' : ': $message');
+  NameExceptionType get type => NameExceptionType.unknown;
 }
 
 /// An exception thrown when a name source input is incorrect.
@@ -195,8 +195,12 @@ class ValidationException extends NameException {
   }
 }
 
-/// An exception when a [NameBuilder] tries to perform an operation while its
-/// current status is marked as closed.
+/// Thrown by not allowed operations such as in [NameBuilder] or name formatting.
+///
+/// For example, this exception is thrown when a [NameBuilder] tries to perform
+/// an operation while its current status is marked as closed. Another cause for
+/// this exception is when trying to [Namefully.format] a name accordingly using
+/// a non-supported key.
 class NotAllowedException extends NameException {
   /// Creates a new `NotAllowedException` with an optional error [message].
   const NotAllowedException({
@@ -237,13 +241,14 @@ class UnknownException extends NameException {
   /// Creates a new `UnknownException` with an optional error [message].
   ///
   /// Optionally, a [stackTrace] and an [error] revealing the true nature of
-  /// the failure.
+  /// the failure. The [Error.stackTrace], if any, is considered as fallback if
+  /// [stackTrace] is provided.
   UnknownException({
     required this.source,
     StackTrace? stackTrace,
     this.error,
     this.message = '',
-  }) : stackTrace = error != null && error is Error ? error.stackTrace : null;
+  }) : stackTrace = stackTrace ?? (error is Error ? error.stackTrace : null);
 
   @override
   final String message;

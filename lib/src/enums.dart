@@ -151,7 +151,7 @@ class Namon {
       other is Namon && other.index == index && other.key == key;
 
   @override
-  int get hashCode => hashValues(index.hashCode, key.hashCode);
+  int get hashCode => hashValues(index, key);
 
   @override
   String toString() => 'Namon.$key';
@@ -221,10 +221,7 @@ class Separator {
       other.token == token;
 
   @override
-  int get hashCode {
-    int hash = hashValues(index.hashCode, name.hashCode);
-    return hashValues(hash, token.hashCode);
-  }
+  int get hashCode => hashValues(hashValues(index, name), token);
 
   @override
   String toString() => 'Separator.$name';

@@ -49,7 +49,7 @@ class Name {
   }
 
   @override
-  int get hashCode => hashValues(namon.hashCode, type.hashCode);
+  int get hashCode => hashValues(namon, type);
 
   /// Gives some descriptive statistics.
   ///
@@ -93,8 +93,6 @@ class Name {
 
 /// Representation of a first name with some extra functionality.
 class FirstName extends Name {
-  List<String> _more = [];
-
   /// Creates an extended version of [Name] and flags it as a first name [type].
   ///
   /// Some may consider [more] additional name parts of a given name as their
@@ -106,6 +104,7 @@ class FirstName extends Name {
 
   /// The additional name parts of the first name.
   List<String> get more => _more;
+  List<String> _more = [];
 
   @override
   int get length => _namon.length + (_more.reduce((acc, n) => acc + n)).length;
@@ -192,17 +191,15 @@ class FirstName extends Name {
 
 /// Representation of a last name with some extra functionality.
 class LastName extends Name {
-  String? _mother;
-
-  /// The internal last name format.
-  final LastNameFormat format;
-
   /// Creates an extended version of [Name] and flags it as a last name [type].
   ///
   /// Some people may keep their [mother]'s surname and want to keep a clear cut
   /// from their [father]'s surname. However, there are no clear rules about it.
   LastName(String father, [this._mother, this.format = LastNameFormat.father])
       : super(father, Namon.lastName);
+
+  /// The internal last name format.
+  final LastNameFormat format;
 
   @override
   int get length => _namon.length + (_mother?.length ?? 0);
@@ -212,6 +209,7 @@ class LastName extends Name {
 
   /// The surname inherited from a mother side.
   String? get mother => _mother;
+  String? _mother;
 
   /// Returns a string representation of the last name.
   @override
@@ -317,33 +315,32 @@ class Summary with Summarizable {
 /// A component that knows how to help a class extend some basic categorical
 /// statistics on string values.
 mixin Summarizable {
-  Map<String, int> _distribution = {};
-  int _count = 0;
-  int _frequency = 0;
-  String _top = '';
-  int _unique = 0;
-
   late final String _string;
   late final List<String> _restrictions;
 
   /// The characters' distribution along with their frequencies.
   Map<String, int> get distribution => _distribution;
+  Map<String, int> _distribution = {};
 
   /// The number of characters of the distribution, excluding the restricted
   /// ones.
   int get count => _count;
+  int _count = 0;
 
   /// The total number of characters of the content.
   int get length => _string.length;
 
   /// The count of the most repeated characters.
   int get frequency => _frequency;
+  int _frequency = 0;
 
   /// The most repeated character.
   String get top => _top;
+  String _top = '';
 
   /// The count of unique characters.
   int get unique => _unique;
+  int _unique = 0;
 
   /// Creates a summary of a given string of alphabetical characters.
   Summarizable summarize(String string, {List<String>? restrictions}) {

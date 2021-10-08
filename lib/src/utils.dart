@@ -130,7 +130,7 @@ String generatePassword(String string) {
 }
 
 // Borrowed from the dart sdk: sdk/lib/math/jenkins_smi_hash.dart.
-int hashValues(int arg01, int arg02) {
+int hashValues(Object arg01, Object arg02) {
   int hash = arg01.hashCode + arg02.hashCode;
   hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
   hash = hash ^ (hash >> 11);
