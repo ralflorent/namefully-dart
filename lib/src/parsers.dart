@@ -8,58 +8,51 @@ import 'validators.dart';
 
 /// A parser signature that helps to organize the names accordingly.
 abstract class Parser<T> {
+  /// Enables const constructors.
+  const Parser(this.raw);
+
   /// The raw data to be parsed.
-  late T raw;
+  final T raw;
 
-  /// The configurations to consider while parsing.
-  Config? config;
-
-  /// Parses the raw data into a [FullName].
+  /// Parses the raw data into a [FullName] while considering some [options].
   FullName parse({Config? options});
 }
 
 class StringParser implements Parser<String> {
-  @override
-  String raw;
+  const StringParser(this.raw);
 
   @override
-  Config? config;
-
-  StringParser(this.raw);
+  final String raw;
 
   @override
   FullName parse({Config? options}) {
-    config = Config.merge(options);
-    final names = raw.split(config!.separator.token);
+    final config = Config.merge(options);
+    final names = raw.split(config.separator.token);
     return ListStringParser(names).parse(options: options);
   }
 }
 
 class ListStringParser implements Parser<List<String>> {
-  @override
-  List<String> raw;
+  const ListStringParser(this.raw);
 
   @override
-  Config? config;
-
-  @override
-  ListStringParser(this.raw);
+  final List<String> raw;
 
   @override
   FullName parse({Config? options}) {
     /// Given this setting;
-    config = Config.merge(options);
+    final config = Config.merge(options);
 
     /// Try to validate first (if enabled);
     final raw = this.raw.map((n) => n.trim()).toList();
-    final nameIndex = organizeNameIndex(config!.orderedBy, raw.length);
-    if (!config!.bypass) ListStringValidator(nameIndex).validate(raw);
+    final nameIndex = organizeNameIndex(config.orderedBy, raw.length);
+    if (!config.bypass) ListStringValidator(nameIndex).validate(raw);
 
     /// Then distribute all the elements accordingly to set [FullName].
-    return _distribute(raw, nameIndex);
+    return _distribute(raw, config, nameIndex);
   }
 
-  FullName _distribute(List<String> raw, NameIndex index) {
+  FullName _distribute(List<String> raw, Config config, NameIndex index) {
     final fullName = FullName(config: config);
     switch (raw.length) {
       case 2:
@@ -90,23 +83,20 @@ class ListStringParser implements Parser<List<String>> {
 }
 
 class JsonNameParser implements Parser<Map<String, String>> {
-  @override
-  Map<String, String> raw;
+  const JsonNameParser(this.raw);
 
   @override
-  Config? config;
-
-  JsonNameParser(this.raw);
+  final Map<String, String> raw;
 
   @override
   FullName parse({Config? options}) {
-    /// Given this setting;
-    config = Config.merge(options);
+    // Given this setting;
+    final config = Config.merge(options);
 
-    /// Try to validate first;
-    if (!config!.bypass) NamaValidator().validate(_asNama());
+    // Try to validate first;
+    if (!config.bypass) NamaValidator().validate(_asNama());
 
-    /// Then create a [FullName] from json.
+    // Then create a [FullName] from json.
     return FullName.fromJson(raw, config: config);
   }
 
@@ -125,24 +115,21 @@ class JsonNameParser implements Parser<Map<String, String>> {
 }
 
 class ListNameParser implements Parser<List<Name>> {
-  @override
-  List<Name> raw;
+  const ListNameParser(this.raw);
 
   @override
-  Config? config;
-
-  ListNameParser(this.raw);
+  final List<Name> raw;
 
   @override
   FullName parse({Config? options}) {
-    /// Given this setting;
-    config = Config.merge(options);
+    // Given this setting;
+    final config = Config.merge(options);
 
-    /// Try to validate first;
-    if (!config!.bypass) ListNameValidator().validate(raw);
+    // Try to validate first;
+    if (!config.bypass) ListNameValidator().validate(raw);
     final fullName = FullName(config: config);
 
-    /// Then distribute all the elements accordingly to set [FullName].
+    // Then distribute all the elements accordingly to set [FullName].
     for (final name in raw) {
       if (name.type == Namon.prefix) {
         fullName.prefix = name;
@@ -152,8 +139,8 @@ class ListNameParser implements Parser<List<Name>> {
         fullName.middleName.add(name);
       } else if (name.type == Namon.lastName) {
         fullName.lastName = name is LastName
-            ? LastName(name.namon, name.mother, config!.lastNameFormat)
-            : LastName(name.namon, null, config!.lastNameFormat);
+            ? LastName(name.namon, name.mother, config.lastNameFormat)
+            : LastName(name.namon, null, config.lastNameFormat);
       } else if (name.type == Namon.suffix) {
         fullName.suffix = name;
       }

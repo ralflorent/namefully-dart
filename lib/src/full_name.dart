@@ -141,19 +141,19 @@ class FullName {
   /// Parses a [json] name into a full name.
   void _parseJsonName(Map<String, String> json) {
     try {
-      if (json['prefix'] != null) rawPrefix(json['prefix']!);
-      if (json['middleName'] != null) {
-        rawMiddleName(json['middleName']!.split(' '));
+      if (json[Namon.prefix.key] != null) rawPrefix(json[Namon.prefix.key]!);
+      if (json[Namon.middleName.key] != null) {
+        rawMiddleName(json[Namon.middleName.key]!.split(' '));
       }
-      if (json['suffix'] != null) rawSuffix(json['suffix']!);
-      rawFirstName(json['firstName']!);
-      rawLastName(json['lastName']!);
+      if (json[Namon.suffix.key] != null) rawSuffix(json[Namon.suffix.key]!);
+      rawFirstName(json[Namon.firstName.key]!);
+      rawLastName(json[Namon.lastName.key]!);
     } on NameException {
       rethrow; // Let a name exception run its course.
     } catch (error) {
       throw UnknownException(
         source: json.values.join(' '),
-        message: 'could not parse Map<String,String> content',
+        message: 'could not parse Map<String, String> content',
         error: error,
       );
     }

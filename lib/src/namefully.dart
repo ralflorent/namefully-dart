@@ -105,7 +105,7 @@ class Namefully {
   }
 
   /// Creates a name from a customized [Parser].
-  Namefully.fromParser(Parser<dynamic> parser, {Config? config}) {
+  Namefully.fromParser(Parser parser, {Config? config}) {
     _build(parser, config);
   }
 
@@ -185,11 +185,11 @@ class Namefully {
 
   /// Gets a Map or json-like representation of the [fullName].
   Map<String, String?> toMap() => Map.unmodifiable({
-        'prefix': prefix,
-        'firstName': first,
-        'middleName': middleName().join(' '),
-        'lastName': last,
-        'suffix': suffix,
+        Namon.prefix.key: prefix,
+        Namon.firstName.key: first,
+        Namon.middleName.key: middleName().join(' '),
+        Namon.lastName.key: last,
+        Namon.suffix.key: suffix,
       });
 
   /// Gets a list representation of the [fullName].
