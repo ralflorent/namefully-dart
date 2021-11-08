@@ -104,10 +104,13 @@ class FirstName extends Name {
 
   /// The additional name parts of the first name.
   List<String> get more => _more;
-  List<String> _more = [];
+  late List<String> _more;
 
   @override
-  int get length => _namon.length + (_more.reduce((acc, n) => acc + n)).length;
+  int get length {
+    return super.length +
+        (hasMore() ? (_more.reduce((acc, n) => acc + n)).length : 0);
+  }
 
   @override
   String toString({bool includeAll = false}) {

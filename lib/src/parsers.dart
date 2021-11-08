@@ -46,7 +46,13 @@ class ListStringParser implements Parser<List<String>> {
     /// Try to validate first (if enabled);
     final raw = this.raw.map((n) => n.trim()).toList();
     final nameIndex = organizeNameIndex(config.orderedBy, raw.length);
-    if (!config.bypass) ListStringValidator(nameIndex).validate(raw);
+    final validator = ListStringValidator(nameIndex);
+
+    if (config.bypass) {
+      validator.validateIndex(raw);
+    } else {
+      validator.validate(raw);
+    }
 
     /// Then distribute all the elements accordingly to set [FullName].
     return _distribute(raw, config, nameIndex);
@@ -126,7 +132,7 @@ class ListNameParser implements Parser<List<Name>> {
     final config = Config.merge(options);
 
     // Try to validate first;
-    if (!config.bypass) ListNameValidator().validate(raw);
+    ListNameValidator().validate(raw);
     final fullName = FullName(config: config);
 
     // Then distribute all the elements accordingly to set [FullName].

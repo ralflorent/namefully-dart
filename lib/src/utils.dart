@@ -38,7 +38,7 @@ class NameIndex {
 /// Reorganizes the existing global indexes for list of name parts:
 /// [orderedBy] first or last name, of [argLength] of the provided array.
 NameIndex organizeNameIndex(NameOrder orderedBy, int argLength) {
-  late NameIndex? out;
+  NameIndex out = const NameIndex(0, 1, 2, 3, 4);
   if (orderedBy == NameOrder.firstName) {
     switch (argLength) {
       case 2: // first name + last name
@@ -70,7 +70,7 @@ NameIndex organizeNameIndex(NameOrder orderedBy, int argLength) {
         break;
     }
   }
-  return out ?? const NameIndex(0, 1, 2, 3, 4);
+  return out;
 }
 
 /// Capitalizes a [string] via a [CapsRange] option.

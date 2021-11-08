@@ -1,83 +1,79 @@
 import 'package:namefully/namefully.dart';
-import 'package:namefully/src/validators.dart';
 import 'package:test/test.dart';
 
 import 'test_utils.dart';
 
 void main() {
+  var config = Config.inline(bypass: false);
+
   group('ValidationException', () {
     test('is thrown when a namon breaks the validation rules', () {
       expect(
-        () => NamonValidator().validate('J4ne'),
+        () => Namefully('J4ne Doe', config: config),
+        throwsValidationException,
+      );
+      expect(
+        () => Namefully('Jane Do3', config: config),
         throwsValidationException,
       );
     });
 
     test('is thrown if part of a first name breaks the validation rules', () {
       expect(
-        () => FirstNameValidator().validate(FirstName('J4ne')),
+        () => Namefully('J4ne Doe', config: config),
         throwsValidationException,
       );
       expect(
-        () => FirstNameValidator().validate(FirstName('J4ne', ['Ka7e'])),
+        () => Namefully.of([
+          FirstName('Jane', ['M4ry']),
+          LastName('Doe')
+        ], config: config),
         throwsValidationException,
       );
-      expect(() => FirstNameValidator().validate('Jane;'),
-          throwsValidationException);
     });
 
     test('is thrown if any middle name breaks the validation rules', () {
       expect(
-        () => MiddleNameValidator().validate([Name('ka7e', Namon.firstName)]),
-        throwsValidationException,
-      );
-      expect(
-        () => MiddleNameValidator().validate([Name('kate;', Namon.middleName)]),
-        throwsValidationException,
-      );
-      expect(
-        () => MiddleNameValidator().validate([
-          Name('Jack', Namon.middleName),
-          Name('kate;', Namon.middleName),
-        ]),
+        () => Namefully('Jane M4ry Doe', config: config),
         throwsValidationException,
       );
     });
 
     test('is thrown if any part of a last name breaks the validation rules',
         () {
-      expect(() => LastNameValidator().validate(LastName('Smith;')),
-          throwsValidationException);
-      expect(() => LastNameValidator().validate(LastName('Smith', 'Doe-')),
-          throwsValidationException);
-      expect(() => LastNameValidator().validate('Smith--Doe'),
-          throwsValidationException);
+      expect(
+        () => Namefully('Jane Do3', config: config),
+        throwsValidationException,
+      );
+      expect(
+        () => Namefully.of([FirstName('Jane'), LastName('Doe', 'Sm1th')],
+            config: config),
+        throwsValidationException,
+      );
     });
 
     test('is thrown if a namon breaks the validation rules', () {
-      expect(() => NameValidator().validate(Name('mr.', Namon.prefix)),
-          throwsValidationException);
-      expect(() => NameValidator().validate(Name('mr ', Namon.prefix)),
-          throwsValidationException);
-      expect(() => NameValidator().validate(Name('jane-', Namon.prefix)),
-          throwsValidationException);
-      expect(() => NameValidator().validate(Name("john'", Namon.prefix)),
-          throwsValidationException);
+      expect(
+        () => Namefully.of(
+            [Name('mr ', Namon.prefix), FirstName('John'), LastName('Doe')],
+            config: config),
+        throwsValidationException,
+      );
     });
 
     test('is thrown if the json name values are incorrect', () {
       expect(
-        () => NamaValidator().validate({
-          Namon.firstName: 'J4ne',
-          Namon.lastName: 'Doe',
-        }),
+        () => Namefully.fromJson({
+          'firstName': 'J4ne',
+          'lastName': 'Doe',
+        }, config: config),
         throwsValidationException,
       );
       expect(
-        () => NamaValidator().validate({
-          Namon.prefix: '',
-          Namon.firstName: 'Jane',
-          Namon.lastName: 'Smith',
+        () => Namefully.fromJson({
+          'prefix': '',
+          'firstName': 'Jane',
+          'lastName': 'Smith',
         }),
         throwsValidationException,
       );
@@ -85,7 +81,7 @@ void main() {
 
     test('is thrown if a string list breaks the validation rules', () {
       expect(
-        () => ListStringValidator().validate(['jane,', 'doe']),
+        () => Namefully.fromList(['j4ne', 'doe'], config: config),
         throwsValidationException,
       );
     });
@@ -93,34 +89,25 @@ void main() {
 
   group('InputException', () {
     test('is thrown if the json name keys are not as expected', () {
-      expect(() => NamaValidator().validate({}), throwsInputException);
       expect(
-        () => NamaValidator().validate({Namon.prefix: ''}),
+        () => Namefully.fromJson({'firstname': 'Jane', 'lastName': 'Doe'},
+            config: config),
         throwsInputException,
       );
       expect(
-        () => NamaValidator().validate({
-          Namon.prefix: 'Mr',
-          Namon.firstName: 'John',
-        }),
+        () => Namefully.fromJson({'firstName': 'Jane', 'lastname': 'Doe'}),
         throwsInputException,
       );
-      expect(
-        () => NamaValidator().validate({
-          Namon.prefix: 'Mr',
-          Namon.lastName: 'Smith',
-        }),
-        throwsInputException,
-      );
+      expect(() => Namefully.fromJson({}), throwsInputException);
     });
     test('is thrown if a string list has an unsupported number of entries', () {
-      expect(() => ListStringValidator().validate([]), throwsInputException);
+      expect(() => Namefully.fromList([]), throwsInputException);
       expect(
-        () => ListStringValidator().validate(['jane']),
+        () => Namefully.fromList(['jane']),
         throwsInputException,
       );
       expect(
-        () => ListStringValidator().validate([
+        () => Namefully.fromList([
           'ms',
           'jane',
           'jane',
@@ -134,10 +121,10 @@ void main() {
 
     test('is thrown if a name list has an unsupported number of entries', () {
       var name = Name('jane-', Namon.firstName);
-      expect(() => ListNameValidator().validate([]), throwsInputException);
-      expect(() => ListNameValidator().validate([name]), throwsInputException);
+      expect(() => Namefully.of([]), throwsInputException);
+      expect(() => Namefully.of([name]), throwsInputException);
       expect(
-        () => ListNameValidator().validate([
+        () => Namefully.of([
           name,
           name,
           name,
@@ -147,21 +134,6 @@ void main() {
         ]),
         throwsInputException,
       );
-    });
-
-    test('is thrown if the wrong argument is provided for a first name', () {
-      expect(() => FirstNameValidator().validate(1), throwsInputException);
-      expect(() => FirstNameValidator().validate(true), throwsInputException);
-    });
-
-    test('is thrown if the wrong argument is provided for a middle name', () {
-      expect(() => MiddleNameValidator().validate(1), throwsInputException);
-      expect(() => MiddleNameValidator().validate(true), throwsInputException);
-    });
-
-    test('is thrown if the wrong argument is provided for a last name', () {
-      expect(() => LastNameValidator().validate(1), throwsInputException);
-      expect(() => LastNameValidator().validate(true), throwsInputException);
     });
   });
 }
