@@ -1,10 +1,11 @@
+import 'package:namefully/name_builder.dart';
 import 'package:namefully/namefully.dart';
 import 'package:test/test.dart';
 
 import 'test_utils.dart';
 
 void main() {
-  var config = Config.inline(bypass: false);
+  final Config config = Config.inline(name: 'error_handling', bypass: false);
 
   group('ValidationException', () {
     test('is thrown when a namon breaks the validation rules', () {
@@ -69,14 +70,6 @@ void main() {
         }, config: config),
         throwsValidationException,
       );
-      expect(
-        () => Namefully.fromJson({
-          'prefix': '',
-          'firstName': 'Jane',
-          'lastName': 'Smith',
-        }),
-        throwsValidationException,
-      );
     });
 
     test('is thrown if a string list breaks the validation rules', () {
@@ -90,8 +83,7 @@ void main() {
   group('InputException', () {
     test('is thrown if the json name keys are not as expected', () {
       expect(
-        () => Namefully.fromJson({'firstname': 'Jane', 'lastName': 'Doe'},
-            config: config),
+        () => Namefully.fromJson({'firstname': 'Jane', 'lastName': 'Doe'}),
         throwsInputException,
       );
       expect(
@@ -133,6 +125,39 @@ void main() {
           name,
         ]),
         throwsInputException,
+      );
+    });
+  });
+
+  group('NotAllowedException', () {
+    test('is thrown if wrong key params are given when formatting', () {
+      final name = Namefully('Jane Doe');
+      for (var k in ['[', '{', '^', '!', '@', '#', 'a', 'c', 'd']) {
+        expect(() => name.format(k), throwsNotAllowedException);
+      }
+    });
+
+    test('is thrown if a name builder tries to operate after being closed', () {
+      var builder = NameBuilder('Jane Doe')
+        ..byLastName() // orders the name by last name
+        ..upper() // makes the name uppercase
+        ..build(); // closes the name builder.
+
+      expect(builder.isClosed, equals(true));
+      expect(() => builder.lower(), throwsNotAllowedException);
+      expect(builder.name.toString(), equals('DOE JANE'));
+    });
+  });
+
+  group('UnknownException', () {
+    test('is thrown if a json name cannot be parsed from FullName', () {
+      expect(
+        () => FullName.fromJson({'firstname': 'Jane', 'lastname': 'Doe'}),
+        throwsUnknownException,
+      );
+      expect(
+        () => FullName.fromJson({}),
+        throwsUnknownException,
       );
     });
   });

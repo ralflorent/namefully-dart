@@ -10,4 +10,3 @@ export 'src/namefully.dart';
 export 'src/names.dart';
 export 'src/parsers.dart' show Parser;
 export 'src/utils.dart' show NameIndex, organizeNameIndex;
-export 'src/validators.dart' show Validators;

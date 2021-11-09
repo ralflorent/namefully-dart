@@ -1,8 +1,6 @@
 import 'package:namefully/namefully.dart';
 import 'package:test/test.dart';
 
-import 'test_utils.dart';
-
 void main() {
   void _runExpectations(FullName fullName) {
     expect(fullName.prefix, isA<Name>());
@@ -46,20 +44,6 @@ void main() {
         'suffix': 'Ph.D'
       });
       _runExpectations(fullName);
-    });
-
-    test('throws an exception when a json name cannot be parsed', () {
-      expect(
-        () {
-          fullName = FullName.fromJson({
-            'prefix': 'Mr',
-            'firstname': 'John',
-            'lastname': 'Smith',
-            'suffix': 'Ph.D'
-          });
-        },
-        throwsUnknownException,
-      );
     });
 
     test('creates a full name from raw string content', () {

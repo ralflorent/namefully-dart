@@ -8,13 +8,10 @@ final throwsNotAllowedException = throwsA(TypeMatcher<NotAllowedException>());
 final throwsUnknownException = throwsA(TypeMatcher<UnknownException>());
 
 class SimpleParser implements Parser<String> {
-  @override
-  Config? config;
+  const SimpleParser(this.raw);
 
   @override
-  String raw;
-
-  SimpleParser(this.raw);
+  final String raw;
 
   @override
   FullName parse({Config? options}) {

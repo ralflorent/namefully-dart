@@ -105,12 +105,6 @@ void main() {
         expect(name.format(r'f $m. l'), equals('John B. Smith'));
       });
 
-      test('throws error for wrong key params when formatting', () {
-        for (var k in ['[', '{', '^', '!', '@', '#', 'a', 'c', 'd']) {
-          expect(() => name.format(k), throwsNotAllowedException);
-        }
-      });
-
       test('.to() converts a birth name to a specific capitalization case', () {
         expect(name.to(Capitalization.lower), equals('john ben smith'));
         expect(name.to(Capitalization.upper), equals('JOHN BEN SMITH'));
@@ -445,7 +439,6 @@ void main() {
       expect(name.toList(), equals([null, 'Jane', '', 'Doe', null]));
 
       expect(builder.asString, equals('Jane Doe'));
-      expect(() => builder.lower(), throwsNotAllowedException);
     });
 
     test('and roll back on demand', () {

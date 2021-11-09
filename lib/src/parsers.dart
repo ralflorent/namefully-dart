@@ -100,7 +100,7 @@ class JsonNameParser implements Parser<Map<String, String>> {
     final config = Config.merge(options);
 
     // Try to validate first;
-    if (!config.bypass) NamaValidator().validate(_asNama());
+    NamaValidator().validate(_asNama());
 
     // Then create a [FullName] from json.
     return FullName.fromJson(raw, config: config);
