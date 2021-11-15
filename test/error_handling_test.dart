@@ -1,5 +1,6 @@
 import 'package:namefully/name_builder.dart';
 import 'package:namefully/namefully.dart';
+import 'package:namefully/src/validators.dart';
 import 'package:test/test.dart';
 
 import 'test_utils.dart';
@@ -38,6 +39,21 @@ void main() {
         () => Namefully('Jane M4ry Doe', config: config),
         throwsValidationException,
       );
+      expect(
+        () => Validators.middleName.validate([Name('ka7e', Namon.firstName)]),
+        throwsValidationException,
+      );
+      expect(
+        () => Validators.middleName.validate([Name('kate;', Namon.middleName)]),
+        throwsValidationException,
+      );
+      expect(
+        () => Validators.middleName.validate([
+          Name('Jack', Namon.middleName),
+          Name('kate;', Namon.middleName),
+        ]),
+        throwsValidationException,
+      );
     });
 
     test('is thrown if any part of a last name breaks the validation rules',
@@ -60,6 +76,10 @@ void main() {
             config: config),
         throwsValidationException,
       );
+      expect(() => Validators.prefix.validate(Name('mr.', Namon.prefix)),
+          throwsValidationException);
+      expect(() => Validators.suffix.validate(Name('PhD ', Namon.suffix)),
+          throwsValidationException);
     });
 
     test('is thrown if the json name values are incorrect', () {
@@ -68,6 +88,14 @@ void main() {
           'firstName': 'J4ne',
           'lastName': 'Doe',
         }, config: config),
+        throwsValidationException,
+      );
+      expect(
+        () => Validators.nama.validate({
+          Namon.prefix: '',
+          Namon.firstName: 'Jane',
+          Namon.lastName: 'Smith',
+        }),
         throwsValidationException,
       );
     });
@@ -91,6 +119,25 @@ void main() {
         throwsInputException,
       );
       expect(() => Namefully.fromJson({}), throwsInputException);
+
+      expect(
+        () => Validators.nama.validate({Namon.prefix: ''}),
+        throwsInputException,
+      );
+      expect(
+        () => Validators.nama.validate({
+          Namon.prefix: 'Mr',
+          Namon.firstName: 'John',
+        }),
+        throwsInputException,
+      );
+      expect(
+        () => Validators.nama.validate({
+          Namon.prefix: 'Mr',
+          Namon.lastName: 'Smith',
+        }),
+        throwsInputException,
+      );
     });
     test('is thrown if a string list has an unsupported number of entries', () {
       expect(() => Namefully.fromList([]), throwsInputException);
@@ -127,6 +174,21 @@ void main() {
         throwsInputException,
       );
     });
+
+    test('is thrown if the wrong argument is provided for a first name', () {
+      expect(() => Validators.firstName.validate(1), throwsInputException);
+      expect(() => Validators.firstName.validate(true), throwsInputException);
+    });
+
+    test('is thrown if the wrong argument is provided for a middle name', () {
+      expect(() => Validators.middleName.validate(1), throwsInputException);
+      expect(() => Validators.middleName.validate(true), throwsInputException);
+    });
+
+    test('is thrown if the wrong argument is provided for a last name', () {
+      expect(() => Validators.lastName.validate(1), throwsInputException);
+      expect(() => Validators.lastName.validate(true), throwsInputException);
+    });
   });
 
   group('NotAllowedException', () {
@@ -159,6 +221,70 @@ void main() {
         () => FullName.fromJson({}),
         throwsUnknownException,
       );
+    });
+  });
+
+  group('NameException', () {
+    const String name = 'Jane Doe', message = 'Wrong name';
+
+    test('can be created with a message only', () {
+      NameException exception = NameException.empty(message, name);
+
+      expect(exception, isA<Exception>());
+      expect(exception.message, equals(message));
+      expect(exception.source, equals(name));
+      expect(exception.sourceAsString, equals(name));
+      expect(exception.type, equals(NameExceptionType.unknown));
+      expect(exception.toString(), '_NameException ($name): $message');
+    });
+
+    test('can be created for wrong input', () {
+      NameException exception =
+          NameException.input(source: ['Jane', 'Doe'], message: message);
+
+      expect(exception, isA<Exception>());
+      expect(exception.message, equals(message));
+      expect(exception.source, equals(['Jane', 'Doe']));
+      expect(exception.sourceAsString, equals(name));
+      expect(exception.type, equals(NameExceptionType.input));
+      expect(exception.toString(), 'InputException ($name): $message');
+    });
+
+    test('can be created for validation purposes', () {
+      NameException exception = NameException.validation(
+          source: [FirstName('Jane'), LastName('Doe')],
+          nameType: 'firstName',
+          message: message);
+
+      expect(exception, isA<Exception>());
+      expect(exception.message, equals(message));
+      expect(exception.source, equals([FirstName('Jane'), LastName('Doe')]));
+      expect(exception.sourceAsString, equals(name));
+      expect(exception.type, equals(NameExceptionType.validation));
+      expect(exception.toString(),
+          "ValidationException (firstName='$name'): $message");
+    });
+
+    test('can be created for unsupported operations', () {
+      NameException exception = NameException.notAllowed(
+          source: name, operation: 'lower', message: message);
+
+      expect(exception, isA<Exception>());
+      expect(exception.message, equals(message));
+      expect(exception.source, equals(name));
+      expect(exception.sourceAsString, equals(name));
+      expect(exception.type, equals(NameExceptionType.notAllowed));
+      expect(exception.toString(),
+          'NotAllowedException ($name) - lower: $message');
+    });
+
+    test('can be created for unknown use cases', () {
+      final exception = UnknownException(source: name);
+
+      expect(exception, isA<NameException>());
+      expect(exception.stackTrace, isNull);
+      expect(exception.type, equals(NameExceptionType.unknown));
+      expect(exception.toString(), 'UnknownException ($name)');
     });
   });
 }

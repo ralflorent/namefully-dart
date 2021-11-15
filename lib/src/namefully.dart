@@ -466,12 +466,12 @@ class Namefully {
           name = hasMid ? [lasts, fn.toString(), mids] : [lasts, fn.toString()];
           break;
         case FlattenedBy.all:
-          name = hasMid ? [firsts, mids, lasts] : [firsts, lasts];
+          name = hasMid ? [lasts, firsts, mids] : [lasts, firsts];
           break;
       }
     }
 
-    final flat = by == FlattenedBy.all ? name.join() : name.join(' ');
+    final flat = name.join(' ');
     if (warning && flat.length > limit) {
       print('The flattened name <$flat> still surpasses the set limit $limit');
     }

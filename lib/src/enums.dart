@@ -165,10 +165,7 @@ class Namon {
 
 /// The token used to indicate how to split string values.
 class Separator {
-  const Separator._(this.index, this.name, this.token);
-
-  /// The integer-based indexing factor.
-  final int index;
+  const Separator._(this.name, this.token);
 
   /// The name of the separator.
   final String name;
@@ -176,52 +173,49 @@ class Separator {
   /// The character representative of the separator.
   final String token;
 
-  static const Separator comma = Separator._(0, 'comma', ',');
+  static const Separator comma = Separator._('comma', ',');
 
-  static const Separator colon = Separator._(1, 'colon', ':');
+  static const Separator colon = Separator._('colon', ':');
 
-  static const Separator empty = Separator._(2, 'empty', '');
+  static const Separator doubleQuote = Separator._('doubleQuote', '"');
 
-  static const Separator doubleQuote = Separator._(3, 'doubleQuote', '"');
+  static const Separator empty = Separator._('empty', '');
 
-  static const Separator hyphen = Separator._(4, 'hyphen', '-');
+  static const Separator hyphen = Separator._('hyphen', '-');
 
-  static const Separator period = Separator._(5, 'period', '.');
+  static const Separator period = Separator._('period', '.');
 
-  static const Separator semiColon = Separator._(6, 'semiColon', ';');
+  static const Separator semiColon = Separator._('semiColon', ';');
 
-  static const Separator singleQuote = Separator._(7, 'singleQuote', "'");
+  static const Separator singleQuote = Separator._('singleQuote', "'");
 
-  static const Separator space = Separator._(8, 'space', ' ');
+  static const Separator space = Separator._('space', ' ');
 
-  static const Separator underscore = Separator._(9, 'underscore', '_');
+  static const Separator underscore = Separator._('underscore', '_');
 
   /// All the available separators.
-  static const List<Separator> values = [
-    comma,
-    colon,
-    empty,
-    doubleQuote,
-    hyphen,
-    period,
-    semiColon,
-    singleQuote,
-    space,
-    underscore,
-  ];
+  static final Map<String, Separator> values = Map.unmodifiable({
+    comma.name: comma,
+    colon.name: colon,
+    doubleQuote.name: doubleQuote,
+    empty.name: empty,
+    hyphen.name: hyphen,
+    period.name: period,
+    semiColon.name: semiColon,
+    singleQuote.name: singleQuote,
+    space.name: space,
+    underscore.name: underscore,
+  });
 
   /// All the available tokens.
-  static final tokens = List<String>.unmodifiable(values.map((s) => s.token));
+  static final Set<String> tokens = values.values.map((s) => s.token).toSet();
 
   @override
   bool operator ==(Object? other) =>
-      other is Separator &&
-      other.index == index &&
-      other.name == name &&
-      other.token == token;
+      other is Separator && other.name == name && other.token == token;
 
   @override
-  int get hashCode => hashValues(hashValues(index, name), token);
+  int get hashCode => hashValues(name, token);
 
   @override
   String toString() => 'Separator.$name';

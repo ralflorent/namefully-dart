@@ -77,4 +77,18 @@ void main() {
       expect(toggleCase('toGGlE'), equals('TOggLe'));
     });
   });
+
+  group('Separator', () {
+    test('should have some explicit tokens', () {
+      const tokens = [',', ':', '"', '', '-', '.', ';', "'", ' ', '_'];
+      expect(Separator.tokens.length, equals(tokens.length));
+      expect(Separator.tokens.containsAll(tokens), equals(true));
+
+      expect(Separator.period.token, equals('.'));
+      expect(Separator.period.name, equals('period'));
+      expect(Separator.period.toString(), equals('Separator.period'));
+
+      expect(Separator.comma.hashCode != Separator.colon.hashCode, true);
+    });
+  });
 }

@@ -60,16 +60,13 @@ class NameBuilder {
   String get asString => _context.toString();
 
   /// Whether the builder can perform more nesting operations.
-  bool get isClosed => !_canBuild;
+  bool get isClosed => !isOpen;
 
   /// Whether the builder is still open for more nesting operations.
   bool get isOpen => _canBuild;
 
-  /// Creates the initial state of the given [name] under a specific [stateName]
-  /// if provided.
-  NameBuilder._(Namefully name, [String? stateName])
-      : _context = name,
-        _state = _NamefullyState(name, id: stateName) {
+  /// Creates the initial state of the given name.
+  NameBuilder._(this._context) : _state = _NamefullyState(_context) {
     _streamer.sink.add(_context);
   }
 
@@ -135,7 +132,10 @@ class NameBuilder {
   /// Flips definitely the name order from the current config.
   void flip() {
     if (!_canBuild) throw _builderException(asString, 'flip');
-    _context = Namefully(_state.last.full, config: _state.last.config)..flip();
+    _context = Namefully(
+      _state.last.full,
+      config: _state.last.config.copyWith(),
+    )..flip();
     _state.add(_context, id: 'flip');
     _streamer.sink.add(_context);
   }

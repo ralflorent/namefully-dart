@@ -76,6 +76,7 @@ void main() {
         expect(name.stats(what: NameType.firstName)?.count, equals(4));
         expect(name.stats(what: NameType.middleName)?.count, equals(3));
         expect(name.stats(what: NameType.lastName)?.count, equals(5));
+        expect(name.stats()?.count, equals(18));
       });
 
       test('.format() formats a full name as desired', () {
@@ -103,6 +104,7 @@ void main() {
         expect(name.format(r'f $l'), equals('John S'));
         expect(name.format(r'f $l.'), equals('John S.'));
         expect(name.format(r'f $m. l'), equals('John B. Smith'));
+        expect(name.format(r'$F.$M.$L'), equals('J.B.S'));
       });
 
       test('.to() converts a birth name to a specific capitalization case', () {
@@ -143,7 +145,9 @@ void main() {
 
       test('.flip() flips the name order from the current config', () {
         name.flip(); // was before ordered by firstName.
-        expect(name.birthName(), equals('Smith John Ben'));
+        expect(name.birth, equals('Smith John Ben'));
+        expect(name.first, equals('John'));
+        expect(name.last, equals('Smith'));
         name.flip(); // flip back to the firstName name order.
       });
     });
@@ -167,6 +171,11 @@ void main() {
         expect(name.middle, equals('Ben'));
         expect(name.last, 'Smith');
         expect(name.suffix, 'Ph.D');
+        expect(name.birth, 'John Ben Smith');
+        expect(name.short, 'John Smith');
+        expect(name.long, 'John Ben Smith');
+        expect(name.public, 'John S');
+        expect(name.full, 'Mr John Ben Smith Ph.D');
         expect(name.fullName(), 'Mr John Ben Smith Ph.D');
         expect(name.fullName(NameOrder.lastName), 'Mr Smith John Ben Ph.D');
         expect(name.birthName(), 'John Ben Smith');
@@ -184,6 +193,9 @@ void main() {
           name.initials(orderedBy: NameOrder.lastName, withMid: true),
           equals(['S', 'J', 'B']),
         );
+        expect(name.initials(only: NameType.firstName), equals(['J']));
+        expect(name.initials(only: NameType.middleName), equals(['B']));
+        expect(name.initials(only: NameType.lastName), equals(['S']));
       });
 
       test('.shorten() shortens a full name to a first and last name', () {
@@ -204,6 +216,22 @@ void main() {
           ),
           equals('John B Smith'),
         );
+        expect(
+          Namefully('John Smith').flatten(
+            limit: 10,
+            by: FlattenedBy.middleName,
+            withPeriod: false,
+          ),
+          equals('John Smith'),
+        );
+        expect(
+          Namefully('John Smith').flatten(
+            limit: 8,
+            by: FlattenedBy.firstMid,
+            withPeriod: true,
+          ),
+          equals('J. Smith'),
+        );
       });
 
       test('.zip() flattens a full name', () {
@@ -213,6 +241,7 @@ void main() {
         expect(name.zip(by: FlattenedBy.lastName), 'John Ben S.');
         expect(name.zip(by: FlattenedBy.firstMid), 'J. B. Smith');
         expect(name.zip(by: FlattenedBy.midLast), 'John B. S.');
+        expect(name.zip(by: FlattenedBy.all), 'J. B. S.');
       });
     });
 
@@ -252,6 +281,9 @@ void main() {
           name.initials(orderedBy: NameOrder.firstName, withMid: true),
           equals(['J', 'B', 'S']),
         );
+        expect(name.initials(only: NameType.firstName), equals(['J']));
+        expect(name.initials(only: NameType.middleName), equals(['B']));
+        expect(name.initials(only: NameType.lastName), equals(['S']));
       });
 
       test('.shorten() shortens a full name to a first and last name', () {
@@ -272,6 +304,22 @@ void main() {
           ),
           equals('Smith John B'),
         );
+        expect(
+          Namefully('Smith John', config: Config('byLastName')).flatten(
+            limit: 10,
+            by: FlattenedBy.middleName,
+            withPeriod: false,
+          ),
+          equals('Smith John'),
+        );
+        expect(
+          Namefully('Smith John', config: Config('byLastName')).flatten(
+            limit: 8,
+            by: FlattenedBy.firstMid,
+            withPeriod: true,
+          ),
+          equals('Smith J.'),
+        );
       });
 
       test('.zip() flattens a full name', () {
@@ -282,50 +330,63 @@ void main() {
         expect(name.zip(by: FlattenedBy.lastName), 'S. John Ben');
         expect(name.zip(by: FlattenedBy.firstMid), 'Smith J. B.');
         expect(name.zip(by: FlattenedBy.midLast), 'S. John B.');
+        expect(name.zip(by: FlattenedBy.all), 'S. J. B.');
       });
     });
 
     group('can be instantiated with', () {
       test('String', () {
-        expect(Namefully('John Smith').toString(), equals('John Smith'));
+        expect(Namefully('John Smith').full, equals('John Smith'));
+        expect(NameBuilder('John Smith').build().full, equals('John Smith'));
+        expect(
+            NameBuilder.only(firstName: 'John', lastName: 'Smith').build().full,
+            equals('John Smith'));
       });
 
       test('List<String>', () {
         expect(Namefully.fromList(['John', 'Smith']).toString(), 'John Smith');
+        expect(NameBuilder.fromList(['John', 'Smith']).build().full,
+            equals('John Smith'));
       });
 
       test('Map<String, String>', () {
         expect(
-          Namefully.fromJson({
-            'firstName': 'John',
-            'lastName': 'Smith',
-          }).toString(),
+          Namefully.fromJson({'firstName': 'John', 'lastName': 'Smith'}).full,
+          equals('John Smith'),
+        );
+        expect(
+          NameBuilder.fromJson({'firstName': 'John', 'lastName': 'Smith'})
+              .build()
+              .full,
           equals('John Smith'),
         );
       });
 
       test('List<Name>', () {
         expect(
-          Namefully.of([FirstName('John'), LastName('Smith')]).toString(),
+          Namefully.of([FirstName('John'), LastName('Smith')]).full,
           equals('John Smith'),
         );
         expect(
           Namefully.of([
             Name('John', Namon.firstName),
             Name('Smith', Namon.lastName),
-          ]).toString(),
+            Name('Ph.D', Namon.suffix),
+          ]).birth,
+          equals('John Smith'),
+        );
+        expect(
+          NameBuilder.of([FirstName('John'), LastName('Smith')]).build().full,
           equals('John Smith'),
         );
       });
 
       test('FullName', () {
-        expect(
-          Namefully.from(FullName()
-                ..rawFirstName('John')
-                ..rawLastName('Smith'))
-              .toString(),
-          equals('John Smith'),
-        );
+        var fullName = FullName()
+          ..rawFirstName('John')
+          ..rawLastName('Smith');
+        expect(Namefully.from(fullName).full, equals('John Smith'));
+        expect(NameBuilder.from(fullName).build().full, equals('John Smith'));
       });
 
       test('Parser<T> (Custom Parser)', () {
@@ -333,7 +394,14 @@ void main() {
           Namefully.fromParser(
             SimpleParser('John#Smith'), // simple parsing logic :P
             config: Config.inline(name: 'simpleParser'),
-          ).toString(),
+          ).full,
+          equals('John Smith'),
+        );
+        expect(
+          NameBuilder.fromParser(
+            SimpleParser('John#Smith'), // simple parsing logic :P
+            config: Config.inline(name: 'simpleParser'),
+          ).build().full,
           equals('John Smith'),
         );
       });
@@ -421,6 +489,14 @@ void main() {
           },
           throwsNameException,
         );
+        expect(
+          () => Namefully('Mr John Joe Sm1th', config: nameCase.config),
+          throwsNameException,
+        );
+        expect(
+          () => Namefully('Mr John Joe Smith Ph+', config: nameCase.config),
+          throwsNameException,
+        );
       });
     });
   });
@@ -439,20 +515,26 @@ void main() {
       expect(name.toList(), equals([null, 'Jane', '', 'Doe', null]));
 
       expect(builder.asString, equals('Jane Doe'));
+      expect(builder.toString(),
+          "NameBuilder's current context[closed]: Jane Doe");
     });
 
     test('and roll back on demand', () {
       var builder = NameBuilder('Jane Mari Doe', config: config)
-        ..shorten()
-        ..upper();
-      expect(builder.isClosed, equals(false));
-      expect(builder.asString, equals('JANE DOE'));
-      builder.rollback();
-      expect(builder.asString, equals('Jane Doe'));
-      builder.rollback();
+        ..lower() // 'jane mari doe'
+        ..flip() // 'doe mari jane'
+        ..shorten(); // 'doe jane'
+
+      expect(builder.asString, equals('doe jane'));
+
+      builder
+        ..rollback() // back to 'doe mari joe'
+        ..rollback() // back to 'jane mari doe'
+        ..rollback() // back to 'Jane Mari Doe'
+        ..rollback() // last rollback is a no-op
+        ..close();
+
       expect(builder.asString, equals('Jane Mari Doe'));
-      builder.close();
-      expect(builder.isClosed, equals(true));
     });
 
     test('and broadcasts its name states', () {
@@ -549,14 +631,13 @@ void main() {
     test('can create a copy from an existing configuration', () {
       var config = Config('config');
       var copyConfig = config.copyWith(
-        name: 'copyConfig',
         orderedBy: NameOrder.lastName,
         lastNameFormat: LastNameFormat.mother,
         bypass: false,
       );
 
       // Check the copied config is set as defined.
-      expect(copyConfig.name, equals('copyConfig'));
+      expect(copyConfig.name, equals('config_copy'));
       expect(copyConfig.orderedBy, equals(NameOrder.lastName));
       expect(copyConfig.separator, equals(Separator.space));
       expect(copyConfig.titling, equals(AbbrTitle.uk));
