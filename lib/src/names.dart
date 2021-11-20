@@ -67,8 +67,6 @@ class Name {
       namon = '${_initial.toUpperCase()}$_body';
     } else if (range == CapsRange.all) {
       namon = '${_initial.toUpperCase()}${_body.toUpperCase()}';
-    } else {
-      namon = _namon.toLowerCase();
     }
   }
 
@@ -79,8 +77,6 @@ class Name {
       namon = '${_initial.toLowerCase()}$_body';
     } else if (range == CapsRange.all) {
       namon = '${_initial.toLowerCase()}${_body.toLowerCase()}';
-    } else {
-      namon = _namon.toUpperCase();
     }
   }
 
@@ -262,8 +258,6 @@ class LastName extends Name {
         initials.add(namon[0]);
         if (hasMother()) initials.add(_mother![0]);
         break;
-      default:
-        initials.add(namon[0]);
     }
     return List.unmodifiable(initials);
   }

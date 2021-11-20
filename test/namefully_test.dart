@@ -631,6 +631,7 @@ void main() {
     test('can create a copy from an existing configuration', () {
       var config = Config('config');
       var copyConfig = config.copyWith(
+        name: 'config', // can be omitted.
         orderedBy: NameOrder.lastName,
         lastNameFormat: LastNameFormat.mother,
         bypass: false,

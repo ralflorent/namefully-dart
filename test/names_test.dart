@@ -15,6 +15,8 @@ void main() {
 
     test('creates a name marked with a specific type', () {
       expect(name.namon, 'John');
+      expect(name.length, equals(4));
+      expect(name.hashCode != name.namon.hashCode, isTrue);
       expect(name.toString(), 'John');
       expect(name.type, Namon.middleName);
     });
@@ -35,7 +37,7 @@ void main() {
 
     test('.stats() returns a summary of the name', () {
       var summary = name.stats();
-      expect(summary.count, equals(4));
+      expect(summary.count, equals(name.length));
       expect(summary.distribution, equals({'J': 1, 'O': 1, 'H': 1, 'N': 1}));
     });
 
@@ -73,6 +75,7 @@ void main() {
       expect(name.toString(), equals('John'));
       expect(name.more, equals([]));
       expect(name.type, equals(Namon.firstName));
+      expect(name.length, equals(4));
     });
 
     test('creates a first name with additional parts', () {
@@ -105,6 +108,7 @@ void main() {
       expect(firstName.stats().count, equals(4));
       expect(firstName.stats(includeAll: true).count, equals(11));
       expect(firstName.stats(includeAll: true).length, equals(13));
+      expect(firstName.length, equals(11));
     });
 
     test('.initials() returns only the initials of the specified parts', () {
@@ -212,6 +216,7 @@ void main() {
       expect(lastName.stats(format: LastNameFormat.mother).count, equals(3));
       expect(lastName.stats(format: LastNameFormat.all).count, equals(8));
       expect(lastName.stats(format: LastNameFormat.all).length, equals(9));
+      expect(lastName.length, equals(8));
     });
 
     test('.initials() returns only the initials of the specified parts', () {
