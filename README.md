@@ -13,10 +13,10 @@ Probably yes. If not, it will come at some point. Be patient.
 
 You may want to use this library if:
 
-* you've been repeatedly dealing with users' given names and surnames;
-* you need to occasionally format a name in a particular order, way, or shape;
-* you keep copy-pasting your name-related business logic for every project;
-* you're curious about trying new, cool stuff.
+- you've been repeatedly dealing with users' given names and surnames;
+- you need to occasionally format a name in a particular order, way, or shape;
+- you keep copy-pasting your name-related business logic for every project;
+- you're curious about trying new, cool stuff.
 
 ## Key features
 
@@ -27,7 +27,7 @@ You may want to use this library if:
 5. Access to names' initials
 6. Support hyphenated names (and other special characters)
 7. Offer predefined validation rules for many writing systems, including the
-Latin and European ones (e.g., German, Greek, Cyrillic, Icelandic characters)
+   Latin and European ones (e.g., German, Greek, Cyrillic, Icelandic characters)
 
 ## Advanced features
 
@@ -73,7 +73,7 @@ Below are enlisted the options supported by `namefully`.
 
 Indicates in what order the names appear when set as raw string values or
 string array values. That is, the first element/piece of the name is either the
-given name (e.g., `Jon Snow`)  or the surname (e.g.,`Snow Jon`).
+given name (e.g., `Jon Snow`) or the surname (e.g.,`Snow Jon`).
 
 ```dart
 // 'Smith' is the surname in this raw string case
@@ -81,14 +81,14 @@ var name1 = Namefully(
   'Smith John Joe',
   config: Config.inline(orderedBy: NameOrder.lastName),
 );
-print(name1.lastName()); // Smith
+print(name1.last); // Smith
 
 // 'Edison' is the surname in this string array case
 var name2 = Namefully.fromList(
   ['Edison', 'Thomas'],
   config: Config.inline(orderedBy: NameOrder.lastName),
 );
-print(name2.firstName()); // Thomas
+print(name2.first); // Thomas
 ```
 
 > NOTE: This option also affects all the other results of the API. In other
@@ -112,7 +112,7 @@ print(name.fullName(NameOrder.firstName)); // John Joe Smith
 
 `Separator` - default: `Separator.space`
 
-*Only valid for raw string values*, this option indicates how to split the parts
+_Only valid for raw string values_, this option indicates how to split the parts
 of a raw string name under the hood.
 
 ```dart
@@ -120,7 +120,7 @@ var name = Namefully(
   'John,Smith',
   config: Config.inline(separator: Separator.comma),
 );
-print(name.fullName()); // John Smith
+print(name.full); // John Smith
 ```
 
 ### titling
@@ -139,7 +139,7 @@ var name = Namefully.fromJson({
   'firstName': 'John',
   'lastName': 'Smith',
 }, config: Config.inline(titling: AbbrTitle.us));
-print(name.fullName()); // Mr. John Smith
+print(name.full); // Mr. John Smith
 print(name.prefix); // Mr.
 ```
 
@@ -159,7 +159,7 @@ var name = Namefully.fromJson(
   },
   config: Config.inline(ending: true),
 );
-print(name.fullName()); // John Smith, Ph.D
+print(name.full); // John Smith, Ph.D
 print(name.suffix); // Ph.D
 ```
 
@@ -175,7 +175,7 @@ var name = Namefully.of(
   [FirstName('John'), LastName('Doe', 'Smith')],
   config: Config.inline(lastNameFormat: LastNameFormat.hyphenated),
 );
-print(name.fullName()); // John Doe-Smith
+print(name.full); // John Doe-Smith
 ```
 
 ### bypass
@@ -189,11 +189,10 @@ var name = Namefully.fromJson(
   {
     'firstName': 'John',
     'lastName': 'Smith',
-    'suffix': 'M.Sc.', // will fail the validation rule.
+    'suffix': 'M.Sc.', // will fail the validation rule and throw an exception.
   },
   config: Config.inline(bypass: false, ending: true),
 );
-print(name.fullName()); // John Smith, M.Sc.
 ```
 
 To sum up, the default values are:
@@ -217,13 +216,10 @@ import 'package:namefully/namefully.dart';
 
 // Suppose you want to cover this '#' separator
 class SimpleParser implements Parser<String> {
-  @override
-  Config? config;
+  const SimpleParser(this.raw);
 
   @override
-  String raw;
-
-  SimpleParser(this.raw);
+  final String raw;
 
   @override
   FullName parse({Config? options}) {
@@ -247,11 +243,11 @@ print(name.fullName()); // Juan Garcia
 The name standards used for the current version of this library are as
 follows:
 
-```[prefix] firstName [middleName] lastName [suffix]```
+`[prefix] firstName [middleName] lastName [suffix]`
 
 The opening `[` and closing `]` brackets mean that these parts are optional. In
 other words, the most basic/typical case is a name that looks like this:
-`John Smith`, where `John` is the *firstName* and `Smith`, the *lastName*.
+`John Smith`, where `John` is the _firstName_ and `Smith`, the _lastName_.
 
 > NOTE: Do notice that the order of appearance matters and (as shown
 > [here](#orderedBy)) can be altered through configured parameters. By default,
@@ -265,51 +261,38 @@ Once imported, all that is required to do is to create an instance of
 
 Let us take a common example:
 
-```Mr John Joe Smith PhD```
+`Mr John Joe Smith PhD`
 
 So, this utility understands the name parts as follows:
 
-* prefix: `Mr`
-* first name: `John`
-* middle name: `Joe`
-* last name: `Smith`
-* suffix: `PhD`
-* full name: `Mr John Joe Smith PhD`
-* birth name: `John Joe Smith`
-* short version: `John Smith`
-* flattened: `John J. S.`
-* initials: `J J S`
+- prefix: `Mr`
+- first name: `John`
+- middle name: `Joe`
+- last name: `Smith`
+- suffix: `PhD`
+- full name: `Mr John Joe Smith PhD`
+- birth name: `John Joe Smith`
+- short version: `John Smith`
+- flattened: `John J. S.`
+- initials: `J J S`
 
 ### Limitations
 
 `namefully` does not have support for certain use cases:
 
-* mononame: `Plato`. A workaround to this is to set the mononame as both first
-and last name;
-* multiple prefixes: `Prof. Dr. Einstein`. An alternative would be to use the
-`bypass` option.
+- mononame: `Plato`. A workaround to this is to set the mononame as both first
+  and last name;
+- multiple prefixes: `Prof. Dr. Einstein`.
 
 See the [test cases](test) for further details or the
 [API Reference](https://pub.dev/documentation/namefully).
-
-## Related packages
-
-This package is also written in [TypeScript](https://www.typescriptlang.org/)
-and made available for:
-
-* [JavaScript](https://www.npmjs.com/package/namefully)
-* [React](https://www.npmjs.com/package/@namefully/react)
-* [Angular](https://www.npmjs.com/package/@namefully/ng)
-
-## Author
-
-Developed by [Ralph Florent](https://github.com/ralflorent).
 
 ## License
 
 The underlying content of this utility is licensed under [MIT](LICENSE).
 
 <!-- References -->
+
 [version-img]: https://img.shields.io/pub/v/namefully
 [version-url]: https://pub.dev/packages/namefully
 [ci-img]: https://github.com/ralflorent/namefully-dart/workflows/build/badge.svg
