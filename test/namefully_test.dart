@@ -108,14 +108,14 @@ void main() {
       });
 
       test('.to() converts a birth name to a specific capitalization case', () {
-        expect(name.to(Capitalization.lower), equals('john ben smith'));
-        expect(name.to(Capitalization.upper), equals('JOHN BEN SMITH'));
-        expect(name.to(Capitalization.camel), equals('johnBenSmith'));
-        expect(name.to(Capitalization.pascal), equals('JohnBenSmith'));
-        expect(name.to(Capitalization.snake), equals('john_ben_smith'));
-        expect(name.to(Capitalization.hyphen), equals('john-ben-smith'));
-        expect(name.to(Capitalization.dot), equals('john.ben.smith'));
-        expect(name.to(Capitalization.toggle), equals('jOHN bEN sMITH'));
+        expect(name.to(Case.lower), equals('john ben smith'));
+        expect(name.to(Case.upper), equals('JOHN BEN SMITH'));
+        expect(name.to(Case.camel), equals('johnBenSmith'));
+        expect(name.to(Case.pascal), equals('JohnBenSmith'));
+        expect(name.to(Case.snake), equals('john_ben_smith'));
+        expect(name.to(Case.hyphen), equals('john-ben-smith'));
+        expect(name.to(Case.dot), equals('john.ben.smith'));
+        expect(name.to(Case.toggle), equals('jOHN bEN sMITH'));
 
         // Alternatives are:
         expect(name.lower(), equals('john ben smith'));
@@ -205,13 +205,13 @@ void main() {
 
       test('.flatten() flattens a full name based on specs', () {
         expect(
-          name.flatten(limit: 10, by: FlattenedBy.middleName),
+          name.flatten(limit: 10, by: Flat.middleName),
           equals('John B. Smith'),
         );
         expect(
           name.flatten(
             limit: 10,
-            by: FlattenedBy.middleName,
+            by: Flat.middleName,
             withPeriod: false,
           ),
           equals('John B Smith'),
@@ -219,7 +219,7 @@ void main() {
         expect(
           Namefully('John Smith').flatten(
             limit: 10,
-            by: FlattenedBy.middleName,
+            by: Flat.middleName,
             withPeriod: false,
           ),
           equals('John Smith'),
@@ -227,7 +227,7 @@ void main() {
         expect(
           Namefully('John Smith').flatten(
             limit: 8,
-            by: FlattenedBy.firstMid,
+            by: Flat.firstMid,
             withPeriod: true,
           ),
           equals('J. Smith'),
@@ -236,12 +236,12 @@ void main() {
 
       test('.zip() flattens a full name', () {
         expect(name.zip(), 'John B. S.');
-        expect(name.zip(by: FlattenedBy.firstName), 'J. Ben Smith');
-        expect(name.zip(by: FlattenedBy.middleName), 'John B. Smith');
-        expect(name.zip(by: FlattenedBy.lastName), 'John Ben S.');
-        expect(name.zip(by: FlattenedBy.firstMid), 'J. B. Smith');
-        expect(name.zip(by: FlattenedBy.midLast), 'John B. S.');
-        expect(name.zip(by: FlattenedBy.all), 'J. B. S.');
+        expect(name.zip(by: Flat.firstName), 'J. Ben Smith');
+        expect(name.zip(by: Flat.middleName), 'John B. Smith');
+        expect(name.zip(by: Flat.lastName), 'John Ben S.');
+        expect(name.zip(by: Flat.firstMid), 'J. B. Smith');
+        expect(name.zip(by: Flat.midLast), 'John B. S.');
+        expect(name.zip(by: Flat.all), 'J. B. S.');
       });
     });
 
@@ -293,13 +293,13 @@ void main() {
 
       test('.flatten() flattens a full name based on specs', () {
         expect(
-          name.flatten(limit: 10, by: FlattenedBy.middleName),
+          name.flatten(limit: 10, by: Flat.middleName),
           equals('Smith John B.'),
         );
         expect(
           name.flatten(
             limit: 10,
-            by: FlattenedBy.middleName,
+            by: Flat.middleName,
             withPeriod: false,
           ),
           equals('Smith John B'),
@@ -307,7 +307,7 @@ void main() {
         expect(
           Namefully('Smith John', config: Config('byLastName')).flatten(
             limit: 10,
-            by: FlattenedBy.middleName,
+            by: Flat.middleName,
             withPeriod: false,
           ),
           equals('Smith John'),
@@ -315,7 +315,7 @@ void main() {
         expect(
           Namefully('Smith John', config: Config('byLastName')).flatten(
             limit: 8,
-            by: FlattenedBy.firstMid,
+            by: Flat.firstMid,
             withPeriod: true,
           ),
           equals('Smith J.'),
@@ -325,12 +325,12 @@ void main() {
       test('.zip() flattens a full name', () {
         expect(name.zip(), 'S. John B.');
         expect(name.zip(withPeriod: false), 'S John B');
-        expect(name.zip(by: FlattenedBy.firstName), 'Smith J. Ben');
-        expect(name.zip(by: FlattenedBy.middleName), 'Smith John B.');
-        expect(name.zip(by: FlattenedBy.lastName), 'S. John Ben');
-        expect(name.zip(by: FlattenedBy.firstMid), 'Smith J. B.');
-        expect(name.zip(by: FlattenedBy.midLast), 'S. John B.');
-        expect(name.zip(by: FlattenedBy.all), 'S. J. B.');
+        expect(name.zip(by: Flat.firstName), 'Smith J. Ben');
+        expect(name.zip(by: Flat.middleName), 'Smith John B.');
+        expect(name.zip(by: Flat.lastName), 'S. John Ben');
+        expect(name.zip(by: Flat.firstMid), 'Smith J. B.');
+        expect(name.zip(by: Flat.midLast), 'S. John B.');
+        expect(name.zip(by: Flat.all), 'S. J. B.');
       });
     });
 
@@ -447,7 +447,7 @@ void main() {
         );
         expect(name.toString(), 'Shakira Isabel Ripoll');
         expect(name.lastName(), equals('Ripoll'));
-        expect(name.lastName(LastNameFormat.all), 'Mebarak Ripoll');
+        expect(name.lastName(Surname.all), 'Mebarak Ripoll');
       });
 
       test('containing a US title', () {
@@ -559,45 +559,45 @@ void main() {
       expect(config.name, equals('default'));
       expect(config.orderedBy, equals(NameOrder.firstName));
       expect(config.separator, equals(Separator.space));
-      expect(config.titling, equals(AbbrTitle.uk));
+      expect(config.title, equals(Title.uk));
       expect(config.bypass, equals(true));
       expect(config.ending, equals(false));
-      expect(config.lastNameFormat, equals(LastNameFormat.father));
+      expect(config.surname, equals(Surname.father));
     });
 
     test('creates a configuration with inline options', () {
       var inlineConfig = Config.inline(
         orderedBy: NameOrder.lastName,
         separator: Separator.comma,
-        titling: AbbrTitle.us,
-        lastNameFormat: LastNameFormat.hyphenated,
+        title: Title.us,
+        surname: Surname.hyphenated,
         bypass: true,
       );
       expect(inlineConfig.name, equals('default'));
       expect(inlineConfig.orderedBy, equals(NameOrder.lastName));
       expect(inlineConfig.separator, equals(Separator.comma));
-      expect(inlineConfig.titling, equals(AbbrTitle.us));
+      expect(inlineConfig.title, equals(Title.us));
       expect(inlineConfig.bypass, equals(true));
       expect(inlineConfig.ending, equals(false));
-      expect(inlineConfig.lastNameFormat, equals(LastNameFormat.hyphenated));
+      expect(inlineConfig.surname, equals(Surname.hyphenated));
     });
 
     test('merges a configuration with another', () {
       var other = Config.inline(
         orderedBy: NameOrder.firstName,
         separator: Separator.colon,
-        titling: AbbrTitle.us,
-        lastNameFormat: LastNameFormat.hyphenated,
+        title: Title.us,
+        surname: Surname.hyphenated,
         ending: true,
       );
       var mergedConfig = Config.merge(other);
       expect(mergedConfig.name, equals('default'));
       expect(mergedConfig.orderedBy, equals(NameOrder.firstName));
       expect(mergedConfig.separator, equals(Separator.colon));
-      expect(mergedConfig.titling, equals(AbbrTitle.us));
+      expect(mergedConfig.title, equals(Title.us));
       expect(mergedConfig.bypass, equals(true));
       expect(mergedConfig.ending, equals(true));
-      expect(mergedConfig.lastNameFormat, equals(LastNameFormat.hyphenated));
+      expect(mergedConfig.surname, equals(Surname.hyphenated));
     });
 
     test('can create more than 1 configuration when necessary', () {
@@ -605,7 +605,7 @@ void main() {
       var otherConfig = Config.inline(
         name: 'otherConfig',
         orderedBy: NameOrder.lastName,
-        lastNameFormat: LastNameFormat.mother,
+        surname: Surname.mother,
         bypass: false,
       );
 
@@ -613,19 +613,19 @@ void main() {
       expect(otherConfig.name, equals('otherConfig'));
       expect(otherConfig.orderedBy, equals(NameOrder.lastName));
       expect(otherConfig.separator, equals(Separator.space));
-      expect(otherConfig.titling, equals(AbbrTitle.uk));
+      expect(otherConfig.title, equals(Title.uk));
       expect(otherConfig.bypass, equals(false));
       expect(otherConfig.ending, equals(false));
-      expect(otherConfig.lastNameFormat, equals(LastNameFormat.mother));
+      expect(otherConfig.surname, equals(Surname.mother));
 
       // Check the default config is not altered by the other config.
       expect(defaultConfig.name, equals('defaultConfig'));
       expect(defaultConfig.orderedBy, equals(NameOrder.firstName));
       expect(defaultConfig.separator, equals(Separator.space));
-      expect(defaultConfig.titling, equals(AbbrTitle.uk));
+      expect(defaultConfig.title, equals(Title.uk));
       expect(defaultConfig.bypass, equals(true));
       expect(defaultConfig.ending, equals(false));
-      expect(defaultConfig.lastNameFormat, equals(LastNameFormat.father));
+      expect(defaultConfig.surname, equals(Surname.father));
     });
 
     test('can create a copy from an existing configuration', () {
@@ -633,7 +633,7 @@ void main() {
       var copyConfig = config.copyWith(
         name: 'config', // can be omitted.
         orderedBy: NameOrder.lastName,
-        lastNameFormat: LastNameFormat.mother,
+        surname: Surname.mother,
         bypass: false,
       );
 
@@ -641,19 +641,19 @@ void main() {
       expect(copyConfig.name, equals('config_copy'));
       expect(copyConfig.orderedBy, equals(NameOrder.lastName));
       expect(copyConfig.separator, equals(Separator.space));
-      expect(copyConfig.titling, equals(AbbrTitle.uk));
+      expect(copyConfig.title, equals(Title.uk));
       expect(copyConfig.bypass, equals(false));
       expect(copyConfig.ending, equals(false));
-      expect(copyConfig.lastNameFormat, equals(LastNameFormat.mother));
+      expect(copyConfig.surname, equals(Surname.mother));
 
       // Check the config is not altered by the copy config.
       expect(config.name, equals('config'));
       expect(config.orderedBy, equals(NameOrder.firstName));
       expect(config.separator, equals(Separator.space));
-      expect(config.titling, equals(AbbrTitle.uk));
+      expect(config.title, equals(Title.uk));
       expect(config.bypass, equals(true));
       expect(config.ending, equals(false));
-      expect(config.lastNameFormat, equals(LastNameFormat.father));
+      expect(config.surname, equals(Surname.father));
     });
   });
 }

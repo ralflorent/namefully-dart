@@ -194,11 +194,11 @@ class LastName extends Name {
   ///
   /// Some people may keep their [mother]'s surname and want to keep a clear cut
   /// from their [father]'s surname. However, there are no clear rules about it.
-  LastName(String father, [this._mother, this.format = LastNameFormat.father])
+  LastName(String father, [this._mother, this.format = Surname.father])
       : super(father, Namon.lastName);
 
   /// The internal last name format.
-  final LastNameFormat format;
+  final Surname format;
 
   @override
   int get length => _namon.length + (_mother?.length ?? 0);
@@ -212,16 +212,16 @@ class LastName extends Name {
 
   /// Returns a string representation of the last name.
   @override
-  String toString({LastNameFormat? format}) {
+  String toString({Surname? format}) {
     format = format ?? this.format;
     switch (format) {
-      case LastNameFormat.father:
+      case Surname.father:
         return namon;
-      case LastNameFormat.mother:
+      case Surname.mother:
         return _mother ?? '';
-      case LastNameFormat.hyphenated:
+      case Surname.hyphenated:
         return hasMother() ? '$namon-$_mother' : namon;
-      case LastNameFormat.all:
+      case Surname.all:
         return hasMother() ? '$namon $_mother' : namon;
     }
   }
@@ -235,7 +235,7 @@ class LastName extends Name {
   /// and shape of the characters' distribution. See [Summary] for more details.
   @override
   Summary stats({
-    LastNameFormat? format,
+    Surname? format,
     List<String> restrictions = const [' '],
   }) {
     return Summary(toString(format: format), restrictions: restrictions);
@@ -243,18 +243,18 @@ class LastName extends Name {
 
   /// Gets the initials of the last name.
   @override
-  List<String> initials({LastNameFormat? format}) {
+  List<String> initials({Surname? format}) {
     format ??= this.format;
     var initials = <String>[];
     switch (format) {
-      case LastNameFormat.father:
+      case Surname.father:
         initials.add(namon[0]);
         break;
-      case LastNameFormat.mother:
+      case Surname.mother:
         if (hasMother()) initials.add(_mother![0]);
         break;
-      case LastNameFormat.hyphenated:
-      case LastNameFormat.all:
+      case Surname.hyphenated:
+      case Surname.all:
         initials.add(namon[0]);
         if (hasMother()) initials.add(_mother![0]);
         break;
@@ -297,7 +297,7 @@ class LastName extends Name {
 
   /// Creates a password-like representation of the last name.
   @override
-  String passwd({LastNameFormat? format}) {
+  String passwd({Surname? format}) {
     return generatePassword(toString(format: format));
   }
 }

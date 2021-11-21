@@ -2,7 +2,7 @@ import 'utils.dart';
 
 /// The abbreviation type to indicate whether or not to add period to a prefix
 /// using the American or British way.
-enum AbbrTitle {
+enum Title {
   /// A period after the prefix.
   us,
 
@@ -15,7 +15,7 @@ enum AbbrTitle {
 /// This enum can be set via [Config] or when creating a [LastName]. As this can
 /// become ambiguous at the time of handling it, the value set in [Config] is
 /// prioritized and viewed as the source of truth for future considerations.
-enum LastNameFormat {
+enum Surname {
   /// The fatherly surname only.
   father,
 
@@ -41,8 +41,8 @@ enum NameOrder {
 /// The types of name handled in this according the name standards.
 enum NameType { firstName, middleName, lastName, birthName }
 
-/// The distinct variants to indicate how to flatten a [FullName].
-enum FlattenedBy {
+/// The possible variants to indicate how to flatten a [FullName].
+enum Flat {
   /// Use the first name's initial combined the remaining parts.
   firstName,
 
@@ -75,7 +75,7 @@ enum CapsRange {
 }
 
 /// The types of capitalization cases supported in this utility.
-enum Capitalization {
+enum Case {
   /// A camelCase transformation.
   camel,
 

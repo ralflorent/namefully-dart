@@ -23,7 +23,7 @@ const String _kCopyAlias = '_copy';
 ///
 /// ```dart
 /// var defaultConfig = Config();
-/// var otherConfig = Config.inline(name: 'other', titling: AbbrTitle.us);
+/// var otherConfig = Config.inline(name: 'other', title: Title.us);
 /// var mergedConfig = Config.merge(otherConfig);
 /// var copyConfig = mergedConfig.copyWith(ending: true);
 /// ```
@@ -39,7 +39,7 @@ abstract class Config {
 
   /// The abbreviation type to indicate whether or not to add period to a prefix
   /// using the American or British way.
-  AbbrTitle get titling;
+  Title get title;
 
   /// The option indicating if an ending suffix is used in a formal way.
   bool get ending;
@@ -59,7 +59,7 @@ abstract class Config {
   /// Note that this option can be set when creating a [LastName]. As this can
   /// become ambiguous at the time of handling it, the value set in this is
   /// prioritized and viewed as the source of truth for future considerations.
-  LastNameFormat get lastNameFormat;
+  Surname get surname;
 
   /// The name of the cached configuration.
   String get name;
@@ -82,10 +82,10 @@ abstract class Config {
     String name,
     NameOrder? orderedBy,
     Separator? separator,
-    AbbrTitle? titling,
+    Title? title,
     bool? ending,
     bool? bypass,
-    LastNameFormat? lastNameFormat,
+    Surname? surname,
   }) = _Config.inline;
 
   /// Returns a copy of this configuration merged with the provided values.
@@ -99,10 +99,10 @@ abstract class Config {
     String? name,
     NameOrder? orderedBy,
     Separator? separator,
-    AbbrTitle? titling,
+    Title? title,
     bool? ending,
     bool? bypass,
-    LastNameFormat? lastNameFormat,
+    Surname? surname,
   });
 
   /// Alters the [nameOrder] between the first and last name, and rearrange the
@@ -124,7 +124,7 @@ class _Config implements Config {
   Separator separator;
 
   @override
-  AbbrTitle titling;
+  Title title;
 
   @override
   bool ending;
@@ -133,7 +133,7 @@ class _Config implements Config {
   bool bypass;
 
   @override
-  LastNameFormat lastNameFormat;
+  Surname surname;
 
   @override
   final String name;
@@ -144,10 +144,10 @@ class _Config implements Config {
   _Config._default(this.name)
       : orderedBy = NameOrder.firstName,
         separator = Separator.space,
-        titling = AbbrTitle.uk,
+        title = Title.uk,
         ending = false,
         bypass = true,
-        lastNameFormat = LastNameFormat.father;
+        surname = Surname.father;
 
   factory _Config([String name = _kDefaultName]) {
     if (_cache.containsKey(name)) {
@@ -162,18 +162,18 @@ class _Config implements Config {
     String name = _kDefaultName,
     NameOrder? orderedBy,
     Separator? separator,
-    AbbrTitle? titling,
+    Title? title,
     bool? ending,
     bool? bypass,
-    LastNameFormat? lastNameFormat,
+    Surname? surname,
   }) {
     return _Config(name)
       ..orderedBy = orderedBy ?? NameOrder.firstName
       ..separator = separator ?? Separator.space
-      ..titling = titling ?? AbbrTitle.uk
+      ..title = title ?? Title.uk
       ..ending = ending ?? false
       ..bypass = bypass ?? true
-      ..lastNameFormat = lastNameFormat ?? LastNameFormat.father;
+      ..surname = surname ?? Surname.father;
   }
 
   factory _Config.merge(Config? other) {
@@ -183,10 +183,10 @@ class _Config implements Config {
             name: other.name,
             orderedBy: other.orderedBy,
             separator: other.separator,
-            titling: other.titling,
+            title: other.title,
             ending: other.ending,
             bypass: other.bypass,
-            lastNameFormat: other.lastNameFormat,
+            surname: other.surname,
           );
   }
 
@@ -195,18 +195,18 @@ class _Config implements Config {
     String? name,
     NameOrder? orderedBy,
     Separator? separator,
-    AbbrTitle? titling,
+    Title? title,
     bool? ending,
     bool? bypass,
-    LastNameFormat? lastNameFormat,
+    Surname? surname,
   }) {
     return _Config(getNewName(name ?? this.name + _kCopyAlias))
       ..orderedBy = orderedBy ?? this.orderedBy
       ..separator = separator ?? this.separator
-      ..titling = titling ?? this.titling
+      ..title = title ?? this.title
       ..ending = ending ?? this.ending
       ..bypass = bypass ?? this.bypass
-      ..lastNameFormat = lastNameFormat ?? this.lastNameFormat;
+      ..surname = surname ?? this.surname;
   }
 
   @override

@@ -22,19 +22,19 @@ void main() {
   // Gets all the initials.
   print(name.initials(withMid: true)); // ['J', 'S', 'S']
 
-  // Formats as desired.
+  // Formats it as desired.
   print(name.format('L, f m')); // SNOW, Jon Stark
   print(name.format(r'f $l.')); // Jon S.
 
-  // Make it short.
+  // Makes it short.
   print(name.shorten()); // Jon Snow
 
-  // Make it flat.
+  // Makes it flat.
   print(name.zip()); // Jon S. S.
 
-  // Make it uppercase.
+  // Makes it uppercase.
   print(name.upper()); // JON STARK SNOW
 
-  // Transforms it to dot.case.
+  // Transforms it into dot.case.
   print(name.dot()); // jon.stark.snow
 }

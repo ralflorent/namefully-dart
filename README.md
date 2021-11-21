@@ -123,9 +123,9 @@ var name = Namefully(
 print(name.full); // John Smith
 ```
 
-### titling
+### title
 
-`AbbrTitle` - default: `AbbrTitle.uk`
+`Title` - default: `Title.uk`
 
 Abides by the ways the international community defines an abbreviated title.
 American and Canadian English follow slightly different rules for abbreviated
@@ -138,7 +138,7 @@ var name = Namefully.fromJson({
   'prefix': 'Mr',
   'firstName': 'John',
   'lastName': 'Smith',
-}, config: Config.inline(titling: AbbrTitle.us));
+}, config: Config.inline(title: Title.us));
 print(name.full); // Mr. John Smith
 print(name.prefix); // Mr.
 ```
@@ -163,9 +163,9 @@ print(name.full); // John Smith, Ph.D
 print(name.suffix); // Ph.D
 ```
 
-### lastNameFormat
+### surname
 
-`LastNameFormat` - default: `LastNameFormat.father`
+`Surname` - default: `Surname.father`
 
 Defines the distinct formats to output a compound surname (e.g., Hispanic
 surnames).
@@ -173,7 +173,7 @@ surnames).
 ```dart
 var name = Namefully.of(
   [FirstName('John'), LastName('Doe', 'Smith')],
-  config: Config.inline(lastNameFormat: LastNameFormat.hyphenated),
+  config: Config.inline(surname: Surname.hyphenated),
 );
 print(name.full); // John Doe-Smith
 ```
@@ -201,10 +201,10 @@ To sum up, the default values are:
 Config._default(this.name)
     : orderedBy = NameOrder.firstName,
       separator = Separator.space,
-      titling = AbbrTitle.uk,
+      title = Title.uk,
       ending = false,
       bypass = true,
-      lastNameFormat = LastNameFormat.father;
+      surname = Surname.father;
 ```
 
 ## Do It Yourself

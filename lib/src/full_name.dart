@@ -73,7 +73,7 @@ class FullName {
     if (name == null) return;
     if (!_config.bypass) Validators.prefix.validate(name);
     _prefix = Name(
-      _config.titling == AbbrTitle.us ? (name.namon + '.') : name.namon,
+      _config.title == Title.us ? (name.namon + '.') : name.namon,
       Namon.prefix,
     );
   }
@@ -131,8 +131,8 @@ class FullName {
   }
 
   /// Sets a [lastName] using string values.
-  void rawLastName(String father, {String? mother, LastNameFormat? format}) {
-    lastName = LastName(father, mother, format ?? LastNameFormat.father);
+  void rawLastName(String father, {String? mother, Surname? format}) {
+    lastName = LastName(father, mother, format ?? Surname.father);
   }
 
   /// Sets a [suffix] using string values.

@@ -227,7 +227,7 @@ class Namefully {
   ///
   /// The last name [format] overrides the how-to formatting of a surname
   /// output, considering its sub-parts.
-  String lastName([LastNameFormat? format]) {
+  String lastName([Surname? format]) {
     return _fullName.lastName.toString(format: format);
   }
 
@@ -336,7 +336,7 @@ class Namefully {
         return Summary(middleName().join(' '));
       case NameType.lastName:
         return _fullName.lastName
-            .stats(format: _config.lastNameFormat, restrictions: restrictions);
+            .stats(format: _config.surname, restrictions: restrictions);
       case NameType.birthName:
         return _summary;
       default:
@@ -355,10 +355,10 @@ class Namefully {
   ///
   /// As a shortened name, the namon of the first name is favored over the other
   /// names forming part of the entire first names, if any. Meanwhile, for
-  /// the last name, the configured `lastNameFormat` is prioritized.
+  /// the last name, the configured `surname` is prioritized.
   ///
   /// For a given `FirstName FatherName MotherName`, shortening this name when
-  /// the lastNameFormat is set as `mother` is equivalent to making it:
+  /// the surname is set as `mother` is equivalent to making it:
   /// `FirstName MotherName`.
   String shorten({NameOrder? orderedBy}) {
     orderedBy ??= _config.orderedBy;
@@ -370,9 +370,9 @@ class Namefully {
   /// Flattens a long name using the name types as variants.
   ///
   /// While [limit] sets a threshold as a limited number of characters
-  /// supported to flatten a [FullName], [FlattenedBy] indicates which variant
+  /// supported to flatten a [FullName], [Flat] indicates which variant
   /// to use when doing so. By default, a full name gets flattened by
-  /// [FlattenedBy.middleName].
+  /// [Flat.middleName].
   ///
   /// if the set limit is violated, a [warning] is given to the user about it.
   ///
@@ -382,17 +382,17 @@ class Namefully {
   ///
   /// Flattening a long name refers to reducing the name to the following forms.
   /// For example, `John Winston Ono Lennon` flattened by:
-  /// * [FlattenedBy.firstName]: => 'J. Winston Ono Lennon'
-  /// * [FlattenedBy.middleName]: => 'John W. O. Lennon'
-  /// * [FlattenedBy.lastName]: => 'John Winston Ono L.'
-  /// * [FlattenedBy.firstMid]: => 'J. W. O. Lennon'
-  /// * [FlattenedBy.midLast]: => 'John W. O. L.'
-  /// * [FlattenedBy.all]: => 'J. W. O. L.'
+  /// * [Flat.firstName]: => 'J. Winston Ono Lennon'
+  /// * [Flat.middleName]: => 'John W. O. Lennon'
+  /// * [Flat.lastName]: => 'John Winston Ono L.'
+  /// * [Flat.firstMid]: => 'J. W. O. Lennon'
+  /// * [Flat.midLast]: => 'John W. O. L.'
+  /// * [Flat.all]: => 'J. W. O. L.'
   ///
   /// A shorter version of this method is [zip()].
   String flatten({
     int limit = 20,
-    FlattenedBy by = FlattenedBy.middleName,
+    Flat by = Flat.middleName,
     bool withPeriod = true,
     bool warning = true,
   }) {
@@ -413,18 +413,18 @@ class Namefully {
 
     if (_config.orderedBy == NameOrder.firstName) {
       switch (by) {
-        case FlattenedBy.firstName:
+        case Flat.firstName:
           name = hasMid ? [firsts, mn, ln.toString()] : [firsts, ln.toString()];
           break;
-        case FlattenedBy.lastName:
+        case Flat.lastName:
           name = hasMid ? [fn.toString(), mn, lasts] : [fn.toString(), lasts];
           break;
-        case FlattenedBy.middleName:
+        case Flat.middleName:
           name = hasMid
               ? [fn.toString(), mids, ln.toString()]
               : [fn.toString(), ln.toString()];
           break;
-        case FlattenedBy.firstMid:
+        case Flat.firstMid:
           name = hasMid
               ? [
                   firsts,
@@ -433,27 +433,27 @@ class Namefully {
                 ]
               : [firsts, ln.toString()];
           break;
-        case FlattenedBy.midLast:
+        case Flat.midLast:
           name = hasMid ? [fn.toString(), mids, lasts] : [fn.toString(), lasts];
           break;
-        case FlattenedBy.all:
+        case Flat.all:
           name = hasMid ? [firsts, mids, lasts] : [firsts, lasts];
           break;
       }
     } else {
       switch (by) {
-        case FlattenedBy.firstName:
+        case Flat.firstName:
           name = hasMid ? [ln.toString(), firsts, mn] : [ln.toString(), firsts];
           break;
-        case FlattenedBy.lastName:
+        case Flat.lastName:
           name = hasMid ? [lasts, fn.toString(), mn] : [lasts, fn.toString()];
           break;
-        case FlattenedBy.middleName:
+        case Flat.middleName:
           name = hasMid
               ? [ln.toString(), fn.toString(), mids]
               : [ln.toString(), fn.toString()];
           break;
-        case FlattenedBy.firstMid:
+        case Flat.firstMid:
           name = hasMid
               ? [
                   ln.toString(),
@@ -462,10 +462,10 @@ class Namefully {
                 ]
               : [ln.toString(), firsts];
           break;
-        case FlattenedBy.midLast:
+        case Flat.midLast:
           name = hasMid ? [lasts, fn.toString(), mids] : [lasts, fn.toString()];
           break;
-        case FlattenedBy.all:
+        case Flat.all:
           name = hasMid ? [lasts, firsts, mids] : [lasts, firsts];
           break;
       }
@@ -481,7 +481,7 @@ class Namefully {
   /// Zips or compacts a name using different forms of variants.
   ///
   /// See [flatten()] for more details.
-  String zip({FlattenedBy by = FlattenedBy.midLast, bool withPeriod = true}) {
+  String zip({Flat by = Flat.midLast, bool withPeriod = true}) {
     return flatten(limit: 0, by: by, warning: false, withPeriod: withPeriod);
   }
 
@@ -551,49 +551,49 @@ class Namefully {
     return formatted.join().trim();
   }
 
-  /// Transforms a [birthName] to UPPERCASE.
+  /// Transforms a [birthName] into UPPERCASE.
   String upper() => birthName().toUpperCase();
 
-  /// Transforms a [birthName] to lowercase.
+  /// Transforms a [birthName] into lowercase.
   String lower() => birthName().toLowerCase();
 
-  /// Transforms a [birthName] to camelCase.
+  /// Transforms a [birthName] into camelCase.
   String camel() => decapitalize(pascal());
 
-  /// Transforms a [birthName] to PascalCase.
+  /// Transforms a [birthName] into PascalCase.
   String pascal() => split().map((n) => capitalize(n)).join();
 
-  /// Transforms a [birthName] to snake_case.
+  /// Transforms a [birthName] into snake_case.
   String snake() => split().map((n) => n.toLowerCase()).join('_');
 
-  /// Transforms a [birthName] to hyphen-case (or kebab-case).
+  /// Transforms a [birthName] into hyphen-case (or kebab-case).
   String hyphen() => split().map((n) => n.toLowerCase()).join('-');
 
-  /// Transforms a [birthName] to dot.case.
+  /// Transforms a [birthName] into dot.case.
   String dot() => split().map((n) => n.toLowerCase()).join('.');
 
-  /// Transforms a [birthName] to ToGgLe CaSe.
+  /// Transforms a [birthName] into ToGgLe CaSe.
   String toggle() => toggleCase(birthName());
 
-  /// Transforms a [birthName] to a specific title [capitalization].
-  String to(Capitalization capitalization) {
-    switch (capitalization) {
-      case Capitalization.camel:
+  /// Transforms a [birthName] into a specific title [capitalization].
+  String to(Case c) {
+    switch (c) {
+      case Case.camel:
         return camel();
-      case Capitalization.dot:
+      case Case.dot:
         return dot();
-      case Capitalization.hyphen:
-      case Capitalization.kebab:
+      case Case.hyphen:
+      case Case.kebab:
         return hyphen();
-      case Capitalization.lower:
+      case Case.lower:
         return lower();
-      case Capitalization.pascal:
+      case Case.pascal:
         return pascal();
-      case Capitalization.snake:
+      case Case.snake:
         return snake();
-      case Capitalization.toggle:
+      case Case.toggle:
         return toggle();
-      case Capitalization.upper:
+      case Case.upper:
         return upper();
     }
   }
@@ -657,13 +657,13 @@ class Namefully {
       case 'B':
         return birthName().toUpperCase();
       case 'f':
-        return _fullName.firstName.toString();
+        return first;
       case 'F':
-        return _fullName.firstName.toString().toUpperCase();
+        return first.toUpperCase();
       case 'l':
-        return _fullName.lastName.toString();
+        return last;
       case 'L':
-        return _fullName.lastName.toString().toUpperCase();
+        return last.toUpperCase();
       case 'm':
       case 'M':
         if (!hasMiddleName()) {
@@ -671,35 +671,29 @@ class Namefully {
           return null;
         }
         return char == 'm'
-            ? _fullName.middleName.map((n) => n.namon).join(' ')
-            : _fullName.middleName.map((n) => n.namon.toUpperCase()).join(' ');
+            ? middleName().join(' ')
+            : middleName().join(' ').toUpperCase();
       case 'o':
       case 'O':
         final sxSep = _config.ending ? ',' : '';
-        final nama = <String>[];
+        final nama = <String>[
+          if (_fullName.prefix != null) prefix!,
+          '$last,'.toUpperCase(),
+          if (hasMiddleName()) first,
+          if (hasMiddleName()) middleName().join(' ') + sxSep,
+          if (!hasMiddleName()) first + sxSep,
+          if (_fullName.suffix != null) suffix!
+        ].join(' ').trim();
 
-        if (_fullName.prefix != null) {
-          nama.add(_fullName.prefix.toString());
-        }
-        nama.add('${_fullName.lastName.toString()},'.toUpperCase());
-        if (hasMiddleName()) {
-          nama.add(_fullName.firstName.toString());
-          nama.add(_fullName.middleName.map((n) => n.namon).join(' ') + sxSep);
-        } else {
-          nama.add(_fullName.firstName.toString() + sxSep);
-        }
-        if (_fullName.suffix != null) nama.add(_fullName.suffix.toString());
-
-        var official = nama.join(' ').trim();
-        return char == 'o' ? official : official.toUpperCase();
+        return char == 'o' ? nama : nama.toUpperCase();
       case 'p':
-        return _fullName.prefix?.toString();
+        return prefix;
       case 'P':
-        return _fullName.prefix?.toString().toUpperCase();
+        return prefix?.toUpperCase();
       case 's':
-        return _fullName.suffix?.toString();
+        return suffix;
       case 'S':
-        return _fullName.suffix?.toString().toUpperCase();
+        return suffix?.toUpperCase();
       case r'$f':
       case r'$F':
         return _fullName.firstName.initials().first;

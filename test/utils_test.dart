@@ -5,24 +5,24 @@ import 'package:test/test.dart';
 void main() {
   group('Utils', () {
     test(
-        '.organizeNameIndex() provides how to organize the name indexes from '
-        'a name list when ordered by first name', () {
-      var indexes = organizeNameIndex(NameOrder.firstName, 2);
+        '.getNameIndex() provides the name indexes from a list of names when'
+        ' ordered by first name', () {
+      var indexes = NameIndex.getNameIndex(NameOrder.firstName, 2);
       expect(indexes.firstName, equals(0));
       expect(indexes.lastName, equals(1));
 
-      indexes = organizeNameIndex(NameOrder.firstName, 3);
+      indexes = NameIndex.getNameIndex(NameOrder.firstName, 3);
       expect(indexes.firstName, equals(0));
       expect(indexes.middleName, equals(1));
       expect(indexes.lastName, equals(2));
 
-      indexes = organizeNameIndex(NameOrder.firstName, 4);
+      indexes = NameIndex.getNameIndex(NameOrder.firstName, 4);
       expect(indexes.prefix, equals(0));
       expect(indexes.firstName, equals(1));
       expect(indexes.middleName, equals(2));
       expect(indexes.lastName, equals(3));
 
-      indexes = organizeNameIndex(NameOrder.firstName, 5);
+      indexes = NameIndex.getNameIndex(NameOrder.firstName, 5);
       expect(indexes.prefix, equals(0));
       expect(indexes.firstName, equals(1));
       expect(indexes.middleName, equals(2));
@@ -31,24 +31,24 @@ void main() {
     });
 
     test(
-        '.organizeNameIndex() provides how to organize the name indexes from '
-        'a name list when ordered by last name', () {
-      var indexes = organizeNameIndex(NameOrder.lastName, 2);
+        '.getNameIndex() provides the name indexes from a list of names when'
+        ' ordered by last name', () {
+      var indexes = NameIndex.getNameIndex(NameOrder.lastName, 2);
       expect(indexes.lastName, equals(0));
       expect(indexes.firstName, equals(1));
 
-      indexes = organizeNameIndex(NameOrder.lastName, 3);
+      indexes = NameIndex.getNameIndex(NameOrder.lastName, 3);
       expect(indexes.lastName, equals(0));
       expect(indexes.firstName, equals(1));
       expect(indexes.middleName, equals(2));
 
-      indexes = organizeNameIndex(NameOrder.lastName, 4);
+      indexes = NameIndex.getNameIndex(NameOrder.lastName, 4);
       expect(indexes.prefix, equals(0));
       expect(indexes.lastName, equals(1));
       expect(indexes.firstName, equals(2));
       expect(indexes.middleName, equals(3));
 
-      indexes = organizeNameIndex(NameOrder.lastName, 5);
+      indexes = NameIndex.getNameIndex(NameOrder.lastName, 5);
       expect(indexes.prefix, equals(0));
       expect(indexes.lastName, equals(1));
       expect(indexes.firstName, equals(2));

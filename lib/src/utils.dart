@@ -33,44 +33,60 @@ class NameIndex {
     this.lastName,
     this.suffix,
   );
-}
 
-/// Reorganizes the existing global indexes for list of name parts:
-/// [orderedBy] first or last name, of [argLength] of the provided array.
-NameIndex organizeNameIndex(NameOrder orderedBy, int argLength) {
-  NameIndex out = const NameIndex(0, 1, 2, 3, 4);
-  if (orderedBy == NameOrder.firstName) {
-    switch (argLength) {
-      case 2: // first name + last name
-        out = const NameIndex(-1, 0, -1, 1, -1);
-        break;
-      case 3: // first name + middle name + last name
-        out = const NameIndex(-1, 0, 1, 2, -1);
-        break;
-      case 4: // prefix + first name + middle name + last name
-        out = const NameIndex(0, 1, 2, 3, -1);
-        break;
-      case 5: // prefix + first name + middle name + last name + suffix
-        out = const NameIndex(0, 1, 2, 3, 4);
-        break;
+  /// Disable the constructor to prevent instantiation.
+  const NameIndex._(
+    this.prefix,
+    this.firstName,
+    this.middleName,
+    this.lastName,
+    this.suffix,
+  );
+
+  /// The minimum number of parts in a list of names.
+  static const int min = kMinNumberOfNameParts;
+
+  /// The maximum number of parts in a list of names.
+  static const int max = kMaxNumberOfNameParts;
+
+  /// Gets the name index for a list of names based on the [count] of elements
+  /// and their [order] of appearance.
+  static NameIndex getNameIndex(NameOrder order, [int count = 2]) {
+    assert(count >= min && count <= max, 'Count of names is out of range.');
+    NameIndex out = const NameIndex._(0, 1, 2, 3, 4);
+    if (order == NameOrder.firstName) {
+      switch (count) {
+        case 2: // first name + last name
+          out = const NameIndex._(-1, 0, -1, 1, -1);
+          break;
+        case 3: // first name + middle name + last name
+          out = const NameIndex._(-1, 0, 1, 2, -1);
+          break;
+        case 4: // prefix + first name + middle name + last name
+          out = const NameIndex._(0, 1, 2, 3, -1);
+          break;
+        case 5: // prefix + first name + middle name + last name + suffix
+          out = const NameIndex._(0, 1, 2, 3, 4);
+          break;
+      }
+    } else {
+      switch (count) {
+        case 2: // last name + first name
+          out = const NameIndex._(-1, 1, -1, 0, -1);
+          break;
+        case 3: // last name + first name + middle name
+          out = const NameIndex._(-1, 1, 2, 0, -1);
+          break;
+        case 4: // prefix + last name + first name + middle name
+          out = const NameIndex._(0, 2, 3, 1, -1);
+          break;
+        case 5: // prefix + last name + first name + middle name + suffix
+          out = const NameIndex._(0, 2, 3, 1, 4);
+          break;
+      }
     }
-  } else {
-    switch (argLength) {
-      case 2: // last name + first name
-        out = const NameIndex(-1, 1, -1, 0, -1);
-        break;
-      case 3: // last name + first name + middle name
-        out = const NameIndex(-1, 1, 2, 0, -1);
-        break;
-      case 4: // prefix + last name + first name + middle name
-        out = const NameIndex(0, 2, 3, 1, -1);
-        break;
-      case 5: // prefix + last name + first name + middle name + suffix
-        out = const NameIndex(0, 2, 3, 1, 4);
-        break;
-    }
+    return out;
   }
-  return out;
 }
 
 /// Capitalizes a [string] via a [CapsRange] option.
@@ -98,6 +114,24 @@ String toggleCase(String string) {
   return chars.join();
 }
 
+/// Generates a password-like content from a [string].
+String generatePassword(String string) {
+  var mapper = kPasswordMapper;
+  return string.toLowerCase().split('').map((char) {
+    return mapper.containsKey(char)
+        ? mapper[char]!.random()
+        : mapper['\$']!.random();
+  }).join();
+}
+
+// Borrowed from the dart sdk: sdk/lib/math/jenkins_smi_hash.dart.
+int hashValues(Object arg01, Object arg02) {
+  int hash = arg01.hashCode + arg02.hashCode;
+  hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+  hash = hash ^ (hash >> 11);
+  return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+}
+
 /// Makes a [Set] capable of [random]izing its elements.
 extension CharSet<E> on Set<E> {
   /// Shuffles the elements within a set and returns a random one.
@@ -117,22 +151,4 @@ extension StringValidation on String {
 extension FirstOrNullIterable<E> on Iterable<E> {
   /// The first value if any.
   E? get firstOrNull => length == 0 ? null : elementAt(0);
-}
-
-/// Generates a password-like content from a [string].
-String generatePassword(String string) {
-  var mapper = kPasswordMapper;
-  return string.toLowerCase().split('').map((char) {
-    return mapper.containsKey(char)
-        ? mapper[char]!.random()
-        : mapper['\$']!.random();
-  }).join();
-}
-
-// Borrowed from the dart sdk: sdk/lib/math/jenkins_smi_hash.dart.
-int hashValues(Object arg01, Object arg02) {
-  int hash = arg01.hashCode + arg02.hashCode;
-  hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-  hash = hash ^ (hash >> 11);
-  return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
 }

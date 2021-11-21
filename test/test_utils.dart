@@ -67,12 +67,12 @@ final nameCases = {
     ],
     'options': Config.inline(
       name: 'manyLastNames',
-      lastNameFormat: LastNameFormat.mother,
+      surname: Surname.mother,
     )
   },
   'withTitling': {
     'name': {'prefix': 'Dr', 'firstName': 'Albert', 'lastName': 'Einstein'},
-    'options': Config.inline(name: 'withTitling', titling: AbbrTitle.us),
+    'options': Config.inline(name: 'withTitling', title: Title.us),
   },
   'withEnding': {
     'name': {'firstName': 'Fabrice', 'lastName': 'Piazza', 'suffix': 'Ph.D'},
@@ -96,7 +96,7 @@ final nameCases = {
       name: 'noBypass',
       bypass: false,
       ending: true,
-      titling: AbbrTitle.us,
+      title: Title.us,
     )
   },
 };

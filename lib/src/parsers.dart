@@ -45,7 +45,7 @@ class ListStringParser implements Parser<List<String>> {
 
     /// Try to validate first (if enabled);
     final raw = this.raw.map((n) => n.trim()).toList();
-    final nameIndex = organizeNameIndex(config.orderedBy, raw.length);
+    final nameIndex = NameIndex.getNameIndex(config.orderedBy, raw.length);
     final validator = ListStringValidator(nameIndex);
 
     if (config.bypass) {
@@ -145,8 +145,8 @@ class ListNameParser implements Parser<List<Name>> {
         fullName.middleName.add(name);
       } else if (name.type == Namon.lastName) {
         fullName.lastName = name is LastName
-            ? LastName(name.namon, name.mother, config.lastNameFormat)
-            : LastName(name.namon, null, config.lastNameFormat);
+            ? LastName(name.namon, name.mother, config.surname)
+            : LastName(name.namon, null, config.surname);
       } else if (name.type == Namon.suffix) {
         fullName.suffix = name;
       }

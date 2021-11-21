@@ -172,61 +172,61 @@ void main() {
       expect(name.father, equals('Smith'));
       expect(name.hasMother(), equals(false));
       expect(name.mother, equals(isNull));
-      expect(name.toString(format: LastNameFormat.mother), equals(isEmpty));
+      expect(name.toString(format: Surname.mother), equals(isEmpty));
       expect(name.type, equals(Namon.lastName));
     });
 
     test('creates a last name with both father and mother surnames', () {
       expect(lastName.father, equals('Smith'));
       expect(lastName.hasMother(), equals(true));
-      expect(lastName.toString(format: LastNameFormat.mother), equals('Doe'));
+      expect(lastName.toString(format: Surname.mother), equals('Doe'));
       expect(lastName.type, equals(Namon.lastName));
     });
 
-    test('creates a last name with a [LastNameFormat.mother] format', () {
-      expect(LastName('Smith', 'Doe', LastNameFormat.mother).toString(), 'Doe');
+    test('creates a last name with a [Surname.mother] format', () {
+      expect(LastName('Smith', 'Doe', Surname.mother).toString(), 'Doe');
     });
 
-    test('creates a last name with a [LastNameFormat.hyphenated] format', () {
+    test('creates a last name with a [Surname.hyphenated] format', () {
       expect(
-        LastName('Smith', 'Doe', LastNameFormat.hyphenated).toString(),
+        LastName('Smith', 'Doe', Surname.hyphenated).toString(),
         equals('Smith-Doe'),
       );
     });
 
-    test('creates a last name with a [LastNameFormat.all] format', () {
+    test('creates a last name with a [Surname.all] format', () {
       expect(
-        LastName('Smith', 'Doe', LastNameFormat.all).toString(),
+        LastName('Smith', 'Doe', Surname.all).toString(),
         equals('Smith Doe'),
       );
     });
 
     test('.toString() outputs a last name with a specific format', () {
       expect(lastName.toString(), equals('Smith'));
-      expect(lastName.toString(format: LastNameFormat.mother), 'Doe');
+      expect(lastName.toString(format: Surname.mother), 'Doe');
       expect(
-        lastName.toString(format: LastNameFormat.hyphenated),
+        lastName.toString(format: Surname.hyphenated),
         equals('Smith-Doe'),
       );
-      expect(lastName.toString(format: LastNameFormat.all), 'Smith Doe');
+      expect(lastName.toString(format: Surname.all), 'Smith Doe');
     });
 
     test('.stats() returns only a summary of the specified parts', () {
       expect(lastName.stats().count, equals(5));
-      expect(lastName.stats(format: LastNameFormat.mother).count, equals(3));
-      expect(lastName.stats(format: LastNameFormat.all).count, equals(8));
-      expect(lastName.stats(format: LastNameFormat.all).length, equals(9));
+      expect(lastName.stats(format: Surname.mother).count, equals(3));
+      expect(lastName.stats(format: Surname.all).count, equals(8));
+      expect(lastName.stats(format: Surname.all).length, equals(9));
       expect(lastName.length, equals(8));
     });
 
     test('.initials() returns only the initials of the specified parts', () {
       expect(lastName.initials(), equals(['S']));
-      expect(lastName.initials(format: LastNameFormat.mother), equals(['D']));
+      expect(lastName.initials(format: Surname.mother), equals(['D']));
       expect(
-        lastName.initials(format: LastNameFormat.hyphenated),
+        lastName.initials(format: Surname.hyphenated),
         equals(['S', 'D']),
       );
-      expect(lastName.initials(format: LastNameFormat.all), equals(['S', 'D']));
+      expect(lastName.initials(format: Surname.all), equals(['S', 'D']));
     });
 
     test('.caps() capitalizes a last name afterwards', () {
@@ -238,7 +238,7 @@ void main() {
     test('.caps() capitalizes all parts of the last name afterwards', () {
       expect((lastName..caps(CapsRange.all)).toString(), equals('SMITH'));
       expect(
-        (lastName..caps(CapsRange.all)).toString(format: LastNameFormat.all),
+        (lastName..caps(CapsRange.all)).toString(format: Surname.all),
         equals('SMITH DOE'),
       );
     });
@@ -247,7 +247,7 @@ void main() {
       var name = LastName('SMITH', 'DOE');
       expect((name..decaps()).toString(), equals('sMITH'));
       expect(
-        (name..decaps()).toString(format: LastNameFormat.all),
+        (name..decaps()).toString(format: Surname.all),
         'sMITH dOE',
       );
     });
@@ -256,7 +256,7 @@ void main() {
       var name = LastName('SMITH', 'DOE');
       expect((name..decaps(CapsRange.all)).toString(), equals('smith'));
       expect(
-        (name..decaps(CapsRange.all)).toString(format: LastNameFormat.all),
+        (name..decaps(CapsRange.all)).toString(format: Surname.all),
         equals('smith doe'),
       );
     });
@@ -264,8 +264,7 @@ void main() {
     test('.normalize() normalizes the last name afterwards', () {
       expect((LastName('SMITH')..normalize()).toString(), equals('Smith'));
       expect(
-        (LastName('SMITH', 'DOE')..normalize())
-            .toString(format: LastNameFormat.all),
+        (LastName('SMITH', 'DOE')..normalize()).toString(format: Surname.all),
         equals('Smith Doe'),
       );
     });
