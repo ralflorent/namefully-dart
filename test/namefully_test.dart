@@ -23,7 +23,7 @@ void main() {
         expect(name.has(Namon.prefix), equals(true));
         expect(name.has(Namon.suffix), equals(true));
         expect(name.has(Namon.middleName), equals(true));
-        expect(name.hasMiddleName(), equals(true));
+        expect(name.hasMiddle, equals(true));
       });
 
       test('.toString() returns a String version of the full name', () {
@@ -48,7 +48,7 @@ void main() {
       });
 
       test('.stats() returns the summary of the birth name', () {
-        var summary = name.stats(what: NameType.birthName);
+        var summary = name.stats(type: NameType.birthName);
         expect(summary?.count, equals(12));
         expect(summary?.length, equals(14));
         expect(summary?.frequency, equals(2));
@@ -73,9 +73,9 @@ void main() {
       });
 
       test('.stats() returns the summary of a specified namon', () {
-        expect(name.stats(what: NameType.firstName)?.count, equals(4));
-        expect(name.stats(what: NameType.middleName)?.count, equals(3));
-        expect(name.stats(what: NameType.lastName)?.count, equals(5));
+        expect(name.stats(type: NameType.firstName)?.count, equals(4));
+        expect(name.stats(type: NameType.middleName)?.count, equals(3));
+        expect(name.stats(type: NameType.lastName)?.count, equals(5));
         expect(name.stats()?.count, equals(18));
       });
 
@@ -425,7 +425,7 @@ void main() {
         expect(name.toString(), 'Daniel Michael Blake Day-Lewis');
         expect(name.firstName(includeAll: false), equals('Daniel'));
         expect(name.firstName(), equals('Daniel Michael Blake'));
-        expect(name.hasMiddleName(), equals(false));
+        expect(name.hasMiddle, equals(false));
       });
 
       test('containing many middle names', () {
@@ -435,7 +435,7 @@ void main() {
           config: nameCase.config,
         );
         expect(name.toString(), 'Emilia Isobel Euphemia Rose Clarke');
-        expect(name.hasMiddleName(), equals(true));
+        expect(name.hasMiddle, equals(true));
         expect(name.middleName(), equals(['Isobel', 'Euphemia', 'Rose']));
       });
 
@@ -447,7 +447,7 @@ void main() {
         );
         expect(name.toString(), 'Shakira Isabel Ripoll');
         expect(name.lastName(), equals('Ripoll'));
-        expect(name.lastName(Surname.all), 'Mebarak Ripoll');
+        expect(name.lastName(format: Surname.all), 'Mebarak Ripoll');
       });
 
       test('containing a US title', () {
@@ -514,7 +514,7 @@ void main() {
       expect(name.toString(), equals('Jane Doe'));
       expect(name.toList(), equals([null, 'Jane', '', 'Doe', null]));
 
-      expect(builder.asString, equals('Jane Doe'));
+      expect(builder.name.toString(), equals('Jane Doe'));
       expect(builder.toString(),
           "NameBuilder's current context[closed]: Jane Doe");
     });
@@ -525,7 +525,7 @@ void main() {
         ..flip() // 'doe mari jane'
         ..shorten(); // 'doe jane'
 
-      expect(builder.asString, equals('doe jane'));
+      expect(builder.name.toString(), equals('doe jane'));
 
       builder
         ..rollback() // back to 'doe mari joe'
@@ -534,7 +534,7 @@ void main() {
         ..rollback() // last rollback is a no-op
         ..close();
 
-      expect(builder.asString, equals('Jane Mari Doe'));
+      expect(builder.name.toString(), equals('Jane Mari Doe'));
     });
 
     test('and broadcasts its name states', () {

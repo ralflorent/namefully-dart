@@ -84,9 +84,9 @@ void main() {
       expect(firstName.type, equals(Namon.firstName));
     });
 
-    test('.hasMore() indicates if a first name has more than 1 name part', () {
-      expect(firstName.hasMore(), equals(true));
-      expect(FirstName('John').hasMore(), equals(false));
+    test('.hasMore indicates if a first name has more than 1 name part', () {
+      expect(firstName.hasMore, equals(true));
+      expect(FirstName('John').hasMore, equals(false));
     });
 
     test('.asNames() returns the name parts as a pile of [Name]s', () {
@@ -170,7 +170,7 @@ void main() {
     test('creates a last name with a father surname only', () {
       var name = LastName('Smith');
       expect(name.father, equals('Smith'));
-      expect(name.hasMother(), equals(false));
+      expect(name.hasMother, equals(false));
       expect(name.mother, equals(isNull));
       expect(name.toString(format: Surname.mother), equals(isEmpty));
       expect(name.type, equals(Namon.lastName));
@@ -178,7 +178,7 @@ void main() {
 
     test('creates a last name with both father and mother surnames', () {
       expect(lastName.father, equals('Smith'));
-      expect(lastName.hasMother(), equals(true));
+      expect(lastName.hasMother, equals(true));
       expect(lastName.toString(format: Surname.mother), equals('Doe'));
       expect(lastName.type, equals(Namon.lastName));
     });

@@ -50,6 +50,6 @@ void main() {
   } on NameException catch (exception) {
     print(exception); // should catch a `NotAllowedException`.
   } finally {
-    print(builder.asString); // the name context stays the same.
+    print(builder); // the name context stays the same.
   }
 }

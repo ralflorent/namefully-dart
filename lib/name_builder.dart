@@ -4,24 +4,24 @@ import 'namefully.dart';
 
 /// An on-the-fly name builder.
 ///
-/// This builder knows how to take a [name] from distinct raw forms and build it
+/// This builder knows how to take a name from distinct raw forms and build it
 /// through a state management mechanism. That is, as the name changes, its
 /// states are persisted and notified to any subscriber listening to those
-/// changes, thanks to a stream controller that broadcasts them.
+/// changes, thanks to a [StreamController] that broadcasts them.
 ///
 /// The builder starts by creating an initial state of the created name. If a
 /// change event occurs to this name, this change is hence viewed as the current
 /// name state to consider, and the previous one becomes history. As this works
-/// like a state store, this gives a rollback flexibility in case an undesirable
+/// like a state store, this gives a rollback flexibility in case an undesired
 /// change is made.
 ///
 /// Once the builder finishes building up the name, the changes are committed
-/// and the store is freed as well as the stream controller for performance
+/// and the store is freed as well as the [StreamController] for performance
 /// purposes. That means, the builder may no longer change the final name state
 /// and should live up to that last change.
 ///
-/// In the following example, a listener prints out the different states of the
-/// name: `Jane Ann Doe`.
+/// In the following example, a subscriber prints out the different states of
+/// the name: `Jane Ann Doe`.
 ///
 /// ```dart
 /// var builder = NameBuilder('Jane Ann Doe', config: Config('NameBuilder'))
@@ -33,16 +33,16 @@ import 'namefully.dart';
 /// print(builder.build()); // 'doe jane'
 /// ```
 ///
-/// NOTE: Most of the operations supported in the name builder can be performed
+/// **NOTE**: Most of the operations supported in the name builder can be performed
 /// with [Namefully.format]. This builder is an expensive operation and should
 /// be used in specific use cases, or when judged extremely necessary. Otherwise,
-/// keep it sane and simple using the traditional `Namefully`.
+/// keep it sane and simple using the traditional `Namefully` class.
 class NameBuilder {
   /// The context in which the name is being built up.
   Namefully _context;
 
   /// Whether this builder can continue building additional name states.
-  bool _canBuild = true;
+  bool _done = true;
 
   /// The state of the changing name.
   final _NamefullyState _state;
@@ -56,14 +56,11 @@ class NameBuilder {
   /// The name for the current context.
   Namefully get name => _context;
 
-  /// The name for the current context as a string.
-  String get asString => _context.toString();
-
   /// Whether the builder can perform more nesting operations.
   bool get isClosed => !isOpen;
 
   /// Whether the builder is still open for more nesting operations.
-  bool get isOpen => _canBuild;
+  bool get isOpen => _done;
 
   /// Creates the initial state of the given name.
   NameBuilder._(this._context) : _state = _NamefullyState(_context) {
@@ -120,7 +117,7 @@ class NameBuilder {
   String toString() {
     return "NameBuilder's current context[" +
         (isClosed ? 'closed' : 'open') +
-        ']: $asString';
+        ']: $_context';
   }
 
   /// Arranges the name by [NameOrder.firstName].
@@ -131,7 +128,7 @@ class NameBuilder {
 
   /// Flips definitely the name order from the current config.
   void flip() {
-    if (!_canBuild) throw _builderException(asString, 'flip');
+    if (!_done) throw _builderException(_context.toString(), 'flip');
     _context = Namefully(
       _state.last.full,
       config: _state.last.config.copyWith(),
@@ -140,28 +137,28 @@ class NameBuilder {
     _streamer.sink.add(_context);
   }
 
-  /// Shortens a full name to a typical name, a combination of [firstName] and
-  /// [lastName].
+  /// Shortens a full name to a typical name, a combination of first and last
+  /// name.
   ///
   /// See [Namefully.shorten] for more info.
   void shorten() {
-    if (!_canBuild) throw _builderException(asString, 'shorten');
+    if (!_done) throw _builderException(_context.toString(), 'shorten');
     _context = Namefully(_state.last.shorten(), config: _state.last.config);
     _state.add(_context, id: 'shorten');
     _streamer.sink.add(_context);
   }
 
-  /// Transforms a [birthName] to UPPERCASE.
+  /// Transforms a [birthName] into UPPERCASE.
   void upper() {
-    if (!_canBuild) throw _builderException(asString, 'upper');
+    if (!_done) throw _builderException(_context.toString(), 'upper');
     _context = Namefully(_state.last.upper(), config: _state.last.config);
     _state.add(_context, id: 'upper');
     _streamer.sink.add(_context);
   }
 
-  /// Transforms a [birthName] to lowercase.
+  /// Transforms a [birthName] into lowercase.
   void lower() {
-    if (!_canBuild) throw _builderException(asString, 'lower');
+    if (!_done) throw _builderException(_context.toString(), 'lower');
     _context = Namefully(_state.last.lower(), config: _state.last.config);
     _state.add(_context, id: 'lower');
     _streamer.sink.add(_context);
@@ -169,21 +166,21 @@ class NameBuilder {
 
   /// Returns the final state of the changing name.
   Namefully build() {
-    if (!_canBuild) throw _builderException(asString, 'build');
+    if (!_done) throw _builderException(_context.toString(), 'build');
     close();
     return _context;
   }
 
   /// Closes this builder on demand.
   void close() {
-    _canBuild = false;
+    _done = false;
     _streamer.close();
     _state.dispose();
   }
 
   /// Rolls back to the previous context.
   void rollback() {
-    if (!_canBuild) throw _builderException(asString, 'rollback');
+    if (!_done) throw _builderException(_context.toString(), 'rollback');
     _context = _state.rollback();
     _streamer.sink.add(_context);
   }
@@ -192,7 +189,7 @@ class NameBuilder {
   /// [NameOrder.lastName].
   void _order(NameOrder by) {
     var ops = by == NameOrder.firstName ? 'byFirstName' : 'byLastName';
-    if (!_canBuild) throw _builderException(asString, ops);
+    if (!_done) throw _builderException(_context.toString(), ops);
     _context = Namefully(
       _state.last.fullName(by),
       config: _state.last.config.copyWith(orderedBy: by),

@@ -102,25 +102,25 @@ class FirstName extends Name {
   List<String> get more => _more;
   late List<String> _more;
 
+  /// Determines whether a first name has [more] name parts.
+  bool get hasMore => _more.isNotEmpty;
+
   @override
   int get length {
     return super.length +
-        (hasMore() ? (_more.reduce((acc, n) => acc + n)).length : 0);
+        (hasMore ? (_more.reduce((acc, n) => acc + n)).length : 0);
   }
 
   @override
   String toString({bool includeAll = false}) {
-    return includeAll && hasMore() ? '$namon ${_more.join(" ")}'.trim() : namon;
+    return includeAll && hasMore ? '$namon ${_more.join(" ")}'.trim() : namon;
   }
-
-  /// Determines whether a first name has [more] name parts.
-  bool hasMore() => _more.isNotEmpty;
 
   /// Returns a combined version of the [namon] and [more] if any.
   List<Name> asNames() {
     return [
       Name(namon, Namon.firstName),
-      if (hasMore()) ..._more.map((n) => Name(n, Namon.firstName))
+      if (hasMore) ..._more.map((n) => Name(n, Namon.firstName))
     ];
   }
 
@@ -144,7 +144,7 @@ class FirstName extends Name {
   List<String> initials({bool includeAll = false}) {
     return List.unmodifiable([
       _initial,
-      if (includeAll && hasMore()) ..._more.map((n) => n[0]),
+      if (includeAll && hasMore) ..._more.map((n) => n[0]),
     ]);
   }
 
@@ -154,10 +154,10 @@ class FirstName extends Name {
     range ??= _capsRange;
     if (range == CapsRange.initial) {
       namon = capitalize(namon);
-      if (hasMore()) _more = _more.map(capitalize).toList();
+      if (hasMore) _more = _more.map(capitalize).toList();
     } else if (range == CapsRange.all) {
       namon = namon.toUpperCase();
-      if (hasMore()) _more = _more.map((n) => n.toUpperCase()).toList();
+      if (hasMore) _more = _more.map((n) => n.toUpperCase()).toList();
     }
   }
 
@@ -167,10 +167,10 @@ class FirstName extends Name {
     range ??= _capsRange;
     if (range == CapsRange.initial) {
       namon = decapitalize(namon);
-      if (hasMore()) _more = _more.map(decapitalize).toList();
+      if (hasMore) _more = _more.map(decapitalize).toList();
     } else if (range == CapsRange.all) {
       namon = namon.toLowerCase();
-      if (hasMore()) _more = _more.map((n) => n.toLowerCase()).toList();
+      if (hasMore) _more = _more.map((n) => n.toLowerCase()).toList();
     }
   }
 
@@ -178,7 +178,7 @@ class FirstName extends Name {
   @override
   void normalize() {
     namon = capitalize(namon);
-    if (hasMore()) _more = _more.map(capitalize).toList();
+    if (hasMore) _more = _more.map(capitalize).toList();
   }
 
   /// Creates a password-like representation of the first name.
@@ -210,6 +210,9 @@ class LastName extends Name {
   String? get mother => _mother;
   String? _mother;
 
+  /// Returns `true` if the [mother]'s surname is defined.
+  bool get hasMother => _mother?.isNotEmpty ?? false;
+
   /// Returns a string representation of the last name.
   @override
   String toString({Surname? format}) {
@@ -220,14 +223,11 @@ class LastName extends Name {
       case Surname.mother:
         return _mother ?? '';
       case Surname.hyphenated:
-        return hasMother() ? '$namon-$_mother' : namon;
+        return hasMother ? '$namon-$_mother' : namon;
       case Surname.all:
-        return hasMother() ? '$namon $_mother' : namon;
+        return hasMother ? '$namon $_mother' : namon;
     }
   }
-
-  /// Returns `true` if the [mother]'s surname is defined.
-  bool hasMother() => _mother?.isNotEmpty ?? false;
 
   /// Gives some descriptive statistics.
   ///
@@ -251,12 +251,12 @@ class LastName extends Name {
         initials.add(namon[0]);
         break;
       case Surname.mother:
-        if (hasMother()) initials.add(_mother![0]);
+        if (hasMother) initials.add(_mother![0]);
         break;
       case Surname.hyphenated:
       case Surname.all:
         initials.add(namon[0]);
-        if (hasMother()) initials.add(_mother![0]);
+        if (hasMother) initials.add(_mother![0]);
         break;
     }
     return List.unmodifiable(initials);
@@ -268,10 +268,10 @@ class LastName extends Name {
     range ??= _capsRange;
     if (range == CapsRange.initial) {
       namon = capitalize(namon);
-      if (hasMother()) _mother = capitalize(_mother!);
+      if (hasMother) _mother = capitalize(_mother!);
     } else if (range == CapsRange.all) {
       namon = namon.toUpperCase();
-      if (hasMother()) _mother = _mother!.toUpperCase();
+      if (hasMother) _mother = _mother!.toUpperCase();
     }
   }
 
@@ -281,10 +281,10 @@ class LastName extends Name {
     range ??= _capsRange;
     if (range == CapsRange.initial) {
       namon = decapitalize(namon);
-      if (hasMother()) _mother = decapitalize(_mother!);
+      if (hasMother) _mother = decapitalize(_mother!);
     } else if (range == CapsRange.all) {
       namon = namon.toLowerCase();
-      if (hasMother()) _mother = _mother!.toLowerCase();
+      if (hasMother) _mother = _mother!.toLowerCase();
     }
   }
 
@@ -292,7 +292,7 @@ class LastName extends Name {
   @override
   void normalize() {
     namon = capitalize(namon);
-    if (hasMother()) _mother = capitalize(_mother!);
+    if (hasMother) _mother = capitalize(_mother!);
   }
 
   /// Creates a password-like representation of the last name.

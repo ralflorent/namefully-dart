@@ -195,7 +195,7 @@ var name = Namefully.fromJson(
 );
 ```
 
-To sum up, the default values are:
+To sum it all up, the default values are:
 
 ```dart
 Config._default(this.name)
@@ -235,7 +235,7 @@ var name = Namefully.fromParser(
   SimpleParser('Juan#Garcia'),
   config: Config.inline(name: 'simpleParser'),
 );
-print(name.fullName()); // Juan Garcia
+print(name.full); // Juan Garcia
 ```
 
 ## Concepts and examples
