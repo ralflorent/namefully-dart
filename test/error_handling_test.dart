@@ -228,7 +228,7 @@ void main() {
     const String name = 'Jane Doe', message = 'Wrong name';
 
     test('can be created with a message only', () {
-      NameException exception = NameException.empty(message, name);
+      NameException exception = NameException(message, name);
 
       expect(exception, isA<Exception>());
       expect(exception.message, equals(message));

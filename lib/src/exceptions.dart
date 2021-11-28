@@ -52,10 +52,14 @@ enum NameExceptionType {
 /// name: reconstructing it or skipping it.
 abstract class NameException implements Exception {
   /// Enables const constructors.
-  const NameException([this.source, this.message = '']);
+  const NameException._([
+    this.message = '',
+    this.source,
+    this.type = NameExceptionType.unknown,
+  ]);
 
   /// Creates a concrete `NameException` with an optional error [message].
-  factory NameException.empty([String message, Object source]) = _NameException;
+  factory NameException([String message, Object source]) = _NameException;
 
   /// Creates a new `InputException` with an optional error [message].
   factory NameException.input({
@@ -96,7 +100,7 @@ abstract class NameException implements Exception {
   final dynamic source;
 
   /// The name exception type.
-  NameExceptionType get type;
+  final NameExceptionType type;
 
   /// The string value from the name source input.
   String get sourceAsString {
@@ -123,16 +127,8 @@ abstract class NameException implements Exception {
 
 /// Concrete name exception for convenience with a [message] and a [source].
 class _NameException extends NameException {
-  const _NameException([this.message = '', this.source]);
-
-  @override
-  final String message;
-
-  @override
-  final Object? source;
-
-  @override
-  NameExceptionType get type => NameExceptionType.unknown;
+  const _NameException([String message = '', Object? source])
+      : super._(message, source);
 }
 
 /// An exception thrown when a name source input is incorrect.
@@ -149,16 +145,8 @@ class InputException extends NameException {
   /// type. This string value may be extracted to form the following output:
   ///   "InputException (stringName)",
   ///   "InputException (stringName): message".
-  const InputException({required this.source, this.message = ''});
-
-  @override
-  final String message;
-
-  @override
-  final Object source;
-
-  @override
-  NameExceptionType get type => NameExceptionType.input;
+  const InputException({required Object source, String message = ''})
+      : super._(message, source, NameExceptionType.input);
 }
 
 /// An exception thrown to indicate that a name fails the validation rules.
@@ -170,26 +158,17 @@ class ValidationException extends NameException {
   ///     "ValidationException (nameType='stringName')",
   ///     "ValidationException (nameType='stringName'): message"
   const ValidationException({
-    required this.source,
+    required Object source,
     required this.nameType,
-    this.message = '',
-  });
-
-  @override
-  final String message;
-
-  @override
-  final Object source;
+    String message = '',
+  }) : super._(message, source, NameExceptionType.validation);
 
   /// Name of the invalid `nameType` if available.
   final String nameType;
 
   @override
-  NameExceptionType get type => NameExceptionType.validation;
-
-  @override
   String toString() {
-    var report = "ValidationException ($nameType='$sourceAsString')";
+    var report = "$runtimeType ($nameType='$sourceAsString')";
     if (message.isNotEmpty) report = '$report: $message';
     return report;
   }
@@ -202,28 +181,25 @@ class ValidationException extends NameException {
 /// this exception is when trying to [Namefully.format] a name accordingly using
 /// a non-supported key.
 class NotAllowedException extends NameException {
-  /// Creates a new `NotAllowedException` with an optional error [message].
+  /// Creates a new `NotAllowedException` with an optional error [message] and
+  /// the [operation] name.
+  ///
+  /// For example, an exception of this can be interpreted as:
+  ///     "NotAllowedException (stringName)",
+  ///     "NotAllowedException (stringName) - operationName",
+  ///     "NotAllowedException (stringName) - operationName: message"
   const NotAllowedException({
-    required this.source,
-    this.message = '',
+    required Object source,
+    String message = '',
     this.operation = '',
-  });
-
-  @override
-  final String message;
-
-  @override
-  final Object source;
+  }) : super._(message, source, NameExceptionType.notAllowed);
 
   /// The revoked operation name.
   final String operation;
 
   @override
-  NameExceptionType get type => NameExceptionType.notAllowed;
-
-  @override
   String toString() {
-    var report = 'NotAllowedException ($sourceAsString)';
+    var report = '$runtimeType ($sourceAsString)';
     if (operation.isNotEmpty) report = '$report - $operation';
     if (message.isNotEmpty) report = '$report: $message';
     return report;
@@ -244,17 +220,12 @@ class UnknownException extends NameException {
   /// the failure. The [Error.stackTrace], if any, is considered as fallback if
   /// [stackTrace] is provided.
   UnknownException({
-    required this.source,
+    required Object source,
     StackTrace? stackTrace,
     this.error,
-    this.message = '',
-  }) : stackTrace = stackTrace ?? (error is Error ? error.stackTrace : null);
-
-  @override
-  final String message;
-
-  @override
-  final Object source;
+    String message = '',
+  })  : stackTrace = stackTrace ?? (error is Error ? error.stackTrace : null),
+        super._(message, source);
 
   /// Trace revealing the source of that error.
   final StackTrace? stackTrace;
@@ -263,11 +234,9 @@ class UnknownException extends NameException {
   final Object? error;
 
   @override
-  NameExceptionType get type => NameExceptionType.unknown;
-
-  @override
   String toString() {
     var report = super.toString();
+    if (stackTrace != null && error == null) report += '\n$stackTrace';
     if (error != null) report += '\n$error';
     return report;
   }
