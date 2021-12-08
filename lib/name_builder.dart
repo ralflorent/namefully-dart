@@ -48,7 +48,7 @@ class NameBuilder {
   final _NamefullyState _state;
 
   /// The controller providing the on-the-fly updates of the changing name.
-  final _streamer = StreamController<Namefully>();
+  final StreamController<Namefully> _streamer = StreamController<Namefully>();
 
   /// The name changes made available for listeners.
   Stream<Namefully> get stream => _streamer.stream.asBroadcastStream();
@@ -56,11 +56,11 @@ class NameBuilder {
   /// The name for the current context.
   Namefully get name => _context;
 
-  /// Whether the builder can perform more nesting operations.
-  bool get isClosed => !isOpen;
-
   /// Whether the builder is still open for more nesting operations.
   bool get isOpen => _done;
+
+  /// Whether the builder can perform more nesting operations.
+  bool get isClosed => !isOpen;
 
   /// Creates the initial state of the given name.
   NameBuilder._(this._context) : _state = _NamefullyState(_context) {
@@ -213,7 +213,7 @@ NameException _builderException(String source, [String ops = '']) {
 /// memory, and can be easily accessed through historical data as long as the
 /// object persists in memory. An [id] is automatically generated, if none has
 /// been provided during its creation.
-class _NamefullyState extends _State<Namefully> {
+class _NamefullyState implements _State<Namefully> {
   /// The previous name state.
   @override
   final Namefully? previous;
@@ -274,9 +274,9 @@ class _NamefullyState extends _State<Namefully> {
 
 /// A lightweight state management approach.
 abstract class _State<T> {
-  late final T? previous;
+  T? get previous;
 
-  late final T current;
+  T get current;
 
   void add(T state);
 

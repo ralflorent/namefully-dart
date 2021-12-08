@@ -163,7 +163,7 @@ class Namefully {
 
   /// Returns the full name as set.
   @override
-  String toString() => fullName();
+  String toString() => full;
 
   /// Gets the full name ordered as configured.
   ///
@@ -185,12 +185,12 @@ class Namefully {
     final nama = <String>[];
     if (_fullName.prefix != null) nama.add(_fullName.prefix.toString());
     if (orderedBy == NameOrder.firstName) {
-      nama.add(firstName());
+      nama.add(first);
       nama.addAll(middleName());
-      nama.add(lastName() + sep);
+      nama.add(last + sep);
     } else {
-      nama.add(lastName());
-      nama.add(firstName());
+      nama.add(last);
+      nama.add(first);
       nama.add(middleName().join(' ') + sep);
     }
     if (_fullName.suffix != null) nama.add(_fullName.suffix.toString());
@@ -225,8 +225,8 @@ class Namefully {
   String birthName([NameOrder? orderedBy]) {
     orderedBy ??= _config.orderedBy;
     return orderedBy == NameOrder.firstName
-        ? <String>[firstName(), ...middleName(), lastName()].join(' ')
-        : <String>[lastName(), firstName(), ...middleName()].join(' ');
+        ? <String>[first, ...middleName(), last].join(' ')
+        : <String>[last, first, ...middleName()].join(' ');
   }
 
   /// Gets the first name part of the [FullName].
@@ -351,7 +351,7 @@ class Namefully {
       case NameType.birthName:
         return _summary;
       default:
-        return Summary(fullName());
+        return Summary(full);
     }
   }
 

@@ -69,6 +69,21 @@ abstract class Validator<T> {
   void validate(T value);
 }
 
+mixin ListValidatorMixin<T> on Validator<List<T>> {
+  @override
+  void validate(List<T> values) {
+    if (values.isEmpty ||
+        values.length < kMinNumberOfNameParts ||
+        values.length > kMaxNumberOfNameParts) {
+      throw InputException(
+        source: values,
+        message: 'expecting a list of $kMinNumberOfNameParts-'
+            '$kMaxNumberOfNameParts elements',
+      );
+    }
+  }
+}
+
 /// A list of validators for a specific namon.
 abstract class Validators {
   static final namon = NamonValidator();
@@ -82,9 +97,11 @@ abstract class Validators {
 
 /// Namon validator to help to parse single pieces of string.
 class NamonValidator implements Validator<String> {
-  static final _validator = NamonValidator._internal();
+  static const _validator = NamonValidator._();
+
+  const NamonValidator._();
+
   factory NamonValidator() => _validator;
-  NamonValidator._internal();
 
   /// Validates the name content [value].
   @override
@@ -100,9 +117,11 @@ class NamonValidator implements Validator<String> {
 }
 
 class FirstNameValidator implements Validator<dynamic> {
-  static final _validator = FirstNameValidator._internal();
+  static const _validator = FirstNameValidator._();
+
+  const FirstNameValidator._();
+
   factory FirstNameValidator() => _validator;
-  FirstNameValidator._internal();
 
   /// Validates the name content [value].
   @override
@@ -137,9 +156,11 @@ class FirstNameValidator implements Validator<dynamic> {
 }
 
 class MiddleNameValidator implements Validator<dynamic> {
-  static final _validator = MiddleNameValidator._internal();
+  static const _validator = MiddleNameValidator._();
+
+  const MiddleNameValidator._();
+
   factory MiddleNameValidator() => _validator;
-  MiddleNameValidator._internal();
 
   /// Validates the name content [value].
   @override
@@ -188,9 +209,11 @@ class MiddleNameValidator implements Validator<dynamic> {
 }
 
 class LastNameValidator implements Validator<dynamic> {
-  static final _validator = LastNameValidator._internal();
+  static const _validator = LastNameValidator._();
+
+  const LastNameValidator._();
+
   factory LastNameValidator() => _validator;
-  LastNameValidator._internal();
 
   /// Validates the name content [value].
   @override
@@ -225,9 +248,11 @@ class LastNameValidator implements Validator<dynamic> {
 }
 
 class NameValidator implements Validator<Name> {
-  static final _validator = NameValidator._internal();
+  static const _validator = NameValidator._();
+
+  const NameValidator._();
+
   factory NameValidator() => _validator;
-  NameValidator._internal();
 
   /// Validates the [name] content.
   @override
@@ -243,9 +268,11 @@ class NameValidator implements Validator<Name> {
 }
 
 class NamaValidator implements Validator<Map<Namon, String>> {
-  static final _validator = NamaValidator._internal();
+  static const _validator = NamaValidator._();
+
+  const NamaValidator._();
+
   factory NamaValidator() => _validator;
-  NamaValidator._internal();
 
   @override
   void validate(Map<Namon, String> nama) {
@@ -288,25 +315,14 @@ class NamaValidator implements Validator<Map<Namon, String>> {
   }
 }
 
-class ListStringValidator implements Validator<List<String>> {
+class ListStringValidator extends Validator<List<String>>
+    with ListValidatorMixin<String> {
   final NameIndex index;
   ListStringValidator([this.index = const NameIndex(-1, 0, -1, 1, -1)]);
 
-  void validateIndex(List<String> values) {
-    if (values.isEmpty ||
-        values.length < kMinNumberOfNameParts ||
-        values.length > kMaxNumberOfNameParts) {
-      throw InputException(
-        source: values,
-        message: 'expecting a list of $kMinNumberOfNameParts-'
-            '$kMaxNumberOfNameParts elements',
-      );
-    }
-  }
-
   @override
   void validate(List<String> values) {
-    validateIndex(values);
+    super.validate(values);
 
     switch (values.length) {
       case 2:
@@ -333,23 +349,13 @@ class ListStringValidator implements Validator<List<String>> {
         break;
     }
   }
+
+  void validateIndex(List<String> values) => super.validate(values);
 }
 
-class ListNameValidator implements Validator<List<Name>> {
-  static final _validator = ListNameValidator._internal();
+class ListNameValidator extends Validator<List<Name>>
+    with ListValidatorMixin<Name> {
+  static final _validator = ListNameValidator._();
   factory ListNameValidator() => _validator;
-  ListNameValidator._internal();
-
-  @override
-  void validate(List<Name> values) {
-    if (values.isEmpty ||
-        values.length < kMinNumberOfNameParts ||
-        values.length > kMaxNumberOfNameParts) {
-      throw InputException(
-        source: values,
-        message: 'expecting a list of $kMinNumberOfNameParts-'
-            '$kMaxNumberOfNameParts elements',
-      );
-    }
-  }
+  ListNameValidator._();
 }
