@@ -1,8 +1,8 @@
 import 'config.dart';
-import 'enums.dart';
-import 'exceptions.dart';
-import 'names.dart';
-import 'validators.dart';
+import 'types.dart';
+import 'exception.dart';
+import 'name.dart';
+import 'validator.dart';
 
 /// The core component of this utility.
 ///

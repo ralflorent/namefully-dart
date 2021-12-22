@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'constants.dart';
-import 'enums.dart';
+import 'types.dart';
 
 /// A fixed set of values to handle specific positions for list of names.
 ///
@@ -51,7 +51,7 @@ class NameIndex {
 
   /// Gets the name index for a list of names based on the [count] of elements
   /// and their [order] of appearance.
-  static NameIndex getNameIndex(NameOrder order, [int count = 2]) {
+  static NameIndex find(NameOrder order, [int count = 2]) {
     assert(count >= min && count <= max, 'Count of names is out of range.');
     NameIndex out = const NameIndex._(0, 1, 2, 3, 4);
     if (order == NameOrder.firstName) {

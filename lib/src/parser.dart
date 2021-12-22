@@ -1,10 +1,10 @@
 import 'config.dart';
-import 'enums.dart';
-import 'exceptions.dart';
+import 'types.dart';
+import 'exception.dart';
 import 'full_name.dart';
-import 'names.dart';
+import 'name.dart';
 import 'utils.dart';
-import 'validators.dart';
+import 'validator.dart';
 
 /// A parser signature that helps to organize the names accordingly.
 abstract class Parser<T> {
@@ -45,7 +45,7 @@ class ListStringParser implements Parser<List<String>> {
 
     /// Try to validate first (if enabled);
     final raw = this.raw.map((n) => n.trim()).toList();
-    final nameIndex = NameIndex.getNameIndex(config.orderedBy, raw.length);
+    final nameIndex = NameIndex.find(config.orderedBy, raw.length);
     final validator = ListStringValidator(nameIndex);
 
     if (config.bypass) {

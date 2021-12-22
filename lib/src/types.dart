@@ -138,13 +138,13 @@ class Namon {
   ];
 
   /// The predefined name types as a [Map].
-  static Map<String, Namon> get nama => {
+  static Map<String, Namon> get nama => Map<String, Namon>.unmodifiable({
         prefix.key: prefix,
         firstName.key: firstName,
         middleName.key: middleName,
         lastName.key: lastName,
         suffix.key: suffix,
-      };
+      });
 
   @override
   bool operator ==(Object? other) =>

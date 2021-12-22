@@ -1,4 +1,4 @@
-import 'names.dart';
+import 'name.dart';
 
 /// The [Exception] types supported by [Namefully].
 enum NameExceptionType {
@@ -59,24 +59,24 @@ abstract class NameException implements Exception {
   ]);
 
   /// Creates a concrete `NameException` with an optional error [message].
-  factory NameException([String message, Object source]) = _NameException;
+  const factory NameException([String message, Object source]) = _NameException;
 
   /// Creates a new `InputException` with an optional error [message].
-  factory NameException.input({
+  const factory NameException.input({
     required Object source,
     String message,
   }) = InputException;
 
   /// Creates an error containing the invalid [nameType] and a [message] that
   /// briefly describes the problem if provided.
-  factory NameException.validation({
+  const factory NameException.validation({
     required Object source,
     required String nameType,
     String message,
   }) = ValidationException;
 
   /// Creates a new `NotAllowedException` with an optional error [message].
-  factory NameException.notAllowed({
+  const factory NameException.notAllowed({
     required Object source,
     String message,
     String operation,

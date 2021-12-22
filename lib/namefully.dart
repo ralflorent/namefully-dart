@@ -10,20 +10,20 @@ library namefully;
 
 import 'src/config.dart';
 import 'src/constants.dart';
-import 'src/enums.dart';
-import 'src/exceptions.dart';
+import 'src/types.dart';
+import 'src/exception.dart';
 import 'src/full_name.dart';
-import 'src/names.dart';
-import 'src/parsers.dart';
+import 'src/name.dart';
+import 'src/parser.dart';
 import 'src/utils.dart';
 
 /// `namefully`'s Public API
 export 'src/config.dart';
-export 'src/enums.dart';
-export 'src/exceptions.dart';
+export 'src/types.dart';
+export 'src/exception.dart';
 export 'src/full_name.dart';
-export 'src/names.dart';
-export 'src/parsers.dart' show Parser;
+export 'src/name.dart';
+export 'src/parser.dart' show Parser;
 export 'src/utils.dart' show NameIndex;
 
 /// A helper for organizing person names in a particular order, way, or shape.

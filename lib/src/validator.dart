@@ -1,7 +1,7 @@
 import 'constants.dart';
-import 'enums.dart';
-import 'exceptions.dart';
-import 'names.dart';
+import 'types.dart';
+import 'exception.dart';
+import 'name.dart';
 import 'utils.dart';
 
 /// Set of [ValidationRule]s (or [RegExp]).

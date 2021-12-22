@@ -1,5 +1,5 @@
-import 'enums.dart';
-import 'exceptions.dart';
+import 'types.dart';
+import 'exception.dart';
 import 'utils.dart';
 
 /// Representation of a string type name with some extra capabilities.

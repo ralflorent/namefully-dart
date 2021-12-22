@@ -1,4 +1,4 @@
-import 'enums.dart';
+import 'types.dart';
 
 const String _kDefaultName = 'default';
 const String _kCopyAlias = '_copy';
