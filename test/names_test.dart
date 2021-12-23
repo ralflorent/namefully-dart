@@ -14,9 +14,9 @@ void main() {
     });
 
     test('creates a name marked with a specific type', () {
-      expect(name.namon, 'John');
+      expect(name.value, 'John');
       expect(name.length, equals(4));
-      expect(name.hashCode != name.namon.hashCode, isTrue);
+      expect(name.hashCode != name.value.hashCode, isTrue);
       expect(name.toString(), 'John');
       expect(name.type, Namon.middleName);
     });
@@ -301,7 +301,7 @@ void main() {
 
     test('creates a descriptive summary of string with defined restrictions',
         () {
-      var summary = Summary('abracadabra', restrictions: ['a']);
+      var summary = Summary('abracadabra', except: ['a']);
       expect(summary.count, equals(6));
       expect(summary.length, equals(11));
       expect(summary.frequency, equals(2));

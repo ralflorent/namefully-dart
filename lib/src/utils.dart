@@ -26,13 +26,6 @@ import 'types.dart';
 /// `['Jane', 'Smith']`.
 class NameIndex {
   final int prefix, firstName, middleName, lastName, suffix;
-  const NameIndex(
-    this.prefix,
-    this.firstName,
-    this.middleName,
-    this.lastName,
-    this.suffix,
-  );
 
   /// Disable the constructor to prevent instantiation.
   const NameIndex._(
@@ -43,6 +36,9 @@ class NameIndex {
     this.suffix,
   );
 
+  /// The default or base index for the [NameIndex].
+  const NameIndex.base() : this._(1, 0, -1, 1, -1);
+
   /// The minimum number of parts in a list of names.
   static const int min = kMinNumberOfNameParts;
 
@@ -51,41 +47,34 @@ class NameIndex {
 
   /// Gets the name index for a list of names based on the [count] of elements
   /// and their [order] of appearance.
-  static NameIndex find(NameOrder order, [int count = 2]) {
+  static NameIndex when(NameOrder order, [int count = 2]) {
     assert(count >= min && count <= max, 'Count of names is out of range.');
-    NameIndex out = const NameIndex._(0, 1, 2, 3, 4);
+
     if (order == NameOrder.firstName) {
       switch (count) {
         case 2: // first name + last name
-          out = const NameIndex._(-1, 0, -1, 1, -1);
-          break;
+          return const NameIndex._(-1, 0, -1, 1, -1);
         case 3: // first name + middle name + last name
-          out = const NameIndex._(-1, 0, 1, 2, -1);
-          break;
+          return const NameIndex._(-1, 0, 1, 2, -1);
         case 4: // prefix + first name + middle name + last name
-          out = const NameIndex._(0, 1, 2, 3, -1);
-          break;
+          return const NameIndex._(0, 1, 2, 3, -1);
         case 5: // prefix + first name + middle name + last name + suffix
-          out = const NameIndex._(0, 1, 2, 3, 4);
-          break;
+          return const NameIndex._(0, 1, 2, 3, 4);
       }
     } else {
       switch (count) {
         case 2: // last name + first name
-          out = const NameIndex._(-1, 1, -1, 0, -1);
-          break;
+          return const NameIndex._(-1, 1, -1, 0, -1);
         case 3: // last name + first name + middle name
-          out = const NameIndex._(-1, 1, 2, 0, -1);
-          break;
+          return const NameIndex._(-1, 1, 2, 0, -1);
         case 4: // prefix + last name + first name + middle name
-          out = const NameIndex._(0, 2, 3, 1, -1);
-          break;
+          return const NameIndex._(0, 2, 3, 1, -1);
         case 5: // prefix + last name + first name + middle name + suffix
-          out = const NameIndex._(0, 2, 3, 1, 4);
-          break;
+          return const NameIndex._(0, 2, 3, 1, 4);
       }
     }
-    return out;
+
+    return NameIndex.base();
   }
 }
 

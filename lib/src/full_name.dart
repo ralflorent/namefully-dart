@@ -73,7 +73,7 @@ class FullName {
     if (name == null) return;
     if (!_config.bypass) Validators.prefix.validate(name);
     _prefix = Name(
-      _config.title == Title.us ? (name.namon + '.') : name.namon,
+      _config.title == Title.us ? (name.value + '.') : name.value,
       Namon.prefix,
     );
   }

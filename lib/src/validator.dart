@@ -116,7 +116,7 @@ class NamonValidator implements Validator<String> {
   }
 }
 
-class FirstNameValidator implements Validator<dynamic> {
+class FirstNameValidator implements Validator {
   static const _validator = FirstNameValidator._();
 
   const FirstNameValidator._();
@@ -142,7 +142,7 @@ class FirstNameValidator implements Validator<dynamic> {
         );
       }
     } else if (value is FirstName) {
-      Validators.firstName.validate(value.namon);
+      Validators.firstName.validate(value.value);
       if (value.more.isNotEmpty) {
         value.more.forEach(Validators.firstName.validate);
       }
@@ -155,7 +155,7 @@ class FirstNameValidator implements Validator<dynamic> {
   }
 }
 
-class MiddleNameValidator implements Validator<dynamic> {
+class MiddleNameValidator implements Validator {
   static const _validator = MiddleNameValidator._();
 
   const MiddleNameValidator._();
@@ -187,7 +187,7 @@ class MiddleNameValidator implements Validator<dynamic> {
     } else if (value is List<Name>) {
       try {
         for (Name n in value) {
-          namonValidator.validate(n.namon);
+          namonValidator.validate(n.value);
           if (n.type != Namon.middleName) {
             throw NameException('wrong type');
           }
@@ -208,7 +208,7 @@ class MiddleNameValidator implements Validator<dynamic> {
   }
 }
 
-class LastNameValidator implements Validator<dynamic> {
+class LastNameValidator implements Validator {
   static const _validator = LastNameValidator._();
 
   const LastNameValidator._();
@@ -257,7 +257,7 @@ class NameValidator implements Validator<Name> {
   /// Validates the [name] content.
   @override
   void validate(Name name) {
-    if (!ValidationRule.namon.hasMatch(name.namon)) {
+    if (!ValidationRule.namon.hasMatch(name.value)) {
       throw ValidationException(
         source: name,
         nameType: name.type.toString(),
@@ -318,7 +318,7 @@ class NamaValidator implements Validator<Map<Namon, String>> {
 class ListStringValidator extends Validator<List<String>>
     with ListValidatorMixin<String> {
   final NameIndex index;
-  ListStringValidator([this.index = const NameIndex(-1, 0, -1, 1, -1)]);
+  ListStringValidator([this.index = const NameIndex.base()]);
 
   @override
   void validate(List<String> values) {

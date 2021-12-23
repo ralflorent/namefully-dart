@@ -18,20 +18,20 @@ class Name {
   /// A name [type] must be indicated to categorize the name so it can be
   /// treated accordingly. [capsRange] determines how the name should be
   /// capitalized.
-  Name(String namon, this.type, [CapsRange? capsRange])
+  Name(String value, this.type, [CapsRange? capsRange])
       : _capsRange = capsRange ?? CapsRange.initial {
-    this.namon = namon;
+    this.value = value;
     if (capsRange != null) caps(capsRange);
   }
 
   /// The piece of string treated as a name.
-  String get namon => _namon;
-  set namon(String namon) {
-    if (namon.isInvalid) {
-      throw InputException(source: namon, message: 'must be 2+ characters');
+  String get value => _namon;
+  set value(String val) {
+    if (val.isInvalid) {
+      throw InputException(source: val, message: 'must be 2+ characters');
     }
 
-    _namon = namon;
+    _namon = val;
     _initial = _namon[0];
     _body = _namon.substring(1);
   }
@@ -45,11 +45,11 @@ class Name {
   /// Returns true if [other] is equal to this name.
   @override
   bool operator ==(other) {
-    return other is Name && other.namon == namon && other.type == type;
+    return other is Name && other.value == value && other.type == type;
   }
 
   @override
-  int get hashCode => hashValues(namon, type);
+  int get hashCode => hashValues(value, type);
 
   /// Gives some descriptive statistics.
   ///
@@ -63,28 +63,20 @@ class Name {
   /// Capitalizes the name.
   void caps([CapsRange? range]) {
     range ??= _capsRange;
-    if (range == CapsRange.initial) {
-      namon = '${_initial.toUpperCase()}$_body';
-    } else if (range == CapsRange.all) {
-      namon = '${_initial.toUpperCase()}${_body.toUpperCase()}';
-    }
+    value = capitalize(_namon, range);
   }
 
   /// De-capitalizes the name.
   void decaps([CapsRange? range]) {
     range ??= _capsRange;
-    if (range == CapsRange.initial) {
-      namon = '${_initial.toLowerCase()}$_body';
-    } else if (range == CapsRange.all) {
-      namon = '${_initial.toLowerCase()}${_body.toLowerCase()}';
-    }
+    value = decapitalize(_namon, range);
   }
 
   /// Normalizes the name as it should be.
-  void normalize() => _namon = _initial.toUpperCase() + _body.toLowerCase();
+  void normalize() => _namon = capitalize(_namon);
 
   /// Creates a password-like representation of the name.
-  String passwd() => generatePassword(namon);
+  String passwd() => generatePassword(value);
 }
 
 /// Representation of a first name with some extra functionality.
@@ -113,13 +105,13 @@ class FirstName extends Name {
 
   @override
   String toString({bool includeAll = false}) {
-    return includeAll && hasMore ? '$namon ${_more.join(" ")}'.trim() : namon;
+    return includeAll && hasMore ? '$value ${_more.join(" ")}'.trim() : value;
   }
 
-  /// Returns a combined version of the [namon] and [more] if any.
+  /// Returns a combined version of the [value] and [more] if any.
   List<Name> asNames() {
     return [
-      Name(namon, Namon.firstName),
+      Name(value, Namon.firstName),
       if (hasMore) ..._more.map((n) => Name(n, Namon.firstName))
     ];
   }
@@ -131,13 +123,9 @@ class FirstName extends Name {
   @override
   Summary stats({
     bool includeAll = false,
-    List<String> restrictions = const [' '],
-  }) {
-    return Summary(
-      toString(includeAll: includeAll),
-      restrictions: restrictions,
-    );
-  }
+    List<String> except = const [' '],
+  }) =>
+      Summary(toString(includeAll: includeAll), except: except);
 
   /// Gets the initials of the first name.
   @override
@@ -153,10 +141,10 @@ class FirstName extends Name {
   void caps([CapsRange? range]) {
     range ??= _capsRange;
     if (range == CapsRange.initial) {
-      namon = capitalize(namon);
+      value = capitalize(value);
       if (hasMore) _more = _more.map(capitalize).toList();
     } else if (range == CapsRange.all) {
-      namon = namon.toUpperCase();
+      value = value.toUpperCase();
       if (hasMore) _more = _more.map((n) => n.toUpperCase()).toList();
     }
   }
@@ -166,10 +154,10 @@ class FirstName extends Name {
   void decaps([CapsRange? range]) {
     range ??= _capsRange;
     if (range == CapsRange.initial) {
-      namon = decapitalize(namon);
+      value = decapitalize(value);
       if (hasMore) _more = _more.map(decapitalize).toList();
     } else if (range == CapsRange.all) {
-      namon = namon.toLowerCase();
+      value = value.toLowerCase();
       if (hasMore) _more = _more.map((n) => n.toLowerCase()).toList();
     }
   }
@@ -177,7 +165,7 @@ class FirstName extends Name {
   /// Normalizes the first name as it should be.
   @override
   void normalize() {
-    namon = capitalize(namon);
+    value = capitalize(value);
     if (hasMore) _more = _more.map(capitalize).toList();
   }
 
@@ -219,13 +207,13 @@ class LastName extends Name {
     format = format ?? this.format;
     switch (format) {
       case Surname.father:
-        return namon;
+        return value;
       case Surname.mother:
         return _mother ?? '';
       case Surname.hyphenated:
-        return hasMother ? '$namon-$_mother' : namon;
+        return hasMother ? '$value-$_mother' : value;
       case Surname.all:
-        return hasMother ? '$namon $_mother' : namon;
+        return hasMother ? '$value $_mother' : value;
     }
   }
 
@@ -234,11 +222,8 @@ class LastName extends Name {
   /// The statistical description summarizes the central tendency, dispersion
   /// and shape of the characters' distribution. See [Summary] for more details.
   @override
-  Summary stats({
-    Surname? format,
-    List<String> restrictions = const [' '],
-  }) {
-    return Summary(toString(format: format), restrictions: restrictions);
+  Summary stats({Surname? format, List<String> except = const [' ']}) {
+    return Summary(toString(format: format), except: except);
   }
 
   /// Gets the initials of the last name.
@@ -248,14 +233,14 @@ class LastName extends Name {
     var initials = <String>[];
     switch (format) {
       case Surname.father:
-        initials.add(namon[0]);
+        initials.add(value[0]);
         break;
       case Surname.mother:
         if (hasMother) initials.add(_mother![0]);
         break;
       case Surname.hyphenated:
       case Surname.all:
-        initials.add(namon[0]);
+        initials.add(value[0]);
         if (hasMother) initials.add(_mother![0]);
         break;
     }
@@ -267,10 +252,10 @@ class LastName extends Name {
   void caps([CapsRange? range]) {
     range ??= _capsRange;
     if (range == CapsRange.initial) {
-      namon = capitalize(namon);
+      value = capitalize(value);
       if (hasMother) _mother = capitalize(_mother!);
     } else if (range == CapsRange.all) {
-      namon = namon.toUpperCase();
+      value = value.toUpperCase();
       if (hasMother) _mother = _mother!.toUpperCase();
     }
   }
@@ -280,10 +265,10 @@ class LastName extends Name {
   void decaps([CapsRange? range]) {
     range ??= _capsRange;
     if (range == CapsRange.initial) {
-      namon = decapitalize(namon);
+      value = decapitalize(value);
       if (hasMother) _mother = decapitalize(_mother!);
     } else if (range == CapsRange.all) {
-      namon = namon.toLowerCase();
+      value = value.toLowerCase();
       if (hasMother) _mother = _mother!.toLowerCase();
     }
   }
@@ -291,7 +276,7 @@ class LastName extends Name {
   /// Normalizes the last name as it should be.
   @override
   void normalize() {
-    namon = capitalize(namon);
+    value = capitalize(value);
     if (hasMother) _mother = capitalize(_mother!);
   }
 
@@ -304,8 +289,8 @@ class LastName extends Name {
 
 /// Summary of descriptive (categorical) statistics of name components.
 class Summary with Summarizable {
-  Summary(String namon, {List<String>? restrictions}) {
-    summarize(namon, restrictions: restrictions);
+  Summary(String namon, {List<String>? except}) {
+    summarize(namon, except: except);
   }
 }
 
@@ -340,9 +325,9 @@ mixin Summarizable {
   int _unique = 0;
 
   /// Creates a summary of a given string of alphabetical characters.
-  Summarizable summarize(String string, {List<String>? restrictions}) {
+  Summarizable summarize(String string, {List<String>? except}) {
     _string = string;
-    _restrictions = restrictions ?? const [' '];
+    _restrictions = except ?? const [' '];
 
     if (string.isInvalid) {
       throw InputException(source: string, message: 'must be 2+ characters');

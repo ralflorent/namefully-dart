@@ -30,6 +30,24 @@ void main() {
         expect(name.toString(), equals('Mr John Ben Smith Ph.D'));
       });
 
+      test('.equals() checks whether two names are equal', () {
+        expect(name.equals(Namefully('Mr John Ben Smith Ph.D')), equals(true));
+        expect(name.equals(Namefully('Mr John Ben Smith')), equals(false));
+      });
+
+      test('[] gets the raw form of a name', () {
+        expect(name[Namon.prefix],
+            isA<Name>().having((n) => n.value, 'namon', 'Mr'));
+        expect(name[Namon.firstName],
+            isA<FirstName>().having((n) => n.value, 'namon', 'John'));
+        expect(name[Namon.middleName],
+            isA<List<Name>>().having((n) => n.first.value, 'namon', 'Ben'));
+        expect(name[Namon.lastName],
+            isA<LastName>().having((n) => n.value, 'namon', 'Smith'));
+        expect(name[Namon.suffix],
+            isA<Name>().having((n) => n.value, 'namon', 'Ph.D'));
+      });
+
       test('.toMap() returns a Map<String, String> version of the full name',
           () {
         expect(

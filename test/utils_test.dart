@@ -7,22 +7,22 @@ void main() {
     test(
         '.getNameIndex() provides the name indexes from a list of names when'
         ' ordered by first name', () {
-      var indexes = NameIndex.find(NameOrder.firstName, 2);
+      var indexes = NameIndex.when(NameOrder.firstName, 2);
       expect(indexes.firstName, equals(0));
       expect(indexes.lastName, equals(1));
 
-      indexes = NameIndex.find(NameOrder.firstName, 3);
+      indexes = NameIndex.when(NameOrder.firstName, 3);
       expect(indexes.firstName, equals(0));
       expect(indexes.middleName, equals(1));
       expect(indexes.lastName, equals(2));
 
-      indexes = NameIndex.find(NameOrder.firstName, 4);
+      indexes = NameIndex.when(NameOrder.firstName, 4);
       expect(indexes.prefix, equals(0));
       expect(indexes.firstName, equals(1));
       expect(indexes.middleName, equals(2));
       expect(indexes.lastName, equals(3));
 
-      indexes = NameIndex.find(NameOrder.firstName, 5);
+      indexes = NameIndex.when(NameOrder.firstName, 5);
       expect(indexes.prefix, equals(0));
       expect(indexes.firstName, equals(1));
       expect(indexes.middleName, equals(2));
@@ -33,22 +33,22 @@ void main() {
     test(
         '.getNameIndex() provides the name indexes from a list of names when'
         ' ordered by last name', () {
-      var indexes = NameIndex.find(NameOrder.lastName, 2);
+      var indexes = NameIndex.when(NameOrder.lastName, 2);
       expect(indexes.lastName, equals(0));
       expect(indexes.firstName, equals(1));
 
-      indexes = NameIndex.find(NameOrder.lastName, 3);
+      indexes = NameIndex.when(NameOrder.lastName, 3);
       expect(indexes.lastName, equals(0));
       expect(indexes.firstName, equals(1));
       expect(indexes.middleName, equals(2));
 
-      indexes = NameIndex.find(NameOrder.lastName, 4);
+      indexes = NameIndex.when(NameOrder.lastName, 4);
       expect(indexes.prefix, equals(0));
       expect(indexes.lastName, equals(1));
       expect(indexes.firstName, equals(2));
       expect(indexes.middleName, equals(3));
 
-      indexes = NameIndex.find(NameOrder.lastName, 5);
+      indexes = NameIndex.when(NameOrder.lastName, 5);
       expect(indexes.prefix, equals(0));
       expect(indexes.lastName, equals(1));
       expect(indexes.firstName, equals(2));

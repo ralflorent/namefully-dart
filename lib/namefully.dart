@@ -165,6 +165,18 @@ class Namefully {
   @override
   String toString() => full;
 
+  /// Fetches the raw form of a [namon].
+  Object? operator [](Namon namon) {
+    if (namon == Namon.prefix) return _fullName.prefix;
+    if (namon == Namon.firstName) return _fullName.firstName;
+    if (namon == Namon.middleName) return _fullName.middleName;
+    if (namon == Namon.lastName) return _fullName.lastName;
+    if (namon == Namon.suffix) return _fullName.suffix;
+  }
+
+  /// Whether this name is equal to an[other] one from a raw-string perspective.
+  bool equals(Namefully other) => toString() == other.toString();
+
   /// Gets the full name ordered as configured.
   ///
   /// The name order [orderedBy] forces to order by first or last name by
@@ -247,7 +259,7 @@ class Namefully {
 
   /// Gets the middle [Name] part of the [FullName].
   List<String> middleName() {
-    return _fullName.middleName.map((n) => n.namon).toList();
+    return _fullName.middleName.map((n) => n.value).toList();
   }
 
   /// Gets the initials of the [FullName].
@@ -334,11 +346,10 @@ class Namefully {
   ///
   /// Another thing to consider is that the summary is case *insensitive*. Note
   /// that the letter `a` has the top frequency, be it `3`.
-  Summary? stats({NameType? type, List<String> restrictions = const [' ']}) {
+  Summary? stats({NameType? type, List<String> except = const [' ']}) {
     switch (type) {
       case NameType.firstName:
-        return _fullName.firstName
-            .stats(includeAll: true, restrictions: restrictions);
+        return _fullName.firstName.stats(includeAll: true, except: except);
       case NameType.middleName:
         if (!hasMiddle) {
           print('No Summary for middleName since none was set.');
@@ -347,7 +358,7 @@ class Namefully {
         return Summary(middleName().join(' '));
       case NameType.lastName:
         return _fullName.lastName
-            .stats(format: _config.surname, restrictions: restrictions);
+            .stats(format: _config.surname, except: except);
       case NameType.birthName:
         return _summary;
       default:
@@ -374,8 +385,8 @@ class Namefully {
   String shorten({NameOrder? orderedBy}) {
     orderedBy ??= _config.orderedBy;
     return orderedBy == NameOrder.firstName
-        ? [_fullName.firstName.namon, _fullName.lastName.toString()].join(' ')
-        : [_fullName.lastName.toString(), _fullName.firstName.namon].join(' ');
+        ? [_fullName.firstName.value, _fullName.lastName.toString()].join(' ')
+        : [_fullName.lastName.toString(), _fullName.firstName.value].join(' ');
   }
 
   /// Flattens a long name using the name types as variants.
