@@ -23,7 +23,7 @@ void main() {
   print(name.initials); // ['J', 'D']
 
   // Formats it as desired.
-  print(name.format(r'f $l.')); // Jane D.
+  print(name.format(r'f $l')); // Jane D
 
   // Makes it flat.
   print(name.zip()); // Jane D.

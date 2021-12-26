@@ -8,7 +8,6 @@ import 'utils.dart';
 class Name {
   late String _namon;
   late String _initial;
-  late String _body;
 
   final CapsRange _capsRange;
   final Namon type;
@@ -26,14 +25,13 @@ class Name {
 
   /// The piece of string treated as a name.
   String get value => _namon;
-  set value(String val) {
-    if (val.isInvalid) {
-      throw InputException(source: val, message: 'must be 2+ characters');
+  set value(String newValue) {
+    if (newValue.isInvalid) {
+      throw InputException(source: newValue, message: 'must be 2+ characters');
     }
 
-    _namon = val;
-    _initial = _namon[0];
-    _body = _namon.substring(1);
+    _namon = newValue;
+    _initial = newValue[0];
   }
 
   /// The length of the name.

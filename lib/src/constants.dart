@@ -25,7 +25,7 @@ const List<String> kAllowedTokens = [
 const int kMinNumberOfNameParts = 2;
 const int kMaxNumberOfNameParts = 5;
 const List<String> kRestrictedChars = [' ', "'", '-', '.', ','];
-final Map<String, Set<String>> kPasswordMapper = Map.fromIterables([
+final Map<String, Set<String>> kPasswordKeyMapper = Map.fromIterables([
   'a',
   'b',
   'c',

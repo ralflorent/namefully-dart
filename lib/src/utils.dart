@@ -96,21 +96,20 @@ String decapitalize(String string, [CapsRange range = CapsRange.initial]) {
 
 /// Toggles a [string] representation.
 String toggleCase(String string) {
-  var chars = <String>[];
-  for (final c in string.split('')) {
-    chars.add(c == c.toUpperCase() ? c.toLowerCase() : c.toUpperCase());
-  }
-  return chars.join();
+  return <String>[
+    for (var c in string.split(''))
+      c == c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()
+  ].join();
 }
 
 /// Generates a password-like content from a [string].
 String generatePassword(String string) {
-  var mapper = kPasswordMapper;
-  return string.toLowerCase().split('').map((char) {
-    return mapper.containsKey(char)
-        ? mapper[char]!.random()
-        : mapper['\$']!.random();
-  }).join();
+  var m = kPasswordKeyMapper;
+  return string
+      .toLowerCase()
+      .split('')
+      .map((char) => m.containsKey(char) ? m[char]!.random : m['\$']!.random)
+      .join();
 }
 
 // Borrowed from the dart sdk: sdk/lib/math/jenkins_smi_hash.dart.
@@ -124,15 +123,15 @@ int hashValues(Object arg01, Object arg02) {
 /// Makes a [Set] capable of [random]izing its elements.
 extension CharSet<E> on Set<E> {
   /// Shuffles the elements within a set and returns a random one.
-  E random() => List<E>.from(this).elementAt(Random().nextInt(length));
+  E get random => List<E>.from(this).elementAt(Random().nextInt(length));
 }
 
 /// Add validation capabilities to [String].
 extension StringValidation on String {
-  /// A minimum 2 characters must be provided.
+  /// A minimum of 2 characters must be provided.
   bool get isValid => trim().isNotEmpty && trim().length > 1;
 
-  /// A minimum 2 characters must be provided.
+  /// A minimum of 2 characters must be provided.
   bool get isInvalid => !isValid;
 }
 

@@ -3,8 +3,6 @@ import 'package:namefully/namefully.dart';
 export 'src/config.dart';
 export 'src/types.dart';
 export 'src/exception.dart';
-export 'src/full_name.dart';
-export 'src/name.dart';
 
 /// A quick start with `namefully` using a simple string.
 ///
@@ -23,6 +21,9 @@ export 'src/name.dart';
 /// but ONLY for those that are considered people's names. Otherwise, the risk
 /// of having [NameException]s is very high.
 extension NamefullyString on String {
+  /// Sets the configuration for the `namefully` library.
+  set config(Config config) => _config = config;
+
   /// Returns a version of the string transformed into [Namefully].
   ///
   /// A customized [Config]uration may be set using [config] setter.
@@ -71,9 +72,6 @@ extension NamefullyString on String {
   String zip({Flat by = Flat.midLast, bool withPeriod = true}) {
     return namefully.zip(by: by, withPeriod: withPeriod);
   }
-
-  /// Sets the configuration for the namefully library.
-  set config(Config config) => _config = config;
 }
 
 /// An extended version of [Summary] on String.
