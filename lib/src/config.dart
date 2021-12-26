@@ -3,11 +3,11 @@ import 'types.dart';
 const String _kDefaultName = 'default';
 const String _kCopyAlias = '_copy';
 
-/// A single [Config]uration to use across the other components.
+/// The [Config]uration to use across the other components.
 ///
-/// A singleton pattern is used to keep one configuration across the [Namefully]
-/// setup. This is useful to avoid confusion when building other components such
-/// as [FirstName], [LastName], or [Name] of distinct types (or [Namon]) that
+/// The multiton pattern is used to keep one configuration across the [Namefully]
+/// setup. This is useful for avoiding confusion when building other components
+/// such as [FirstName], [LastName], or [Name] of distinct types (or [Namon]) that
 /// may be of particular shapes.
 ///
 /// For example, a person's [FullName] may appear by:
@@ -105,6 +105,9 @@ abstract class Config {
     Surname? surname,
   });
 
+  /// Resets the configuration by setting it back to its default values.
+  void reset();
+
   /// Alters the [nameOrder] between the first and last name, and rearrange the
   /// order of appearance of a name set.
   void updateOrder(NameOrder nameOrder);
@@ -153,8 +156,7 @@ class _Config implements Config {
     if (_cache.containsKey(name)) {
       return _cache[name]!;
     } else {
-      _cache[name] = _Config._default(name);
-      return _cache[name]!;
+      return _cache[name] = _Config._default(name);
     }
   }
 
@@ -200,7 +202,7 @@ class _Config implements Config {
     bool? bypass,
     Surname? surname,
   }) {
-    return _Config(getNewName(name ?? this.name + _kCopyAlias))
+    return _Config(genNewName(name ?? this.name + _kCopyAlias))
       ..orderedBy = orderedBy ?? this.orderedBy
       ..separator = separator ?? this.separator
       ..title = title ?? this.title
@@ -210,12 +212,23 @@ class _Config implements Config {
   }
 
   @override
+  void reset() {
+    orderedBy = NameOrder.firstName;
+    separator = Separator.space;
+    title = Title.uk;
+    ending = false;
+    bypass = true;
+    surname = Surname.father;
+    _cache[name] = _Config._default(name);
+  }
+
+  @override
   void updateOrder(NameOrder nameOrder) => _cache[name]!.orderedBy = nameOrder;
 
-  /// Returns a unique new name.
-  String getNewName(String name) {
+  /// Generates a unique new name.
+  String genNewName(String name) {
     return name == this.name || _cache.containsKey(name)
-        ? getNewName(name + _kCopyAlias)
+        ? genNewName(name + _kCopyAlias)
         : name;
   }
 }

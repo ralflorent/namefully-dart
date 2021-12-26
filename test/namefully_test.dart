@@ -672,6 +672,16 @@ void main() {
       expect(config.bypass, equals(true));
       expect(config.ending, equals(false));
       expect(config.surname, equals(Surname.father));
+
+      // Resets the copy config to the default.
+      copyConfig.reset();
+      expect(copyConfig.name, equals('config_copy'));
+      expect(copyConfig.orderedBy, equals(NameOrder.firstName));
+      expect(copyConfig.separator, equals(Separator.space));
+      expect(copyConfig.title, equals(Title.uk));
+      expect(copyConfig.bypass, equals(true));
+      expect(copyConfig.ending, equals(false));
+      expect(copyConfig.surname, equals(Surname.father));
     });
   });
 }
