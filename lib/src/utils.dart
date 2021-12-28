@@ -97,7 +97,7 @@ String decapitalize(String string, [CapsRange range = CapsRange.initial]) {
 /// Toggles a [string] representation.
 String toggleCase(String string) {
   return <String>[
-    for (var c in string.split(''))
+    for (var c in string.chars)
       c == c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()
   ].join();
 }
@@ -107,7 +107,7 @@ String generatePassword(String string) {
   var m = kPasswordKeyMapper;
   return string
       .toLowerCase()
-      .split('')
+      .chars
       .map((char) => m.containsKey(char) ? m[char]!.random : m['\$']!.random)
       .join();
 }
@@ -133,6 +133,9 @@ extension StringValidation on String {
 
   /// A minimum of 2 characters must be provided.
   bool get isInvalid => !isValid;
+
+  /// Transforms a string into a list of characters.
+  List<String> get chars => split('');
 }
 
 /// Enable nullable check for first values on [Iterable]s.

@@ -351,7 +351,7 @@ mixin Summarizable {
 
     var restrictions = _restrictions.map((n) => n.toUpperCase());
 
-    for (var char in _string.toUpperCase().split('')) {
+    for (var char in _string.toUpperCase().chars) {
       if (restrictions.contains(char)) continue;
       if (frequencies.containsKey(char)) {
         frequencies[char] = frequencies[char]! + 1;

@@ -66,7 +66,7 @@ extension NamefullyString on String {
   List<String> get initials => namefully.initials(withMid: true);
 
   /// Formats the full name as desired.
-  String format([String how = 'o']) => namefully.format(how);
+  String format(String pattern) => namefully.format(pattern);
 
   /// Compacts a name using different forms of variants.
   String zip({Flat by = Flat.midLast, bool withPeriod = true}) {

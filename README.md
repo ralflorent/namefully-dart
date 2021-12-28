@@ -16,7 +16,7 @@ You may want to use this library if:
 - you've been repeatedly dealing with users' given names and surnames;
 - you need to occasionally format a name in a particular order, way, or shape;
 - you keep copy-pasting your name-related business logic for every project;
-- you're curious about trying new, cool stuff.
+- you're curious about trying new, cool stuff (e.g., learning Dart).
 
 ## Key features
 
@@ -60,8 +60,8 @@ void main() {
 
 `Config` is a single configuration to use across the other components.
 
-A singleton pattern is used to keep one configuration across the `Namefully`
-setup. This is useful to avoid confusion when building other components such
+The multiton pattern is used to keep one configuration across the `Namefully`
+setup. This is useful for avoiding confusion when building other components such
 as `FirstName`, `LastName`, or `Name` of distinct types (or `Namon`) that may
 be of particular shapes.
 
@@ -71,9 +71,9 @@ Below are enlisted the options supported by `namefully`.
 
 `NameOrder` - default: `NameOrder.firstName`
 
-Indicates in what order the names appear when set as raw string values or
-string array values. That is, the first element/piece of the name is either the
-given name (e.g., `Jon Snow`) or the surname (e.g.,`Snow Jon`).
+Indicates in what order the names appear when set as raw string values or string
+array values. That is, the first element/piece of the name is either the given
+name (e.g., `Jon Snow`) or the surname (e.g.,`Snow Jon`).
 
 ```dart
 // 'Smith' is the surname in this raw string case
@@ -250,7 +250,7 @@ other words, the most basic/typical case is a name that looks like this:
 `John Smith`, where `John` is the _firstName_ and `Smith`, the _lastName_.
 
 > NOTE: Do notice that the order of appearance matters and (as shown
-> [here](#orderedBy)) can be altered through configured parameters. By default,
+> [orderedBy](#orderedBy)) can be altered through configured parameters. By default,
 > the order of appearance is as shown above and will be used as a basis for
 > future examples and use cases.
 
@@ -280,8 +280,7 @@ So, this utility understands the name parts as follows:
 
 `namefully` does not have support for certain use cases:
 
-- mononame: `Plato`. A workaround to this is to set the mononame as both first
-  and last name;
+- mononame: `Plato`. A workaround is to set the mononame as both first and last name;
 - multiple prefixes: `Prof. Dr. Einstein`.
 
 See the [test cases](test) for further details or the

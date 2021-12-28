@@ -10,10 +10,10 @@ import 'validator.dart';
 /// full name set: prefix, first name, middle name, last name, and suffix.
 ///
 /// This class is intended for internal processes. However, it is understandable
-/// that it might be needed at some point for additional purposes. For this rea-
-/// son, it's made available.
+/// that it might be needed at some point for additional purposes. For this reason,
+/// it's made available.
 ///
-/// It is recommended to avoid using [FullName] unless it is highly necessary or
+/// It is recommended to avoid using this class unless it is highly necessary or
 /// a custom parser is used for uncommon use cases. This utility tries to cover
 /// as many use cases as possible.
 ///
@@ -29,8 +29,8 @@ import 'validator.dart';
 /// print(fullName.shorten()); // John Smith
 /// ```
 ///
-/// Additionally, an optional [Config]uration can be used to indicate some speci-
-/// fic behaviors related to that name handling.
+/// Additionally, an optional [Config]uration can be used to indicate some specific
+/// behaviors related to that name handling.
 class FullName {
   Name? _prefix;
   late FirstName _firstName;
@@ -48,7 +48,7 @@ class FullName {
     _parseJsonName(jsonName);
   }
 
-  /// Creates a full name with raw string content.
+  /// Creates a full name from raw string content.
   FullName.raw({
     String? prefix,
     required String firstName,
@@ -110,11 +110,8 @@ class FullName {
   /// Returns true if a [namon] has been set.
   bool has(Namon namon) {
     if (namon == Namon.prefix) return prefix != null;
-    if (namon == Namon.firstName || namon == Namon.lastName) return true;
     if (namon == Namon.suffix) return suffix != null;
-    if (namon == Namon.middleName) return middleName.isNotEmpty;
-
-    return false;
+    return namon == Namon.middleName ? middleName.isNotEmpty : true;
   }
 
   /// Sets a [prefix] using string values.
@@ -150,11 +147,12 @@ class FullName {
       rawLastName(json[Namon.lastName.key]!);
     } on NameException {
       rethrow; // Let a name exception run its course.
-    } catch (error) {
+    } catch (error, stackTrace) {
       throw UnknownException(
         source: json.values.join(' '),
         message: 'could not parse Map<String, String> content',
         error: error,
+        stackTrace: stackTrace,
       );
     }
   }

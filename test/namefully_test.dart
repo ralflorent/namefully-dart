@@ -98,9 +98,9 @@ void main() {
       });
 
       test('.format() formats a full name as desired', () {
-        expect(name.format(), equals('Mr SMITH, John Ben Ph.D'));
         expect(name.format('short'), equals('John Smith'));
         expect(name.format('long'), equals('John Ben Smith'));
+        expect(name.format('public'), equals('John S'));
         expect(name.format('official'), equals('Mr SMITH, John Ben Ph.D'));
 
         expect(name.format('B'), equals('JOHN BEN SMITH'));

@@ -108,6 +108,9 @@ class Namefully {
   }
 
   /// Creates a name from a [FullName].
+  ///
+  /// Provided by this utility, a [FullName] is a copy of the original data. See
+  /// more on [FullName] for more info.
   Namefully.from(FullName fullName) {
     _config = fullName.config;
     _fullName = fullName;
@@ -193,20 +196,21 @@ class Namefully {
   /// ```
   String fullName([NameOrder? orderedBy]) {
     orderedBy ??= _config.orderedBy;
-    final sep = _config.ending ? ',' : '';
-    final nama = <String>[];
-    if (_fullName.prefix != null) nama.add(_fullName.prefix.toString());
-    if (orderedBy == NameOrder.firstName) {
-      nama.add(first);
-      nama.addAll(middleName());
-      nama.add(last + sep);
-    } else {
-      nama.add(last);
-      nama.add(first);
-      nama.add(middleName().join(' ') + sep);
-    }
-    if (_fullName.suffix != null) nama.add(_fullName.suffix.toString());
-    return nama.join(' ').trim();
+    var sep = _config.ending ? ',' : '';
+
+    return <String>[
+      if (prefix != null) prefix!,
+      if (orderedBy == NameOrder.firstName) ...[
+        first,
+        ...middleName(),
+        last + sep,
+      ] else ...[
+        last,
+        first,
+        middleName().join(' ') + sep
+      ],
+      if (suffix != null) suffix!,
+    ].join(' ').trim();
   }
 
   /// Gets a Map or json-like representation of the full name.
@@ -421,12 +425,12 @@ class Namefully {
     if (count <= limit) return full;
 
     var sep = withPeriod ? '.' : '',
-        fn = _fullName.firstName,
+        fn = _fullName.firstName.toString(),
         mn = middleName().join(' '),
-        ln = _fullName.lastName,
+        ln = _fullName.lastName.toString(),
         hasMid = hasMiddle,
-        f = fn.initials().join('$sep ') + sep,
-        l = ln.initials().join('$sep ') + sep,
+        f = _fullName.firstName.initials().join('$sep ') + sep,
+        l = _fullName.lastName.initials().join('$sep ') + sep,
         m = hasMiddle
             ? _fullName.middleName
                     .map((n) => n.initials().first)
@@ -438,21 +442,19 @@ class Namefully {
     if (_config.orderedBy == NameOrder.firstName) {
       switch (by) {
         case Flat.firstName:
-          name = hasMid ? [f, mn, ln.toString()] : [f, ln.toString()];
+          name = hasMid ? [f, mn, ln] : [f, ln];
           break;
         case Flat.lastName:
-          name = hasMid ? [fn.toString(), mn, l] : [fn.toString(), l];
+          name = hasMid ? [fn, mn, l] : [fn, l];
           break;
         case Flat.middleName:
-          name = hasMid
-              ? [fn.toString(), m, ln.toString()]
-              : [fn.toString(), ln.toString()];
+          name = hasMid ? [fn, m, ln] : [fn, ln];
           break;
         case Flat.firstMid:
-          name = hasMid ? [f, m, ln.toString()] : [f, ln.toString()];
+          name = hasMid ? [f, m, ln] : [f, ln];
           break;
         case Flat.midLast:
-          name = hasMid ? [fn.toString(), m, l] : [fn.toString(), l];
+          name = hasMid ? [fn, m, l] : [fn, l];
           break;
         case Flat.all:
           name = hasMid ? [f, m, l] : [f, l];
@@ -461,21 +463,19 @@ class Namefully {
     } else {
       switch (by) {
         case Flat.firstName:
-          name = hasMid ? [ln.toString(), f, mn] : [ln.toString(), f];
+          name = hasMid ? [ln, f, mn] : [ln, f];
           break;
         case Flat.lastName:
-          name = hasMid ? [l, fn.toString(), mn] : [l, fn.toString()];
+          name = hasMid ? [l, fn, mn] : [l, fn];
           break;
         case Flat.middleName:
-          name = hasMid
-              ? [ln.toString(), fn.toString(), m]
-              : [ln.toString(), fn.toString()];
+          name = hasMid ? [ln, fn, m] : [ln, fn];
           break;
         case Flat.firstMid:
-          name = hasMid ? [ln.toString(), f, m] : [ln.toString(), f];
+          name = hasMid ? [ln, f, m] : [ln, f];
           break;
         case Flat.midLast:
-          name = hasMid ? [l, fn.toString(), m] : [l, fn.toString()];
+          name = hasMid ? [l, fn, m] : [l, fn];
           break;
         case Flat.all:
           name = hasMid ? [l, f, m] : [l, f];
@@ -499,7 +499,7 @@ class Namefully {
 
   /// Formats the full name as desired.
   ///
-  /// [how] to format it?
+  /// Which [pattern] to use format it?
   /// string format
   /// -------------
   /// * 'short': typical first + last name
@@ -531,7 +531,7 @@ class Namefully {
   /// * '_': underscore
   /// * '$': an escape character to select only the initial of the next char.
   ///
-  /// Given the name `Joe Jim Smith`, call [format] with the [how] string.
+  /// Given the name `Joe Jim Smith`, call [format] with the [pattern] string.
   /// - format('l f') => 'Smith Joe'
   /// - format('L, f') => 'SMITH, Joe'
   /// - format('short') => 'Joe Smith'
@@ -540,25 +540,26 @@ class Namefully {
   ///
   /// Do note that the escape character is only valid for the birth name parts:
   /// first, middle, and last names.
-  String format([String how = 'official']) {
-    if (how == 'short') return short;
-    if (how == 'long') return long;
-    if (how == 'official') how = 'o';
+  String format(String pattern) {
+    if (pattern == 'short') return short;
+    if (pattern == 'long') return long;
+    if (pattern == 'public') return public;
+    if (pattern == 'official') pattern = 'o';
 
-    var set = ''; // set of chars.
+    var group = ''; // set of chars.
     final formatted = <String>[];
-    for (var c in how.split('')) {
+    for (var c in pattern.chars) {
       if (!kAllowedTokens.contains(c)) {
         throw NotAllowedException(
           source: full,
           operation: 'format',
-          message: 'unsupported character <$c> from $how.',
+          message: 'unsupported character <$c> from $pattern.',
         );
       }
-      set += c;
+      group += c;
       if (c == r'$') continue;
-      formatted.add(_map(set) ?? '');
-      set = '';
+      formatted.add(_map(group) ?? '');
+      group = '';
     }
     return formatted.join().trim();
   }
