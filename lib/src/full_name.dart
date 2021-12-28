@@ -26,7 +26,6 @@ import 'validator.dart';
 ///     ..rawMiddleName(['Ben', 'Carl'])
 ///     ..rawLastName('Smith')
 ///     ..rawSuffix('Ph.D');
-/// print(fullName.shorten()); // John Smith
 /// ```
 ///
 /// Additionally, an optional [Config]uration can be used to indicate some specific

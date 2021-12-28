@@ -110,7 +110,7 @@ class Namefully {
   /// Creates a name from a [FullName].
   ///
   /// Provided by this utility, a [FullName] is a copy of the original data. See
-  /// more on [FullName] for more info.
+  /// the [FullName] class definition for more info.
   Namefully.from(FullName fullName) {
     _config = fullName.config;
     _fullName = fullName;
@@ -180,39 +180,6 @@ class Namefully {
   /// Whether this name is equal to an[other] one from a raw-string perspective.
   bool equals(Namefully other) => toString() == other.toString();
 
-  /// Gets the full name ordered as configured.
-  ///
-  /// The name order [orderedBy] forces to order by first or last name by
-  /// overriding the preset configuration.
-  ///
-  /// [Namefully.format] may also be used to alter manually the order of appearance
-  /// of full name.
-  ///
-  /// For example:
-  /// ```dart
-  /// var name = Namefully('Jon Stark Snow');
-  /// print(name.fullName(NameOrder.lastName)); // "Snow Jon Stark"
-  /// print(name.format('l f m')); // "Snow Jon Stark"
-  /// ```
-  String fullName([NameOrder? orderedBy]) {
-    orderedBy ??= _config.orderedBy;
-    var sep = _config.ending ? ',' : '';
-
-    return <String>[
-      if (prefix != null) prefix!,
-      if (orderedBy == NameOrder.firstName) ...[
-        first,
-        ...middleName(),
-        last + sep,
-      ] else ...[
-        last,
-        first,
-        middleName().join(' ') + sep
-      ],
-      if (suffix != null) suffix!,
-    ].join(' ').trim();
-  }
-
   /// Gets a Map or json-like representation of the full name.
   Map<String, String?> toMap() => Map.unmodifiable({
         Namon.prefix.key: prefix,
@@ -233,6 +200,39 @@ class Namefully {
 
   /// Confirms that a name part has been set.
   bool has(Namon namon) => _fullName.has(namon);
+
+  /// Gets the full name ordered as configured.
+  ///
+  /// The name order [orderedBy] forces to order by first or last name by
+  /// overriding the preset configuration.
+  ///
+  /// [Namefully.format] may also be used to alter manually the order of appearance
+  /// of full name.
+  ///
+  /// For example:
+  /// ```dart
+  /// var name = Namefully('Jon Stark Snow');
+  /// print(name.fullName(NameOrder.lastName)); // "Snow Jon Stark"
+  /// print(name.format('l f m')); // "Snow Jon Stark"
+  /// ```
+  String fullName([NameOrder? orderedBy]) {
+    var sep = _config.ending ? ',' : '';
+    orderedBy ??= _config.orderedBy;
+
+    return <String>[
+      if (prefix != null) prefix!,
+      if (orderedBy == NameOrder.firstName) ...[
+        first,
+        ...middleName(),
+        last + sep,
+      ] else ...[
+        last,
+        first,
+        middleName().join(' ') + sep
+      ],
+      if (suffix != null) suffix!,
+    ].join(' ').trim();
+  }
 
   /// Gets the birth name ordered as configured, no [prefix] or [suffix].
   ///

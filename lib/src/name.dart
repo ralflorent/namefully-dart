@@ -71,7 +71,7 @@ class Name {
   }
 
   /// Normalizes the name as it should be.
-  void normalize() => _namon = capitalize(_namon);
+  void normalize() => caps(CapsRange.initial);
 
   /// Creates a password-like representation of the name.
   String passwd() => generatePassword(value);
@@ -138,33 +138,16 @@ class FirstName extends Name {
   @override
   void caps([CapsRange? range]) {
     range ??= _capsRange;
-    if (range == CapsRange.initial) {
-      value = capitalize(value);
-      if (hasMore) _more = _more.map(capitalize).toList();
-    } else if (range == CapsRange.all) {
-      value = value.toUpperCase();
-      if (hasMore) _more = _more.map((n) => n.toUpperCase()).toList();
-    }
+    value = capitalize(value, range);
+    if (hasMore) _more = _more.map((n) => capitalize(n, range!)).toList();
   }
 
   /// De-capitalizes the first name.
   @override
   void decaps([CapsRange? range]) {
     range ??= _capsRange;
-    if (range == CapsRange.initial) {
-      value = decapitalize(value);
-      if (hasMore) _more = _more.map(decapitalize).toList();
-    } else if (range == CapsRange.all) {
-      value = value.toLowerCase();
-      if (hasMore) _more = _more.map((n) => n.toLowerCase()).toList();
-    }
-  }
-
-  /// Normalizes the first name as it should be.
-  @override
-  void normalize() {
-    value = capitalize(value);
-    if (hasMore) _more = _more.map(capitalize).toList();
+    value = decapitalize(value, range);
+    if (hasMore) _more = _more.map((n) => decapitalize(n, range!)).toList();
   }
 
   /// Creates a password-like representation of the first name.
@@ -231,14 +214,14 @@ class LastName extends Name {
     var initials = <String>[];
     switch (format) {
       case Surname.father:
-        initials.add(value[0]);
+        initials.add(_initial);
         break;
       case Surname.mother:
         if (hasMother) initials.add(_mother![0]);
         break;
       case Surname.hyphenated:
       case Surname.all:
-        initials.add(value[0]);
+        initials.add(_initial);
         if (hasMother) initials.add(_mother![0]);
         break;
     }
@@ -249,33 +232,16 @@ class LastName extends Name {
   @override
   void caps([CapsRange? range]) {
     range ??= _capsRange;
-    if (range == CapsRange.initial) {
-      value = capitalize(value);
-      if (hasMother) _mother = capitalize(_mother!);
-    } else if (range == CapsRange.all) {
-      value = value.toUpperCase();
-      if (hasMother) _mother = _mother!.toUpperCase();
-    }
+    value = capitalize(value, range);
+    if (hasMother) _mother = capitalize(_mother!, range);
   }
 
   /// De-capitalizes the last name.
   @override
   void decaps([CapsRange? range]) {
     range ??= _capsRange;
-    if (range == CapsRange.initial) {
-      value = decapitalize(value);
-      if (hasMother) _mother = decapitalize(_mother!);
-    } else if (range == CapsRange.all) {
-      value = value.toLowerCase();
-      if (hasMother) _mother = _mother!.toLowerCase();
-    }
-  }
-
-  /// Normalizes the last name as it should be.
-  @override
-  void normalize() {
-    value = capitalize(value);
-    if (hasMother) _mother = capitalize(_mother!);
+    value = decapitalize(value, range);
+    if (hasMother) _mother = decapitalize(_mother!, range);
   }
 
   /// Creates a password-like representation of the last name.

@@ -126,13 +126,6 @@ class FirstNameValidator implements Validator {
   /// Validates the name content [value].
   @override
   void validate(dynamic /** String | FirstName */ value) {
-    if (value == null) {
-      throw ValidationException(
-        source: 'null',
-        nameType: 'firstName',
-        message: 'field required',
-      );
-    }
     if (value is String) {
       if (!ValidationRule.firstName.hasMatch(value)) {
         throw ValidationException(
@@ -218,13 +211,6 @@ class LastNameValidator implements Validator {
   /// Validates the name content [value].
   @override
   void validate(dynamic /** String | LastName */ value) {
-    if (value == null) {
-      throw ValidationException(
-        source: 'null',
-        nameType: 'lastName',
-        message: 'field required',
-      );
-    }
     if (value is String) {
       if (!ValidationRule.lastName.hasMatch(value)) {
         throw ValidationException(
