@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 void main() {
   group('Utils', () {
     test(
-        '.getNameIndex() provides the name indexes from a list of names when'
-        ' ordered by first name', () {
+        'NameIndex.when() provides the name indexes from a list of names when '
+        'ordered by first name', () {
       var indexes = NameIndex.when(NameOrder.firstName, 2);
       expect(indexes.firstName, equals(0));
       expect(indexes.lastName, equals(1));
@@ -31,8 +31,8 @@ void main() {
     });
 
     test(
-        '.getNameIndex() provides the name indexes from a list of names when'
-        ' ordered by last name', () {
+        'NameIndex.when() provides the name indexes from a list of names when '
+        'ordered by last name', () {
       var indexes = NameIndex.when(NameOrder.lastName, 2);
       expect(indexes.lastName, equals(0));
       expect(indexes.firstName, equals(1));

@@ -1,4 +1,16 @@
-# 0.1.5+2
+# 0.1.6
+
+- Add String extension support for quick starters
+- Use effective Dart in `NameException`
+- Use convenient getters (e.g., `FirstName.hasMore`, `LastName.hasMother`)
+- No longer support `Namebuilder.asString`
+- Use semantic names instead for types (breaking changes)
+  - `AbbrTitle` -> `Title`
+  - `FlattenedBy` -> `Flat`
+  - `LastNameFormat` -> `Surname`
+  - `Capitalization` -> `Case`
+
+## 0.1.5+2
 
 - Fix `FirstName.length` bad state error
 - Fix `Config.bypass` validation check and related bugs

@@ -249,7 +249,7 @@ The opening `[` and closing `]` brackets mean that these parts are optional. In
 other words, the most basic/typical case is a name that looks like this:
 `John Smith`, where `John` is the _firstName_ and `Smith`, the _lastName_.
 
-> NOTE: Do notice that the order of appearance matters and (as shown
+> NOTE: Do notice that the order of appearance matters and (as shown in
 > [orderedBy](#orderedBy)) can be altered through configured parameters. By default,
 > the order of appearance is as shown above and will be used as a basis for
 > future examples and use cases.

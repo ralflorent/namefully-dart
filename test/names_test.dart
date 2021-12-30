@@ -311,7 +311,7 @@ void main() {
     });
 
     test(
-        'creates a descriptive summary of a string with space as a default'
+        'creates a descriptive summary of a string with space as a default '
         'defined restrictions', () {
       var summary = Summary('avada kedavra');
       expect(summary.count, equals(12));
