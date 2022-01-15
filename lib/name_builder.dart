@@ -148,7 +148,7 @@ class NameBuilder {
     _streamer.sink.add(_context);
   }
 
-  /// Transforms a [birthName] into UPPERCASE.
+  /// Transforms a birth name into UPPERCASE.
   void upper() {
     if (!_done) throw _builderException(_context.toString(), 'upper');
     _context = Namefully(_state.last.upper(), config: _state.last.config);
@@ -156,7 +156,7 @@ class NameBuilder {
     _streamer.sink.add(_context);
   }
 
-  /// Transforms a [birthName] into lowercase.
+  /// Transforms a birth name into lowercase.
   void lower() {
     if (!_done) throw _builderException(_context.toString(), 'lower');
     _context = Namefully(_state.last.lower(), config: _state.last.config);

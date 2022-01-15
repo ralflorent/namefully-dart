@@ -84,17 +84,6 @@ mixin ListValidatorMixin<T> on Validator<List<T>> {
   }
 }
 
-/// A list of validators for a specific namon.
-abstract class Validators {
-  static final namon = NamonValidator();
-  static final nama = NamaValidator();
-  static final prefix = NameValidator();
-  static final firstName = FirstNameValidator();
-  static final middleName = MiddleNameValidator();
-  static final lastName = LastNameValidator();
-  static final suffix = NameValidator();
-}
-
 /// Namon validator to help to parse single pieces of string.
 class NamonValidator implements Validator<String> {
   static const _validator = NamonValidator._();
@@ -344,4 +333,15 @@ class ListNameValidator extends Validator<List<Name>>
   static final _validator = ListNameValidator._();
   factory ListNameValidator() => _validator;
   ListNameValidator._();
+}
+
+/// A list of validators for a specific namon.
+abstract class Validators {
+  static final namon = NamonValidator();
+  static final nama = NamaValidator();
+  static final prefix = NameValidator();
+  static final firstName = FirstNameValidator();
+  static final middleName = MiddleNameValidator();
+  static final lastName = LastNameValidator();
+  static final suffix = NameValidator();
 }

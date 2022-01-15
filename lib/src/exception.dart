@@ -14,7 +14,6 @@ enum NameExceptionType {
   ///
   /// See also:
   ///   * [ValidationException]
-  ///   * [Validators]
   validation,
 
   /// Thrown by not allowed operations such as in NameBuilder or name formatting.
@@ -37,7 +36,7 @@ enum NameExceptionType {
 /// A name handling failure is not considered an error that should cause a program
 /// failure. Au contraire, it is expected that a programmer using this utility
 /// would consider validating a name using its own business rules. That is not
-/// this utility's job to guess those rules. So, the predefined [ValidationRule]s
+/// this utility's job to guess those rules. So, the predefined `ValidationRules`
 /// obey some common validation techniques when it comes to sanitizing a person
 /// name. For this reason, the [Config.bypass] is set to `true` by default,
 /// indicating that those predefined rules should be skipped for the sake of the

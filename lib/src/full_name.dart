@@ -113,6 +113,15 @@ class FullName {
     return namon == Namon.middleName ? middleName.isNotEmpty : true;
   }
 
+  /// Returns an [Iterable] of existing [Name]s.
+  Iterable<Name> toIterable() sync* {
+    if (prefix != null) yield prefix!;
+    yield firstName;
+    yield* middleName;
+    yield lastName;
+    if (suffix != null) yield suffix!;
+  }
+
   /// Sets a [prefix] using string values.
   void rawPrefix(String namon) => prefix = Name(namon, Namon.prefix);
 

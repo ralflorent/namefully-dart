@@ -164,6 +164,16 @@ class Namefully {
   /// The first name combined with the last name's initial.
   String get public => format(r'f $l');
 
+  /// Returns an [Iterable] of existing [Name]s.
+  ///
+  /// Regardless of the order of appearance, this method will always return the
+  /// existing [Name]s according to the name standards upon which this library
+  /// is based.
+  ///
+  /// This is useful for iterating over the name parts in a consistent manner and
+  /// automatically enables operations such mapping, filtering, etc.
+  Iterable<Name> get parts => _fullName.toIterable();
+
   /// Returns the full name as set.
   @override
   String toString() => full;
@@ -188,15 +198,6 @@ class Namefully {
         Namon.lastName.key: last,
         Namon.suffix.key: suffix,
       });
-
-  /// Gets a list representation of the full name.
-  List<String?> toList() => List.unmodifiable([
-        prefix,
-        first,
-        middleName().join(' '),
-        last,
-        suffix,
-      ]);
 
   /// Confirms that a name part has been set.
   bool has(Namon namon) => _fullName.has(namon);
@@ -274,10 +275,10 @@ class Namefully {
   /// [withMid] determines whether to include the initials of middle [Name].
   ///
   /// For example, given the names:
-  /// - `John Smith` => ['J', 'S']
-  /// - `John Ben Smith` => ['J', 'S'].
+  /// - `John Smith` => `['J', 'S']`
+  /// - `John Ben Smith` => `['J', 'S']`.
   /// when [withMid] is set to true:
-  /// - `John Ben Smith` => ['J', 'B', 'S'].
+  /// - `John Ben Smith` => `['J', 'B', 'S']`.
   ///
   /// **Note**:
   /// Ordered by last name obeys the following format:
@@ -587,29 +588,6 @@ class Namefully {
 
   /// Transforms a [birthName] into ToGgLe CaSe.
   String toggle() => toggleCase(birth);
-
-  /// Transforms a [birthName] into a specific title [Case].
-  String to(Case c) {
-    switch (c) {
-      case Case.camel:
-        return camel();
-      case Case.dot:
-        return dot();
-      case Case.hyphen:
-      case Case.kebab:
-        return hyphen();
-      case Case.lower:
-        return lower();
-      case Case.pascal:
-        return pascal();
-      case Case.snake:
-        return snake();
-      case Case.toggle:
-        return toggle();
-      case Case.upper:
-        return upper();
-    }
-  }
 
   /// Splits a [birthName] using a [separator].
   List<String> split([RegExp? separator]) {

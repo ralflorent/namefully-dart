@@ -61,8 +61,17 @@ void main() {
             }));
       });
 
-      test('.toList() returns a List<String> version of the full name', () {
-        expect(name.toList(), equals(['Mr', 'John', 'Ben', 'Smith', 'Ph.D']));
+      test('.parts returns an Iterable of Names', () {
+        var names = name.parts;
+        expect(names.length, equals(5));
+        expect(names.first, isA<Name>().having((n) => n.value, 'value', 'Mr'));
+        expect(names.elementAt(1),
+            isA<FirstName>().having((n) => n.value, 'value', 'John'));
+        expect(names.elementAt(2),
+            isA<Name>().having((n) => n.value, 'value', 'Ben'));
+        expect(names.elementAt(3),
+            isA<LastName>().having((n) => n.value, 'value', 'Smith'));
+        expect(names.last, isA<Name>().having((n) => n.value, 'value', 'Ph.D'));
       });
 
       test('.stats() returns the summary of the birth name', () {
@@ -125,17 +134,7 @@ void main() {
         expect(name.format(r'$F.$M.$L'), equals('J.B.S'));
       });
 
-      test('.to() converts a birth name to a specific capitalization case', () {
-        expect(name.to(Case.lower), equals('john ben smith'));
-        expect(name.to(Case.upper), equals('JOHN BEN SMITH'));
-        expect(name.to(Case.camel), equals('johnBenSmith'));
-        expect(name.to(Case.pascal), equals('JohnBenSmith'));
-        expect(name.to(Case.snake), equals('john_ben_smith'));
-        expect(name.to(Case.hyphen), equals('john-ben-smith'));
-        expect(name.to(Case.dot), equals('john.ben.smith'));
-        expect(name.to(Case.toggle), equals('jOHN bEN sMITH'));
-
-        // Alternatives are:
+      test('converts a birth name to a specific capitalization case', () {
         expect(name.lower(), equals('john ben smith'));
         expect(name.upper(), equals('JOHN BEN SMITH'));
         expect(name.camel(), equals('johnBenSmith'));
@@ -530,7 +529,6 @@ void main() {
       expect(builder.isClosed, equals(true));
 
       expect(name.toString(), equals('Jane Doe'));
-      expect(name.toList(), equals([null, 'Jane', '', 'Doe', null]));
 
       expect(builder.name.toString(), equals('Jane Doe'));
       expect(builder.toString(),
