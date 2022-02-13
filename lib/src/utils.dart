@@ -102,16 +102,6 @@ String toggleCase(String string) {
   ].join();
 }
 
-/// Generates a password-like content from a [string].
-String generatePassword(String string) {
-  var m = kPasswordKeyMapper;
-  return string
-      .toLowerCase()
-      .chars
-      .map((char) => m.containsKey(char) ? m[char]!.random : m['\$']!.random)
-      .join();
-}
-
 // Borrowed from the dart sdk: sdk/lib/math/jenkins_smi_hash.dart.
 int hashValues(Object arg01, Object arg02) {
   int hash = arg01.hashCode + arg02.hashCode;

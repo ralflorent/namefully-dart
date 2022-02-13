@@ -75,9 +75,6 @@ class Namefully {
   /// A copy of the default configuration (combined with a custom one if any).
   late final Config _config;
 
-  /// The statistical information on the birth name.
-  late final Summary _summary;
-
   /// Creates a name with distinguishable parts from a raw string content.
   ///
   /// An optional [Config]uration may be provided with specifics on how to treat
@@ -111,11 +108,9 @@ class Namefully {
   ///
   /// Provided by this utility, a [FullName] is a copy of the original data. See
   /// the [FullName] class definition for more info.
-  Namefully.from(FullName fullName) {
-    _config = fullName.config;
-    _fullName = fullName;
-    _summary = Summary(birth);
-  }
+  Namefully.from(FullName fullName)
+      : _config = fullName.config,
+        _fullName = fullName;
 
   /// Creates a name from a customized [Parser].
   Namefully.fromParser(Parser parser, {Config? config}) {
@@ -125,11 +120,8 @@ class Namefully {
   /// The current configuration.
   Config get config => _config;
 
-  /// The number of characters of the [birthName] without spaces.
-  int get count => _summary.count;
-
   /// The number of characters of the [birthName], including spaces.
-  int get length => _summary.length;
+  int get length => birth.length;
 
   /// The prefix part.
   String? get prefix => _fullName.prefix?.toString();
@@ -321,56 +313,6 @@ class Namefully {
     return List.unmodifiable(initials);
   }
 
-  /// Gives some descriptive statistics that summarize the central tendency,
-  /// dispersion and shape of the characters' distribution.
-  ///
-  /// [type] indicates which variant to use when describing a name part.
-  ///
-  /// Treated as a categorical dataset, the summary contains the following info:
-  /// - `count`: the number of *unrestricted* characters of the name;
-  /// - `frequency`: the highest frequency within the characters;
-  /// - `top`: the character with the highest frequency;
-  /// - `unique`: the count of unique characters of the name;
-  /// - `distribution`: the characters' distribution.
-  ///
-  /// Given the name `Thomas Alva Edison`, the summary will output as follows:
-  ///
-  /// Descriptive statistics for "Thomas Alva Edison"
-  ///  - count    : 16
-  ///  - frequency: 3
-  ///  - top      : A
-  ///  - unique   : 12
-  ///  - distribution: { T: 1, H: 1, O: 2, M: 1, A: 2, S: 2, ' ': 2, L: 1, V: 1,
-  ///  E: 1, D: 1, I: 1, N: 1 }
-  ///
-  /// **Note:**
-  /// During the setup, a set of restricted characters can be defined to be
-  /// removed from the stats. By default, the only restricted character is the
-  /// `space`. That is why the [count] for the example below results in `16`
-  /// instead of `18`.
-  ///
-  /// Another thing to consider is that the summary is case *insensitive*. Note
-  /// that the letter `a` has the top frequency, be it `3`.
-  Summary? stats({NameType? type, List<String> except = const [' ']}) {
-    switch (type) {
-      case NameType.firstName:
-        return _fullName.firstName.stats(includeAll: true, except: except);
-      case NameType.middleName:
-        if (!hasMiddle) {
-          print('No Summary for middleName since none was set.');
-          return null;
-        }
-        return Summary(middleName().join(' '));
-      case NameType.lastName:
-        return _fullName.lastName
-            .stats(format: _config.surname, except: except);
-      case NameType.birthName:
-        return _summary;
-      default:
-        return Summary(full);
-    }
-  }
-
   /// Shortens a complex full name to a simple typical name, a combination of
   /// first and last name.
   ///
@@ -423,7 +365,7 @@ class Namefully {
     bool withPeriod = true,
     bool warning = true,
   }) {
-    if (count <= limit) return full;
+    if (length <= limit) return full;
 
     var sep = withPeriod ? '.' : '',
         fn = _fullName.firstName.toString(),
@@ -598,24 +540,6 @@ class Namefully {
   /// Joins the name parts of a [birthName] using a [separator].
   String join([String separator = '']) => split().join(separator);
 
-  /// Returns a password-like representation of a name.
-  String? passwd([NameType? nameType]) {
-    switch (nameType) {
-      case NameType.firstName:
-        return _fullName.firstName.passwd();
-      case NameType.middleName:
-        if (!hasMiddle) {
-          print('No password for middleName since none was set.');
-          return null;
-        }
-        return _fullName.middleName.map((n) => n.passwd()).join();
-      case NameType.lastName:
-        return _fullName.lastName.passwd();
-      default:
-        return generatePassword(birth);
-    }
-  }
-
   /// Flips definitely the name order from the preset/current config.
   void flip() {
     if (_config.orderedBy == NameOrder.firstName) {
@@ -631,7 +555,6 @@ class Namefully {
   void _build<T>(Parser<T> parser, [Config? options]) {
     _config = Config.merge(options);
     _fullName = parser.parse(options: _config);
-    _summary = Summary(birth);
   }
 
   /// Maps each [char]acter to a specific name piece.
@@ -670,9 +593,8 @@ class Namefully {
         final nama = <String>[
           if (_fullName.prefix != null) prefix!,
           '$last,'.toUpperCase(),
-          if (hasMiddle) first,
-          if (hasMiddle) middleName().join(' ') + sxSep,
-          if (!hasMiddle) first + sxSep,
+          if (hasMiddle) ...[first, middleName().join(' ') + sxSep] else
+            first + sxSep,
           if (_fullName.suffix != null) suffix!
         ].join(' ').trim();
 

@@ -35,12 +35,6 @@ void main() {
       expect(name == Name('John', Namon.prefix), equals(false));
     });
 
-    test('.stats() returns a summary of the name', () {
-      var summary = name.stats();
-      expect(summary.count, equals(name.length));
-      expect(summary.distribution, equals({'J': 1, 'O': 1, 'H': 1, 'N': 1}));
-    });
-
     test('.initials() returns only the initials of the name', () {
       expect(name.initials(), equals(['J']));
     });
@@ -58,10 +52,6 @@ void main() {
 
     test('.normalize() normalizes the name afterward', () {
       expect((Name('MR', Namon.prefix)..normalize()).toString(), 'Mr');
-    });
-
-    test('.passwd() returns a password-like representation of the name', () {
-      expect(name.passwd(), isNot(contains('John')));
     });
   });
 
@@ -104,13 +94,6 @@ void main() {
       expect(firstName.toString(includeAll: true), equals('John Ben Carl'));
     });
 
-    test('.stats() returns only a summary of the specified parts', () {
-      expect(firstName.stats().count, equals(4));
-      expect(firstName.stats(includeAll: true).count, equals(11));
-      expect(firstName.stats(includeAll: true).length, equals(13));
-      expect(firstName.length, equals(11));
-    });
-
     test('.initials() returns only the initials of the specified parts', () {
       expect(firstName.initials(), equals(['J']));
       expect(firstName.initials(includeAll: true), equals(['J', 'B', 'C']));
@@ -151,14 +134,6 @@ void main() {
           (FirstName('JOHN', ['BEN', 'CARL'])..normalize())
               .toString(includeAll: true),
           equals('John Ben Carl'));
-    });
-
-    test('.passwd() returns a password-like of the first name', () {
-      expect(firstName.passwd(), isNot(contains('John')));
-      expect(
-        firstName.passwd(includeAll: true),
-        isNot(contains('John Ben Carl')),
-      );
     });
   });
 
@@ -211,14 +186,6 @@ void main() {
       expect(lastName.toString(format: Surname.all), 'Smith Doe');
     });
 
-    test('.stats() returns only a summary of the specified parts', () {
-      expect(lastName.stats().count, equals(5));
-      expect(lastName.stats(format: Surname.mother).count, equals(3));
-      expect(lastName.stats(format: Surname.all).count, equals(8));
-      expect(lastName.stats(format: Surname.all).length, equals(9));
-      expect(lastName.length, equals(8));
-    });
-
     test('.initials() returns only the initials of the specified parts', () {
       expect(lastName.initials(), equals(['S']));
       expect(lastName.initials(format: Surname.mother), equals(['D']));
@@ -266,62 +233,6 @@ void main() {
       expect(
         (LastName('SMITH', 'DOE')..normalize()).toString(format: Surname.all),
         equals('Smith Doe'),
-      );
-    });
-
-    test('.passwd() returns a password-like of the last name', () {
-      expect(lastName.passwd(), isNot(contains('Smith')));
-      expect(lastName.passwd(), isNot(contains('Smith Doe')));
-    });
-  });
-
-  group('Summary', () {
-    test('throws an exception if a value is less than 2 characters', () {
-      expect(() => Summary('a'), throwsInputException);
-    });
-
-    test('creates a statistically descriptive summary of a string', () {
-      var summary = Summary('abracadabra');
-      expect(summary.count, equals(11));
-      expect(summary.length, equals(11));
-      expect(summary.frequency, equals(5));
-      expect(summary.unique, equals(5));
-      expect(summary.top, equals('A'));
-      expect(
-        summary.distribution,
-        equals({
-          'A': 5,
-          'B': 2,
-          'R': 2,
-          'C': 1,
-          'D': 1,
-        }),
-      );
-    });
-
-    test('creates a descriptive summary of string with defined restrictions',
-        () {
-      var summary = Summary('abracadabra', except: ['a']);
-      expect(summary.count, equals(6));
-      expect(summary.length, equals(11));
-      expect(summary.frequency, equals(2));
-      expect(summary.unique, equals(4));
-      expect(summary.top, equals('R'));
-      expect(summary.distribution, equals({'B': 2, 'R': 2, 'C': 1, 'D': 1}));
-    });
-
-    test(
-        'creates a descriptive summary of a string with space as a default '
-        'defined restrictions', () {
-      var summary = Summary('avada kedavra');
-      expect(summary.count, equals(12));
-      expect(summary.length, equals(13));
-      expect(summary.frequency, equals(5));
-      expect(summary.unique, equals(6));
-      expect(summary.top, equals('A'));
-      expect(
-        summary.distribution,
-        equals({'A': 5, 'V': 2, 'D': 2, 'K': 1, 'E': 1, 'R': 1}),
       );
     });
   });

@@ -29,9 +29,6 @@ extension NamefullyString on String {
   /// A customized [Config]uration may be set using [config] setter.
   Namefully get namefully => Namefully(this, config: _config);
 
-  /// The number of characters of the [birth] name without spaces.
-  int get count => namefully.count;
-
   /// The prefix part.
   String? get prefix => namefully.prefix;
 
@@ -72,12 +69,6 @@ extension NamefullyString on String {
   String zip({Flat by = Flat.midLast, bool withPeriod = true}) {
     return namefully.zip(by: by, withPeriod: withPeriod);
   }
-}
-
-/// An extended version of [Summary] on String.
-extension SummaryString on String {
-  /// Returns the full name's statistical summary.
-  Summary get summary => Summary(this);
 }
 
 // The configuration used by the extension.

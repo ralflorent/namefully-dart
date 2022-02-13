@@ -49,12 +49,6 @@ class Name {
   @override
   int get hashCode => hashValues(value, type);
 
-  /// Gives some descriptive statistics.
-  ///
-  /// The statistical description summarizes the central tendency, dispersion
-  /// and shape of the characters' distribution. See [Summary] for more details.
-  Summary stats() => Summary(_namon);
-
   /// Gets the initials (first character) of this name.
   List<String> initials() => List.unmodifiable([_initial]);
 
@@ -72,9 +66,6 @@ class Name {
 
   /// Normalizes the name as it should be.
   void normalize() => caps(CapsRange.initial);
-
-  /// Creates a password-like representation of the name.
-  String passwd() => generatePassword(value);
 }
 
 /// Representation of a first name with some extra functionality.
@@ -114,17 +105,6 @@ class FirstName extends Name {
     ];
   }
 
-  /// Gives some descriptive statistics.
-  ///
-  /// The statistical description summarizes the central tendency, dispersion
-  /// and shape of the characters' distribution. See [Summary] for more details.
-  @override
-  Summary stats({
-    bool includeAll = false,
-    List<String> except = const [' '],
-  }) =>
-      Summary(toString(includeAll: includeAll), except: except);
-
   /// Gets the initials of the first name.
   @override
   List<String> initials({bool includeAll = false}) {
@@ -148,12 +128,6 @@ class FirstName extends Name {
     range ??= _capsRange;
     value = decapitalize(value, range);
     if (hasMore) _more = _more.map((n) => decapitalize(n, range!)).toList();
-  }
-
-  /// Creates a password-like representation of the first name.
-  @override
-  String passwd({bool includeAll = false}) {
-    return generatePassword(toString(includeAll: includeAll));
   }
 }
 
@@ -198,15 +172,6 @@ class LastName extends Name {
     }
   }
 
-  /// Gives some descriptive statistics.
-  ///
-  /// The statistical description summarizes the central tendency, dispersion
-  /// and shape of the characters' distribution. See [Summary] for more details.
-  @override
-  Summary stats({Surname? format, List<String> except = const [' ']}) {
-    return Summary(toString(format: format), except: except);
-  }
-
   /// Gets the initials of the last name.
   @override
   List<String> initials({Surname? format}) {
@@ -242,90 +207,5 @@ class LastName extends Name {
     range ??= _capsRange;
     value = decapitalize(value, range);
     if (hasMother) _mother = decapitalize(_mother!, range);
-  }
-
-  /// Creates a password-like representation of the last name.
-  @override
-  String passwd({Surname? format}) {
-    return generatePassword(toString(format: format));
-  }
-}
-
-/// Summary of descriptive (categorical) statistics of name components.
-class Summary with Summarizable {
-  Summary(String namon, {List<String>? except}) {
-    summarize(namon, except: except);
-  }
-}
-
-/// A component that knows how to help a class extend some basic categorical
-/// statistics on string values.
-mixin Summarizable {
-  late final String _string;
-  late final List<String> _restrictions;
-
-  /// The characters' distribution along with their frequencies.
-  Map<String, int> get distribution => _distribution;
-  Map<String, int> _distribution = {};
-
-  /// The number of characters of the distribution, excluding the restricted
-  /// ones.
-  int get count => _count;
-  int _count = 0;
-
-  /// The total number of characters of the content.
-  int get length => _string.length;
-
-  /// The count of the most repeated characters.
-  int get frequency => _frequency;
-  int _frequency = 0;
-
-  /// The most repeated character.
-  String get top => _top;
-  String _top = '';
-
-  /// The count of unique characters.
-  int get unique => _unique;
-  int _unique = 0;
-
-  /// Creates a summary of a given string of alphabetical characters.
-  Summarizable summarize(String string, {List<String>? except}) {
-    _string = string;
-    _restrictions = except ?? const [' '];
-
-    if (string.isInvalid) {
-      throw InputException(source: string, message: 'must be 2+ characters');
-    }
-
-    _distribution = _groupByChar();
-    _unique = _distribution.keys.length;
-    _count = _distribution.values.reduce((acc, val) => acc + val);
-
-    for (var entry in _distribution.entries) {
-      if (entry.value >= _frequency) {
-        _frequency = entry.value;
-        _top = entry.key;
-      }
-    }
-
-    return this;
-  }
-
-  /// Creates the distribution, taking the restricted characters into account.
-  Map<String, int> _groupByChar() {
-    final frequencies = <String, int>{};
-
-    var restrictions = _restrictions.map((n) => n.toUpperCase());
-
-    for (var char in _string.toUpperCase().chars) {
-      if (restrictions.contains(char)) continue;
-      if (frequencies.containsKey(char)) {
-        frequencies[char] = frequencies[char]! + 1;
-      } else {
-        frequencies[char] = 1;
-      }
-    }
-
-    return frequencies;
   }
 }

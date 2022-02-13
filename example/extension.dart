@@ -4,9 +4,6 @@ void main() {
   // Gives a simple name some super power.
   String name = 'Jane Doe';
 
-  // Gets the count of characters, excluding space.
-  print(name.count); // 7
-
   // Gets the count of characters, including space.
   print(name.length); // 8
 

@@ -4,9 +4,6 @@ void main() {
   // Gives a simple name some super power.
   var name = Namefully('Jon Stark Snow');
 
-  // Gets the count of characters, excluding space.
-  print(name.count); // 12
-
   // Gets the count of characters, including space.
   print(name.length); // 14
 

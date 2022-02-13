@@ -74,38 +74,6 @@ void main() {
         expect(names.last, isA<Name>().having((n) => n.value, 'value', 'Ph.D'));
       });
 
-      test('.stats() returns the summary of the birth name', () {
-        var summary = name.stats(type: NameType.birthName);
-        expect(summary?.count, equals(12));
-        expect(summary?.length, equals(14));
-        expect(summary?.frequency, equals(2));
-        expect(summary?.top, equals('N'));
-        expect(summary?.unique, equals(10));
-        expect(
-            summary?.distribution,
-            equals({
-              'J': 1,
-              'O': 1,
-              'H': 2,
-              'N': 2,
-              'B': 1,
-              'E': 1,
-              'S': 1,
-              'M': 1,
-              'I': 1,
-              'T': 1,
-            }));
-        expect(name.count, equals(12));
-        expect(name.length, equals(14));
-      });
-
-      test('.stats() returns the summary of a specified namon', () {
-        expect(name.stats(type: NameType.firstName)?.count, equals(4));
-        expect(name.stats(type: NameType.middleName)?.count, equals(3));
-        expect(name.stats(type: NameType.lastName)?.count, equals(5));
-        expect(name.stats()?.count, equals(18));
-      });
-
       test('.format() formats a full name as desired', () {
         expect(name.format('short'), equals('John Smith'));
         expect(name.format('long'), equals('John Ben Smith'));
@@ -151,13 +119,6 @@ void main() {
 
       test('.join() joins each piece of the birth name with a separator', () {
         expect(name.join('+'), equals('John+Ben+Smith'));
-      });
-
-      test('.passwd() returns a password-like of the birth name', () {
-        expect(name.passwd(), isNot(contains('John Ben Smith')));
-        expect(name.passwd(NameType.firstName), isNot(contains('John')));
-        expect(name.passwd(NameType.middleName), isNot(contains('Ben')));
-        expect(name.passwd(NameType.lastName), isNot(contains('Smith')));
       });
 
       test('.flip() flips the name order from the current config', () {

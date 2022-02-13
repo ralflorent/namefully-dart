@@ -74,36 +74,6 @@ enum CapsRange {
   all
 }
 
-/// The types of capitalization cases supported in this utility.
-enum Case {
-  /// A camelCase transformation.
-  camel,
-
-  /// A dot.case transformation.
-  dot,
-
-  /// A hyphen-case transformation.
-  hyphen,
-
-  /// A kebab-case transformation.
-  kebab,
-
-  /// A lowerase transformation.
-  lower,
-
-  /// A PascalCase transformation.
-  pascal,
-
-  /// A snake_case transformation.
-  snake,
-
-  /// A ToGgLe transformation.
-  toggle,
-
-  /// An UPPERCASE transformation.
-  upper
-}
-
 /// The types of name handled in this utility according the name standards.
 ///
 /// **Note**:

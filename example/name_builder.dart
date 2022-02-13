@@ -23,9 +23,6 @@ void main() {
   // Completes the final build and closes the current name context.
   final name = builder.build();
 
-  // Gets the count of characters, excluding space.
-  print(name.count); // 7
-
   // Gets the count of characters, including space.
   print(name.length); // 8
 
