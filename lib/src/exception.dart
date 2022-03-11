@@ -58,7 +58,7 @@ abstract class NameException implements Exception {
   ]);
 
   /// Creates a concrete `NameException` with an optional error [message].
-  const factory NameException([String message, Object source]) = _NameException;
+  const factory NameException([String message, Object? src]) = _NameException;
 
   /// Creates a new `InputException` with an optional error [message].
   const factory NameException.input({

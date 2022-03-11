@@ -177,6 +177,7 @@ class Namefully {
     if (namon == Namon.middleName) return _fullName.middleName;
     if (namon == Namon.lastName) return _fullName.lastName;
     if (namon == Namon.suffix) return _fullName.suffix;
+    return null;
   }
 
   /// Whether this name is equal to an[other] one from a raw-string perspective.

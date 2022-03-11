@@ -1,4 +1,9 @@
-# 0.1.6
+# 0.1.7
+
+- Remove support for summary and password fields (breaking changes).
+- Add iterable of name parts.
+
+## 0.1.6
 
 - Add String extension support for quick starters
 - Use effective Dart in `NameException`
