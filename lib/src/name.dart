@@ -23,6 +23,21 @@ class Name {
     if (capsRange != null) caps(capsRange);
   }
 
+  /// Creates a prefix.
+  Name.prefix(String value) : this(value, Namon.prefix);
+
+  /// Creates a first name.
+  Name.first(String value) : this(value, Namon.firstName);
+
+  /// Creates a middle name.
+  Name.middle(String value) : this(value, Namon.middleName);
+
+  /// Creates a last name.
+  Name.last(String value) : this(value, Namon.lastName);
+
+  /// Creates a suffix.
+  Name.suffix(String value) : this(value, Namon.suffix);
+
   /// The piece of string treated as a name.
   String get value => _namon;
   set value(String newValue) {

@@ -347,9 +347,9 @@ void main() {
         );
         expect(
           Namefully.of([
-            Name('John', Namon.firstName),
-            Name('Smith', Namon.lastName),
-            Name('Ph.D', Namon.suffix),
+            Name.first('John'),
+            Name.last('Smith'),
+            Name.suffix('Ph.D'),
           ]).birth,
           equals('John Smith'),
         );

@@ -25,14 +25,11 @@ void main() {
     late FullName fullName;
 
     setUp(() {
-      prefix = Name('Mr', Namon.prefix);
+      prefix = Name.prefix('Mr');
       firstName = FirstName('John');
-      middleName = [
-        Name('Ben', Namon.middleName),
-        Name('Carl', Namon.middleName),
-      ];
+      middleName = [Name.middle('Ben'), Name.middle('Carl')];
       lastName = LastName('Smith');
-      suffix = Name('Ph.D', Namon.suffix);
+      suffix = Name.suffix('Ph.D');
     });
 
     test('creates a full name from a json name', () {

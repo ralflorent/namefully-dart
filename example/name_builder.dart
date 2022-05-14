@@ -30,10 +30,10 @@ void main() {
   print(name.first); // jane
 
   // Gets the first middle name.
-  print(name.middle); // doe
+  print(name.middle); // null
 
   // Gets the last name.
-  print(name.last); // null
+  print(name.last); // doe
 
   // Gets all the initials.
   print(name.initials(withMid: true)); // ['d', 'j']

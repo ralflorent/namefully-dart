@@ -53,9 +53,9 @@ final nameCases = {
   'manyMiddleNames': {
     'name': [
       FirstName('Emilia'),
-      Name('Isobel', Namon.middleName),
-      Name('Euphemia', Namon.middleName),
-      Name('Rose', Namon.middleName),
+      Name.middle('Isobel'),
+      Name.middle('Euphemia'),
+      Name.middle('Rose'),
       LastName('Clarke')
     ],
     'options': Config.inline(name: 'manyMiddleNames'),

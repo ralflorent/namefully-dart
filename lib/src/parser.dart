@@ -67,21 +67,21 @@ class ListStringParser implements Parser<List<String>> {
         break;
       case 3:
         fullName.firstName = FirstName(raw.elementAt(index.firstName));
-        fullName.middleName.add(Name(raw[index.middleName], Namon.middleName));
+        fullName.middleName.add(Name.middle(raw[index.middleName]));
         fullName.lastName = LastName(raw.elementAt(index.lastName));
         break;
       case 4:
-        fullName.prefix = Name(raw.elementAt(index.prefix), Namon.prefix);
+        fullName.prefix = Name.prefix(raw.elementAt(index.prefix));
         fullName.firstName = FirstName(raw.elementAt(index.firstName));
-        fullName.middleName.add(Name(raw[index.middleName], Namon.middleName));
+        fullName.middleName.add(Name.middle(raw[index.middleName]));
         fullName.lastName = LastName(raw.elementAt(index.lastName));
         break;
       case 5:
-        fullName.prefix = Name(raw.elementAt(index.prefix), Namon.prefix);
+        fullName.prefix = Name.prefix(raw.elementAt(index.prefix));
         fullName.firstName = FirstName(raw.elementAt(index.firstName));
-        fullName.middleName.add(Name(raw[index.middleName], Namon.middleName));
+        fullName.middleName.add(Name.middle(raw[index.middleName]));
         fullName.lastName = LastName(raw.elementAt(index.lastName));
-        fullName.suffix = Name(raw.elementAt(index.suffix), Namon.suffix);
+        fullName.suffix = Name.suffix(raw.elementAt(index.suffix));
         break;
     }
     return fullName;

@@ -40,17 +40,17 @@ void main() {
         throwsValidationException,
       );
       expect(
-        () => Validators.middleName.validate([Name('ka7e', Namon.firstName)]),
+        () => Validators.middleName.validate([Name.first('ka7e')]),
         throwsValidationException,
       );
       expect(
-        () => Validators.middleName.validate([Name('kate;', Namon.middleName)]),
+        () => Validators.middleName.validate([Name.middle('kate;')]),
         throwsValidationException,
       );
       expect(
         () => Validators.middleName.validate([
-          Name('Jack', Namon.middleName),
-          Name('kate;', Namon.middleName),
+          Name.middle('Jack'),
+          Name.middle('kate;'),
         ]),
         throwsValidationException,
       );
@@ -72,13 +72,13 @@ void main() {
     test('is thrown if a namon breaks the validation rules', () {
       expect(
         () => Namefully.of(
-            [Name('mr ', Namon.prefix), FirstName('John'), LastName('Doe')],
+            [Name.prefix('mr '), FirstName('John'), LastName('Doe')],
             config: config),
         throwsValidationException,
       );
-      expect(() => Validators.prefix.validate(Name('mr.', Namon.prefix)),
+      expect(() => Validators.prefix.validate(Name.prefix('mr.')),
           throwsValidationException);
-      expect(() => Validators.suffix.validate(Name('PhD ', Namon.suffix)),
+      expect(() => Validators.suffix.validate(Name.suffix('PhD ')),
           throwsValidationException);
     });
 
@@ -159,7 +159,7 @@ void main() {
     }, skip: true);
 
     test('is thrown if a name list has an unsupported number of entries', () {
-      var name = Name('jane-', Namon.firstName);
+      var name = Name.first('jane-');
       expect(() => Namefully.of([]), throwsInputException);
       expect(() => Namefully.of([name]), throwsInputException);
       expect(

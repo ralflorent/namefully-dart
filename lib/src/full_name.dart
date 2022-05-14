@@ -71,9 +71,8 @@ class FullName {
   set prefix(Name? name) {
     if (name == null) return;
     if (!_config.bypass) Validators.prefix.validate(name);
-    _prefix = Name(
+    _prefix = Name.prefix(
       _config.title == Title.us ? (name.value + '.') : name.value,
-      Namon.prefix,
     );
   }
 
@@ -123,7 +122,7 @@ class FullName {
   }
 
   /// Sets a [prefix] using string values.
-  void rawPrefix(String namon) => prefix = Name(namon, Namon.prefix);
+  void rawPrefix(String namon) => prefix = Name.prefix(namon);
 
   /// Sets a [firstName] using string values.
   void rawFirstName(String namon, {List<String>? more}) {
@@ -132,7 +131,7 @@ class FullName {
 
   /// Sets a [middleName] using string values.
   void rawMiddleName(List<String> names) {
-    middleName = names.map((n) => Name(n, Namon.middleName)).toList();
+    middleName = names.map((name) => Name.middle(name)).toList();
   }
 
   /// Sets a [lastName] using string values.
@@ -141,7 +140,7 @@ class FullName {
   }
 
   /// Sets a [suffix] using string values.
-  void rawSuffix(String namon) => suffix = Name(namon, Namon.suffix);
+  void rawSuffix(String namon) => suffix = Name.suffix(namon);
 
   /// Parses a [json] name into a full name.
   void _parseJsonName(Map<String, String> json) {

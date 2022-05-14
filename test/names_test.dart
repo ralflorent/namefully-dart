@@ -7,10 +7,10 @@ void main() {
   group('Name', () {
     late Name name;
 
-    setUp(() => name = Name('John', Namon.middleName));
+    setUp(() => name = Name.middle('John'));
 
     test('throws an exception if a name is less than 2 characters', () {
-      expect(() => Name('', Namon.firstName), throwsInputException);
+      expect(() => Name.first(''), throwsInputException);
     });
 
     test('creates a name marked with a specific type', () {
@@ -30,9 +30,9 @@ void main() {
     });
 
     test('== [Name] returns true if they are equal', () {
-      expect(name == Name('John', Namon.middleName), equals(true));
-      expect(name == Name('Johnx', Namon.middleName), equals(false));
-      expect(name == Name('John', Namon.prefix), equals(false));
+      expect(name == Name.middle('John'), equals(true));
+      expect(name == Name.middle('Johnx'), equals(false));
+      expect(name == Name.prefix('John'), equals(false));
     });
 
     test('.initials() returns only the initials of the name', () {
@@ -45,13 +45,13 @@ void main() {
     });
 
     test('.decaps() de-capitalizes the name afterwards', () {
-      var n = Name('MORTY', Namon.firstName);
+      var n = Name.first('MORTY');
       expect((n..decaps()).toString(), 'mORTY');
       expect((n..decaps(CapsRange.all)).toString(), 'morty');
     });
 
     test('.normalize() normalizes the name afterward', () {
-      expect((Name('MR', Namon.prefix)..normalize()).toString(), 'Mr');
+      expect((Name.prefix('MR')..normalize()).toString(), 'Mr');
     });
   });
 
