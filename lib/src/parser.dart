@@ -16,6 +16,25 @@ abstract class Parser<T> {
 
   /// Parses the raw data into a [FullName] while considering some [options].
   FullName parse({Config? options});
+
+  static Parser build(String text) {
+    var parts = text.trim().split(Separator.space.token);
+    var length = parts.length;
+    if (parts.isEmpty || length == 1) {
+      throw NameException.input(
+        source: text,
+        message: 'cannot build from invalid input',
+      );
+    } else if (length == 2 || length == 3) {
+      return StringParser(text);
+    } else {
+      return ListStringParser([
+        parts.first,
+        parts.getRange(1, length - 1).join(' '),
+        parts.last,
+      ]);
+    }
+  }
 }
 
 class StringParser implements Parser<String> {

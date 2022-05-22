@@ -117,6 +117,37 @@ class Namefully {
     _build(parser, config);
   }
 
+  /// Creates a name from specific name parts.
+  Namefully.only({
+    String? prefix,
+    required String firstName,
+    List<String>? middleName,
+    required String lastName,
+    String? suffix,
+    Config? config,
+  })  : _config = config ?? Config(),
+        _fullName = FullName.raw(
+          prefix: prefix,
+          firstName: firstName,
+          middleName: middleName,
+          lastName: lastName,
+          suffix: suffix,
+          config: config,
+        );
+
+  /// Tries to create a name from a text with an unknown (dynamic) format.
+  ///
+  /// This operation is intended to be used when the developer is not sure of
+  /// the format of a name. It will try to parse the text using a number of
+  /// different parsers, and if successful, will return a potential name.
+  /// Otherwise, it will throw a [NameException].
+  ///
+  /// Keep in mind that prefix and suffix are not considered during the parsing
+  /// process.
+  static Namefully tryParse(String text) {
+    return Namefully.fromParser(Parser.build(text));
+  }
+
   /// The current configuration.
   Config get config => _config;
 
@@ -344,8 +375,6 @@ class Namefully {
   /// to use when doing so. By default, a full name gets flattened by
   /// [Flat.middleName].
   ///
-  /// if the set limit is violated, a [warning] is given to the user about it.
-  ///
   /// The flattening operation is only executed iff there is a valid entry and
   /// it surpasses the limit set. In the examples below, let us assume that the
   /// name goes beyond the limit value.
@@ -359,12 +388,18 @@ class Namefully {
   /// * [Flat.midLast]: => 'John W. O. L.'
   /// * [Flat.all]: => 'J. W. O. L.'
   ///
+  /// With the help of the [recursive] flag, the above operation can happen
+  /// recursively in the same order if the name is still too long. For example,
+  /// flattening `John Winston Ono Lennon` using the following params:
+  /// `flatten(limit: 18, by: Flat.firstName, recursive: true)`
+  /// will result in `John W. O. Lennon` and not `J. Winston Ono Lennon`.
+  ///
   /// A shorter version of this method is [zip()].
   String flatten({
     int limit = 20,
     Flat by = Flat.middleName,
     bool withPeriod = true,
-    bool warning = true,
+    bool recursive = false,
   }) {
     if (length <= limit) return full;
 
@@ -427,9 +462,29 @@ class Namefully {
       }
     }
 
-    final flat = name.join(' ');
-    if (warning && flat.length > limit) {
-      print('The flattened name <$flat> still surpasses the set limit $limit');
+    var flat = name.join(' ');
+
+    if (recursive && flat.length > limit) {
+      var next = by == Flat.firstName
+          ? Flat.middleName
+          : by == Flat.middleName
+              ? Flat.lastName
+              : by == Flat.lastName
+                  ? Flat.firstMid
+                  : by == Flat.firstMid
+                      ? Flat.midLast
+                      : by == Flat.midLast
+                          ? Flat.all
+                          : by == Flat.midLast
+                              ? Flat.all
+                              : by;
+      if (next == by) return flat;
+      return flatten(
+        limit: limit,
+        by: next,
+        withPeriod: withPeriod,
+        recursive: recursive,
+      );
     }
     return flat;
   }
@@ -438,7 +493,7 @@ class Namefully {
   ///
   /// See [flatten()] for more details.
   String zip({Flat by = Flat.midLast, bool withPeriod = true}) {
-    return flatten(limit: 0, by: by, warning: false, withPeriod: withPeriod);
+    return flatten(limit: 0, by: by, withPeriod: withPeriod);
   }
 
   /// Formats the full name as desired.

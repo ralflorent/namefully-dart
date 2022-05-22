@@ -210,6 +210,14 @@ void main() {
           ),
           equals('J. Smith'),
         );
+        expect(
+          name.flatten(limit: 10, recursive: true),
+          equals('John B. S.'),
+        );
+        expect(
+          name.flatten(limit: 10, recursive: true, withPeriod: false),
+          equals('John Ben S'),
+        );
       });
 
       test('.zip() flattens a full name', () {
@@ -382,6 +390,21 @@ void main() {
           ).build().full,
           equals('John Smith'),
         );
+      });
+
+      test('only (specific parts)', () {
+        expect(
+          Namefully.only(firstName: 'John', lastName: 'Smith').full,
+          equals('John Smith'),
+        );
+      });
+
+      test('tryParse', () {
+        var parsed = Namefully.tryParse('John Some Other Name Parts Smith');
+        expect(parsed.short, equals('John Smith'));
+        expect(parsed.first, equals('John'));
+        expect(parsed.last, equals('Smith'));
+        expect(parsed.middle, equals('Some Other Name Parts'));
       });
     });
 
