@@ -65,7 +65,7 @@ abstract class Config {
   String get name;
 
   /// Returns a single configuration with default values.
-  factory Config([String name = _kDefaultName]) => _Config(name);
+  factory Config([String? name]) = _Config;
 
   /// Returns a combined version of the existing values of the default configuration
   /// and the provided values of an[other] configuration.
@@ -83,6 +83,16 @@ abstract class Config {
     Surname? surname,
   }) = _Config.inline;
 
+  /// Returns a last name based configuration.
+  factory Config.byLastName({Surname? surname, Separator? separator}) {
+    return _Config.inline(
+      name: 'byLastName',
+      orderedBy: NameOrder.lastName,
+      surname: surname,
+      separator: separator,
+    );
+  }
+
   /// Returns a copy of this configuration merged with the provided values.
   ///
   /// The word `_copy` is added to the existing config's name to create the new
@@ -99,6 +109,9 @@ abstract class Config {
     bool? bypass,
     Surname? surname,
   });
+
+  /// Makes an exact copy of the current configuration.
+  Config clone();
 
   /// Resets the configuration by setting it back to its default values.
   void reset();
@@ -147,7 +160,8 @@ class _Config implements Config {
         bypass = true,
         surname = Surname.father;
 
-  factory _Config([String name = _kDefaultName]) {
+  factory _Config([String? name]) {
+    name ??= _kDefaultName;
     if (_cache.containsKey(name)) {
       return _cache[name]!;
     } else {
@@ -205,6 +219,9 @@ class _Config implements Config {
       ..bypass = bypass ?? this.bypass
       ..surname = surname ?? this.surname;
   }
+
+  @override
+  Config clone() => copyWith();
 
   @override
   void reset() {

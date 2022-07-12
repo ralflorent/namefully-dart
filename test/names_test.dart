@@ -154,6 +154,7 @@ void main() {
     test('creates a last name with both father and mother surnames', () {
       expect(lastName.father, equals('Smith'));
       expect(lastName.hasMother, equals(true));
+      expect(lastName.length, equals(8));
       expect(lastName.toString(format: Surname.mother), equals('Doe'));
       expect(lastName.type, equals(Namon.lastName));
     });

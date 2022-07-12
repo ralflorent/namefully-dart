@@ -17,6 +17,8 @@ abstract class Parser<T> {
   /// Parses the raw data into a [FullName] while considering some [options].
   FullName parse({Config? options});
 
+  /// Builds a dynamic [Parser] on the fly and throws a [NameException] when
+  /// unable to do so. The built parser only knows how to operate birth names.
   static Parser build(String text) {
     var parts = text.trim().split(Separator.space.token);
     var length = parts.length;
@@ -37,11 +39,8 @@ abstract class Parser<T> {
   }
 }
 
-class StringParser implements Parser<String> {
-  const StringParser(this.raw);
-
-  @override
-  final String raw;
+class StringParser extends Parser<String> {
+  const StringParser(String raw) : super(raw);
 
   @override
   FullName parse({Config? options}) {

@@ -56,6 +56,22 @@ void main() {
       expect(indexes.suffix, equals(4));
     });
 
+    test('NameIndex.when() provides a base indexing for wrong counts', () {
+      var indexes = NameIndex.when(NameOrder.firstName, 0);
+      expect(indexes.firstName, equals(0));
+      expect(indexes.lastName, equals(1));
+      expect(indexes.prefix, equals(-1));
+      expect(indexes.middleName, equals(-1));
+      expect(indexes.suffix, equals(-1));
+
+      indexes = NameIndex.when(NameOrder.lastName, 0);
+      expect(indexes.firstName, equals(0));
+      expect(indexes.lastName, equals(1));
+      expect(indexes.prefix, equals(-1));
+      expect(indexes.middleName, equals(-1));
+      expect(indexes.suffix, equals(-1));
+    });
+
     test('.capitalize() capitalizes a string accordingly', () {
       expect(capitalize(''), equals(''));
       expect(capitalize('stRiNg'), equals('String'));

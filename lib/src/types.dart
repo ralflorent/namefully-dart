@@ -10,7 +10,7 @@ enum Title {
   uk
 }
 
-/// An option indicating how to format a surname:
+/// An option indicating how to format a surname.
 ///
 /// This enum can be set via [Config] or when creating a [LastName]. As this can
 /// become ambiguous at the time of handling it, the value set in [Config] is

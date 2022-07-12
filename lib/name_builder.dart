@@ -133,7 +133,7 @@ class NameBuilder {
       _state.last.full,
       config: _state.last.config.copyWith(),
     )..flip();
-    _state.add(_context, id: 'flip');
+    _state.add(_context);
     _streamer.sink.add(_context);
   }
 

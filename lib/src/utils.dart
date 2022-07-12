@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'constants.dart';
 import 'types.dart';
 
@@ -37,7 +35,7 @@ class NameIndex {
   );
 
   /// The default or base index for the [NameIndex].
-  const NameIndex.base() : this._(1, 0, -1, 1, -1);
+  const NameIndex.base() : this._(-1, 0, -1, 1, -1);
 
   /// The minimum number of parts in a list of names.
   static const int min = kMinNumberOfNameParts;
@@ -108,12 +106,6 @@ int hashValues(Object arg01, Object arg02) {
   hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
   hash = hash ^ (hash >> 11);
   return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-}
-
-/// Makes a [Set] capable of [random]izing its elements.
-extension CharSet<E> on Set<E> {
-  /// Shuffles the elements within a set and returns a random one.
-  E get random => List<E>.from(this).elementAt(Random().nextInt(length));
 }
 
 /// Add validation capabilities to [String].

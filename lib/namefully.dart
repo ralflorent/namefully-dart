@@ -67,7 +67,7 @@ export 'src/utils.dart' show NameIndex;
 /// - namon: 1 piece of name (e.g., first name)
 /// - nama: 2+ pieces of name (e.g., first name + last name)
 ///
-/// Happy name handling!
+/// Happy name handling 😊!
 class Namefully {
   /// A copy of high-quality name data.
   late final FullName _fullName;
@@ -194,7 +194,7 @@ class Namefully {
   /// is based.
   ///
   /// This is useful for iterating over the name parts in a consistent manner and
-  /// automatically enables operations such mapping, filtering, etc.
+  /// this automatically enables operations such as mapping, filtering, etc.
   Iterable<Name> get parts => _fullName.toIterable();
 
   /// Returns the full name as set.
@@ -314,10 +314,6 @@ class Namefully {
     bool withMid = false,
     NameType only = NameType.birthName,
   }) {
-    if (withMid && !hasMiddle) {
-      print('No initials for middleName since none was set.');
-    }
-
     orderedBy ??= _config.orderedBy;
     var firstInits = _fullName.firstName.initials(),
         midInits = _fullName.middleName.map((n) => n.initials()).toList(),
@@ -498,11 +494,13 @@ class Namefully {
 
   /// Formats the full name as desired.
   ///
-  /// Which [pattern] to use format it?
+  /// Which [pattern] to use to format it?
   /// string format
   /// -------------
   /// * 'short': typical first + last name
   /// * 'long': birth name (without prefix and suffix)
+  /// * 'public': first name combined with the last name's initial.
+  /// * 'official': official document format
   ///
   /// char format
   /// -----------
@@ -636,10 +634,6 @@ class Namefully {
         return last.toUpperCase();
       case 'm':
       case 'M':
-        if (!hasMiddle) {
-          print('No formatting for middle names since none was set.');
-          return null;
-        }
         return char == 'm'
             ? middleName().join(' ')
             : middleName().join(' ').toUpperCase();

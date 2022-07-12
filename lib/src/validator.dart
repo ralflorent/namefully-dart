@@ -17,7 +17,7 @@ import 'utils.dart';
 /// - `[\u00f8-\u00ff]`: German/Icelandic from ø (index 248) to ÿ (index 255)
 /// - `[\u0400-\u04FF]`: Cyrillic alphabet from Ѐ (index 1024) to ӿ (index 1279)
 /// - `[Ά-ωΑ-ώ]`: Greek alphabet from Ά (index 902) to ω (index 969)
-class ValidationRule {
+abstract class ValidationRule {
   static final base = RegExp(
       r'[a-zA-Z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\u0400-\u04FFΆ-ωΑ-ώ]');
 

@@ -100,6 +100,8 @@ void main() {
         expect(name.format(r'f $l.'), equals('John S.'));
         expect(name.format(r'f $m. l'), equals('John B. Smith'));
         expect(name.format(r'$F.$M.$L'), equals('J.B.S'));
+
+        expect(Namefully('John Smith').format('o'), equals('SMITH, John'));
       });
 
       test('converts a birth name to a specific capitalization case', () {
@@ -210,10 +212,8 @@ void main() {
           ),
           equals('J. Smith'),
         );
-        expect(
-          name.flatten(limit: 10, recursive: true),
-          equals('John B. S.'),
-        );
+        expect(name.flatten(limit: 10, recursive: true), equals('John B. S.'));
+        expect(name.flatten(limit: 5, recursive: true), equals('J. B. S.'));
         expect(
           name.flatten(limit: 10, recursive: true, withPeriod: false),
           equals('John Ben S'),
@@ -235,13 +235,7 @@ void main() {
       late Namefully name;
 
       setUp(() {
-        name = Namefully(
-          'Mr Smith John Ben Ph.D',
-          config: Config.inline(
-            name: 'byLastName',
-            orderedBy: NameOrder.lastName,
-          ),
-        );
+        name = Namefully('Mr Smith John Ben Ph.D', config: Config.byLastName());
       });
 
       test('creates a full name', () {
@@ -330,39 +324,27 @@ void main() {
       });
 
       test('List<String>', () {
-        expect(Namefully.fromList(['John', 'Smith']).toString(), 'John Smith');
-        expect(NameBuilder.fromList(['John', 'Smith']).build().full,
-            equals('John Smith'));
+        const names = ['John', 'Smith'];
+        expect(Namefully.fromList(names).toString(), 'John Smith');
+        expect(NameBuilder.fromList(names).build().full, 'John Smith');
       });
 
       test('Map<String, String>', () {
-        expect(
-          Namefully.fromJson({'firstName': 'John', 'lastName': 'Smith'}).full,
-          equals('John Smith'),
-        );
-        expect(
-          NameBuilder.fromJson({'firstName': 'John', 'lastName': 'Smith'})
-              .build()
-              .full,
-          equals('John Smith'),
-        );
+        const names = {'firstName': 'John', 'lastName': 'Smith'};
+        expect(Namefully.fromJson(names).full, 'John Smith');
+        expect(NameBuilder.fromJson(names).build().full, 'John Smith');
       });
 
       test('List<Name>', () {
-        expect(
-          Namefully.of([FirstName('John'), LastName('Smith')]).full,
-          equals('John Smith'),
-        );
+        final names = [FirstName('John'), LastName('Smith')];
+        expect(Namefully.of(names).full, 'John Smith');
+        expect(NameBuilder.of(names).build().full, 'John Smith');
         expect(
           Namefully.of([
             Name.first('John'),
             Name.last('Smith'),
             Name.suffix('Ph.D'),
           ]).birth,
-          equals('John Smith'),
-        );
-        expect(
-          NameBuilder.of([FirstName('John'), LastName('Smith')]).build().full,
           equals('John Smith'),
         );
       });
@@ -400,11 +382,25 @@ void main() {
       });
 
       test('tryParse', () {
-        var parsed = Namefully.tryParse('John Some Other Name Parts Smith');
+        var parsed = Namefully.tryParse('John Smith');
+        expect(parsed.short, equals('John Smith'));
+        expect(parsed.first, equals('John'));
+        expect(parsed.last, equals('Smith'));
+        expect(parsed.middle, equals(null));
+
+        parsed = Namefully.tryParse('John Ben Smith');
+        expect(parsed.short, equals('John Smith'));
+        expect(parsed.first, equals('John'));
+        expect(parsed.last, equals('Smith'));
+        expect(parsed.middle, equals('Ben'));
+
+        parsed = Namefully.tryParse('John Some Other Name Parts Smith');
         expect(parsed.short, equals('John Smith'));
         expect(parsed.first, equals('John'));
         expect(parsed.last, equals('Smith'));
         expect(parsed.middle, equals('Some Other Name Parts'));
+
+        expect(() => Namefully.tryParse('John'), throwsNameException);
       });
     });
 
@@ -542,15 +538,16 @@ void main() {
       var stream = builder.stream;
       builder
         ..shorten()
-        ..upper()
+        ..flip()
+        ..byFirstName()
         ..close();
       stream.listen(
         expectAsync1<void, Namefully>(
           (name) => expect(name.toString(), isNotEmpty),
-          max: 3,
+          max: 4,
         ),
       );
-    }, skip: true);
+    });
   });
 
   group('Config', () {
@@ -636,8 +633,9 @@ void main() {
         surname: Surname.mother,
         bypass: false,
       );
+      var cloneCopyConfig = copyConfig.clone();
 
-      // Check the copied config is set as defined.
+      // Check that the copied config is set as defined.
       expect(copyConfig.name, equals('config_copy'));
       expect(copyConfig.orderedBy, equals(NameOrder.lastName));
       expect(copyConfig.separator, equals(Separator.space));
@@ -646,7 +644,16 @@ void main() {
       expect(copyConfig.ending, equals(false));
       expect(copyConfig.surname, equals(Surname.mother));
 
-      // Check the config is not altered by the copy config.
+      // Check that the clone copy config is same as the copy config.
+      expect(cloneCopyConfig.name, equals('config_copy_copy'));
+      expect(copyConfig.orderedBy, cloneCopyConfig.orderedBy);
+      expect(copyConfig.separator, cloneCopyConfig.separator);
+      expect(copyConfig.title, cloneCopyConfig.title);
+      expect(copyConfig.bypass, cloneCopyConfig.bypass);
+      expect(copyConfig.ending, cloneCopyConfig.ending);
+      expect(copyConfig.surname, cloneCopyConfig.surname);
+
+      // Check that the config is not altered by the copy config.
       expect(config.name, equals('config'));
       expect(config.orderedBy, equals(NameOrder.firstName));
       expect(config.separator, equals(Separator.space));

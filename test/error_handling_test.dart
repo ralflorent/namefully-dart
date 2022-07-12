@@ -54,12 +54,16 @@ void main() {
         ]),
         throwsValidationException,
       );
+      expect(
+        () => Validators.middleName.validate(['Mary', 'kate;']),
+        throwsValidationException,
+      );
     });
 
     test('is thrown if any part of a last name breaks the validation rules',
         () {
       expect(
-        () => Namefully('Jane Do3', config: config),
+        () => Namefully('Jane Mary Do3', config: config),
         throwsValidationException,
       );
       expect(
@@ -285,6 +289,14 @@ void main() {
       expect(exception.stackTrace, isNull);
       expect(exception.type, equals(NameExceptionType.unknown));
       expect(exception.toString(), 'UnknownException ($name)');
+    });
+
+    test('is thrown if wrong name type is being validated', () {
+      expect(
+        () => Validators.middleName
+            .validate([Name.middle('Mary'), Name.last('Doe')]),
+        throwsNameException,
+      );
     });
   });
 }
