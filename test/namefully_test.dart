@@ -398,7 +398,8 @@ void main() {
         expect(parsed.short, equals('John Smith'));
         expect(parsed.first, equals('John'));
         expect(parsed.last, equals('Smith'));
-        expect(parsed.middle, equals('Some Other Name Parts'));
+        expect(parsed.middle, equals('Some'));
+        expect(parsed.middleName().join(' '), equals('Some Other Name Parts'));
 
         expect(() => Namefully.tryParse('John'), throwsNameException);
       });

@@ -396,6 +396,8 @@ class Namefully {
     Flat by = Flat.middleName,
     bool withPeriod = true,
     bool recursive = false,
+    bool includeAll = false,
+    Surname? surname,
   }) {
     if (length <= limit) return full;
 
@@ -404,8 +406,9 @@ class Namefully {
         mn = middleName().join(' '),
         ln = _fullName.lastName.toString(),
         hasMid = hasMiddle,
-        f = _fullName.firstName.initials().join('$sep ') + sep,
-        l = _fullName.lastName.initials().join('$sep ') + sep,
+        f = _fullName.firstName.initials(includeAll: includeAll).join('$sep ') +
+            sep,
+        l = _fullName.lastName.initials(format: surname).join('$sep ') + sep,
         m = hasMiddle
             ? _fullName.middleName
                     .map((n) => n.initials().first)
@@ -480,6 +483,8 @@ class Namefully {
         by: next,
         withPeriod: withPeriod,
         recursive: recursive,
+        includeAll: includeAll,
+        surname: surname,
       );
     }
     return flat;

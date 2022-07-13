@@ -85,24 +85,31 @@ class ListStringParser implements Parser<List<String>> {
         break;
       case 3:
         fullName.firstName = FirstName(raw.elementAt(index.firstName));
-        fullName.middleName.add(Name.middle(raw[index.middleName]));
+        fullName.middleName.addAll(_toMiddles(raw[index.middleName], config));
         fullName.lastName = LastName(raw.elementAt(index.lastName));
         break;
       case 4:
         fullName.prefix = Name.prefix(raw.elementAt(index.prefix));
         fullName.firstName = FirstName(raw.elementAt(index.firstName));
-        fullName.middleName.add(Name.middle(raw[index.middleName]));
+        fullName.middleName.addAll(_toMiddles(raw[index.middleName], config));
         fullName.lastName = LastName(raw.elementAt(index.lastName));
         break;
       case 5:
         fullName.prefix = Name.prefix(raw.elementAt(index.prefix));
         fullName.firstName = FirstName(raw.elementAt(index.firstName));
-        fullName.middleName.add(Name.middle(raw[index.middleName]));
+        fullName.middleName.addAll(_toMiddles(raw[index.middleName], config));
         fullName.lastName = LastName(raw.elementAt(index.lastName));
         fullName.suffix = Name.suffix(raw.elementAt(index.suffix));
         break;
     }
     return fullName;
+  }
+
+  List<Name> _toMiddles(String raw, Config config) {
+    return raw
+        .split(config.separator.token)
+        .map((name) => Name.middle(name))
+        .toList();
   }
 }
 
@@ -118,7 +125,11 @@ class JsonNameParser implements Parser<Map<String, String>> {
     final config = Config.merge(options);
 
     // Try to validate first;
-    NamaValidator().validate(_asNama());
+    if (config.bypass) {
+      NamaValidator().validateKeys(_asNama());
+    } else {
+      NamaValidator().validate(_asNama());
+    }
 
     // Then create a [FullName] from json.
     return FullName.fromJson(raw, config: config);

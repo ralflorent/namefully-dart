@@ -251,13 +251,25 @@ class NamaValidator implements Validator<Map<Namon, String>> {
 
   @override
   void validate(Map<Namon, String> nama) {
+    validateKeys(nama);
+    Validators.firstName.validate(nama[Namon.firstName]);
+    Validators.lastName.validate(nama[Namon.lastName]);
+
+    if (nama.containsKey(Namon.prefix)) {
+      Validators.namon.validate(nama[Namon.prefix]!);
+    }
+    if (nama.containsKey(Namon.suffix)) {
+      Validators.namon.validate(nama[Namon.suffix]!);
+    }
+  }
+
+  void validateKeys(Map<Namon, String> nama) {
     if (nama.isEmpty) {
       throw InputException(
         source: 'null',
         message: 'Map<k,v> must not be empty',
       );
-    }
-    if (nama.length < kMinNumberOfNameParts ||
+    } else if (nama.length < kMinNumberOfNameParts ||
         nama.length > kMaxNumberOfNameParts) {
       throw InputException(
         source: nama.values.join(' '),
@@ -265,27 +277,19 @@ class NamaValidator implements Validator<Map<Namon, String>> {
             '$kMaxNumberOfNameParts fields',
       );
     }
+
     if (!nama.containsKey(Namon.firstName)) {
       throw InputException(
         source: nama.values.join(' '),
         message: '"firstName" is a required key',
       );
-    } else {
-      Validators.firstName.validate(nama[Namon.firstName]);
     }
+
     if (!nama.containsKey(Namon.lastName)) {
       throw InputException(
         source: nama.values.join(' '),
         message: '"lastName" is a required key',
       );
-    } else {
-      Validators.lastName.validate(nama[Namon.lastName]);
-    }
-    if (nama.containsKey(Namon.prefix)) {
-      Validators.namon.validate(nama[Namon.prefix]!);
-    }
-    if (nama.containsKey(Namon.suffix)) {
-      Validators.namon.validate(nama[Namon.suffix]!);
     }
   }
 }
