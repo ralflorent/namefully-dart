@@ -16,6 +16,9 @@ void main() {
   // Gets the last name.
   print(name.last); // Snow
 
+  // Controls what the public sees.
+  print(name.public); // Jon S
+
   // Gets all the initials.
   print(name.initials(withMid: true)); // ['J', 'S', 'S']
 
@@ -33,4 +36,10 @@ void main() {
 
   // Transforms it into dot.case.
   print(name.dot()); // jon.stark.snow
+
+  // Gives you more control.
+  var hashtag = name.parts
+      .where((part) => !part.isMiddleName) // get rid of middle names
+      .fold('#', (prev, curr) => prev.toString() + curr.value);
+  print(hashtag); // #JonSnow
 }

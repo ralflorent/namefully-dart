@@ -166,17 +166,17 @@ class ListNameParser implements Parser<List<Name>> {
 
     // Then distribute all the elements accordingly to set [FullName].
     for (final name in raw) {
-      if (name.type == Namon.prefix) {
+      if (name.isPrefix) {
         fullName.prefix = name;
-      } else if (name.type == Namon.firstName) {
+      } else if (name.isFirstName) {
         fullName.firstName = name is FirstName ? name : FirstName(name.value);
-      } else if (name.type == Namon.middleName) {
+      } else if (name.isMiddleName) {
         fullName.middleName.add(name);
-      } else if (name.type == Namon.lastName) {
+      } else if (name.isLastName) {
         fullName.lastName = name is LastName
             ? LastName(name.value, name.mother, config.surname)
             : LastName(name.value, null, config.surname);
-      } else if (name.type == Namon.suffix) {
+      } else if (name.isSuffix) {
         fullName.suffix = name;
       }
     }

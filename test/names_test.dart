@@ -19,6 +19,11 @@ void main() {
       expect(name.hashCode != name.value.hashCode, isTrue);
       expect(name.toString(), 'John');
       expect(name.type, Namon.middleName);
+      expect(name.isPrefix, false);
+      expect(name.isFirstName, false);
+      expect(name.isMiddleName, true);
+      expect(name.isLastName, false);
+      expect(name.isSuffix, false);
     });
 
     test('creates a name with its initial capitalized', () {

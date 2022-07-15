@@ -36,6 +36,7 @@ You may want to use this library if:
 3. Use tokens (separators) to reshape prefixes and suffixes
 4. Accept customized parsers (do it yourself)
 5. Build a name on the fly (via a builder)
+6. Parse non-standard name cases
 
 ## Dependencies
 
@@ -50,11 +51,18 @@ import 'package:namefully/namefully.dart';
 
 void main() {
   var name = Namefully('Jon Stark Snow');
+  print(name.public); // Jon S
+  print(name.initials(withMid: true)); // ['J', 'S', 'S']
   print(name.format('L, f m')); // SNOW, Jon Stark
   print(name.shorten()); // Jon Snow
   print(name.zip()); // Jon S. S.
 }
 ```
+
+> NOTE: if you intend to use this utility for non-standard name cases such as
+> many middle names or last names, some extra work is required. For example,
+> using `Namefully.tryParse()` lets you parse names containing many middle names
+> with the risk of throwing a `NameException` when the parsing is not possible.
 
 ## `Config` and default values
 
@@ -77,17 +85,11 @@ name (e.g., `Jon Snow`) or the surname (e.g.,`Snow Jon`).
 
 ```dart
 // 'Smith' is the surname in this raw string case
-var name1 = Namefully(
-  'Smith John Joe',
-  config: Config.inline(orderedBy: NameOrder.lastName),
-);
+var name1 = Namefully('Smith John Joe', config: Config.byLastName());
 print(name1.last); // Smith
 
 // 'Edison' is the surname in this string array case
-var name2 = Namefully.fromList(
-  ['Edison', 'Thomas'],
-  config: Config.inline(orderedBy: NameOrder.lastName),
-);
+var name2 = Namefully.fromList(['Edison', 'Thomas'], config: Config.byLastName());
 print(name2.first); // Thomas
 ```
 
@@ -98,10 +100,7 @@ print(name2.first); // Thomas
 
 ```dart
 // 'Smith' is the surname in this raw string case
-var name = Namefully(
-  'Smith John Joe',
-  config: Config.inline(orderedBy: NameOrder.lastName),
-);
+var name = Namefully('Smith John Joe', config: Config.byLastName());
 print(name.fullName()); // Smith John Joe
 
 // Now alter the order by choosing the given name first
@@ -139,6 +138,7 @@ var name = Namefully.fromJson({
   'firstName': 'John',
   'lastName': 'Smith',
 }, config: Config.inline(title: Title.us));
+
 print(name.full); // Mr. John Smith
 print(name.prefix); // Mr.
 ```
@@ -240,8 +240,7 @@ print(name.full); // Juan Garcia
 
 ## Concepts and examples
 
-The name standards used for the current version of this library are as
-follows:
+The name standards used for the current version of this library are as follows:
 
 `[prefix] firstName [middleName] lastName [suffix]`
 
@@ -275,6 +274,7 @@ So, this utility understands the name parts as follows:
 - short version: `John Smith`
 - flattened: `John J. S.`
 - initials: `J J S`
+- public: `John S`
 
 ### Limitations
 

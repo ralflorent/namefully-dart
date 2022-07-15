@@ -52,6 +52,21 @@ class Name {
   /// The length of the name.
   int get length => _namon.length;
 
+  /// Whether the name is a prefix.
+  bool get isPrefix => type == Namon.prefix;
+
+  /// Whether the name is a first name.
+  bool get isFirstName => type == Namon.firstName;
+
+  /// Whether the name is a middle name.
+  bool get isMiddleName => type == Namon.middleName;
+
+  /// Whether the name is a last name.
+  bool get isLastName => type == Namon.lastName;
+
+  /// Whether the name is a suffix.
+  bool get isSuffix => type == Namon.suffix;
+
   @override
   String toString() => _namon;
 

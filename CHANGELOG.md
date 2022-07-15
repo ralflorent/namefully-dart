@@ -1,4 +1,12 @@
-# 0.1.7
+# 0.1.8
+
+- Add named constructors for `Name`
+- Add text parser for dynamic birth names (ordered by first name)
+- Apply minor improvements and add more test coverage
+- Add more support for middle name handling (e.g., flattening, parsing)
+- Fix automatic validation for json names (now relies on `bypass`).
+
+## 0.1.7
 
 - Remove support for summary and password fields (breaking changes).
 - Add iterable of name parts.
