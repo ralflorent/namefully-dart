@@ -15,9 +15,10 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        sdk: [stable]
+        sdk: [2.12.0, stable]
 
     steps:
       - uses: actions/checkout@v2
@@ -26,14 +27,14 @@ jobs:
           path: "~/.pub-cache"
           key: ${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
 
-      - uses: dart-lang/setup-dart@v1
+      - uses: dart-lang/setup-dart@v1.0
         with:
           sdk: ${{ matrix.sdk }}
 
       - name: Install dependencies
         run: dart pub get
 
-      - name: Analyze project source
+      - name: Analyze code
         run: dart analyze
 
       - name: Run tests
@@ -52,13 +53,13 @@ jobs:
             test/test_all.dart &
 
           echo "Generating LCOV report..."
-          pub global run coverage:collect_coverage \
+          dart pub global run coverage:collect_coverage \
             --port=8888 \
             --out=coverage/coverage.json \
             --wait-paused \
             --resume-isolates && \
 
-          pub global run coverage:format_coverage \
+          dart pub global run coverage:format_coverage \
             --lcov \
             --in=coverage/coverage.json \
             --out=coverage/lcov.info \
