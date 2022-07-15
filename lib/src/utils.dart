@@ -46,8 +46,6 @@ class NameIndex {
   /// Gets the name index for a list of names based on the [count] of elements
   /// and their [order] of appearance.
   static NameIndex when(NameOrder order, [int count = 2]) {
-    assert(count >= min && count <= max, 'Count of names is out of range.');
-
     if (order == NameOrder.firstName) {
       switch (count) {
         case 2: // first name + last name
@@ -58,6 +56,8 @@ class NameIndex {
           return const NameIndex._(0, 1, 2, 3, -1);
         case 5: // prefix + first name + middle name + last name + suffix
           return const NameIndex._(0, 1, 2, 3, 4);
+        default:
+          return NameIndex.base();
       }
     } else {
       switch (count) {
@@ -69,10 +69,10 @@ class NameIndex {
           return const NameIndex._(0, 2, 3, 1, -1);
         case 5: // prefix + last name + first name + middle name + suffix
           return const NameIndex._(0, 2, 3, 1, 4);
+        default:
+          return NameIndex.base();
       }
     }
-
-    return NameIndex.base();
   }
 }
 
