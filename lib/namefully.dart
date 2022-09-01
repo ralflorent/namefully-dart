@@ -272,10 +272,10 @@ class Namefully {
 
   /// Gets the first name part of the [FullName].
   ///
-  /// The [includeAll] param determines whether to include other pieces of the
+  /// The [withMore] param determines whether to include other pieces of the
   /// first name.
-  String firstName({bool includeAll = true}) {
-    return _fullName.firstName.toString(includeAll: includeAll);
+  String firstName({bool withMore = true}) {
+    return _fullName.firstName.toString(withMore: withMore);
   }
 
   /// Gets the last name part of the [FullName].
@@ -396,7 +396,7 @@ class Namefully {
     Flat by = Flat.middleName,
     bool withPeriod = true,
     bool recursive = false,
-    bool includeAll = false,
+    bool withMore = false,
     Surname? surname,
   }) {
     if (length <= limit) return full;
@@ -406,7 +406,7 @@ class Namefully {
         mn = middleName().join(' '),
         ln = _fullName.lastName.toString(),
         hasMid = hasMiddle,
-        f = _fullName.firstName.initials(includeAll: includeAll).join('$sep ') +
+        f = _fullName.firstName.initials(withMore: withMore).join('$sep ') +
             sep,
         l = _fullName.lastName.initials(format: surname).join('$sep ') + sep,
         m = hasMiddle
@@ -483,7 +483,7 @@ class Namefully {
         by: next,
         withPeriod: withPeriod,
         recursive: recursive,
-        includeAll: includeAll,
+        withMore: withMore,
         surname: surname,
       );
     }

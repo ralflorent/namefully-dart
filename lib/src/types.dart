@@ -43,22 +43,22 @@ enum NameType { firstName, middleName, lastName, birthName }
 
 /// The possible variants to indicate how to flatten a [FullName].
 enum Flat {
-  /// Use the first name's initial combined the remaining parts.
+  /// Use the first name's initial combined with the remaining parts.
   firstName,
 
-  /// Use the middle name's initial combined the remaining parts.
+  /// Use the middle name's initial combined with the remaining parts.
   middleName,
 
-  /// Use the last name's initial combined the remaining parts.
+  /// Use the last name's initial combined with the remaining parts.
   lastName,
 
-  /// Use both the first and middle names' initials combined the remaining parts.
+  /// Use both the first and middle names' initials combined with the remaining parts.
   firstMid,
 
-  /// Use both the last and middle names' initials combined the remaining parts.
+  /// Use both the last and middle names' initials combined with the remaining parts.
   midLast,
 
-  /// Use the first, middle and last names' initials combined the remaining parts.
+  /// Use the first, middle and last names' initials combined with the remaining parts.
   all
 }
 
@@ -108,13 +108,13 @@ class Namon {
   ];
 
   /// The predefined name types as a [Map].
-  static Map<String, Namon> get nama => Map<String, Namon>.unmodifiable({
-        prefix.key: prefix,
-        firstName.key: firstName,
-        middleName.key: middleName,
-        lastName.key: lastName,
-        suffix.key: suffix,
-      });
+  static final Map<String, Namon> nama = Map<String, Namon>.unmodifiable({
+    prefix.key: prefix,
+    firstName.key: firstName,
+    middleName.key: middleName,
+    lastName.key: lastName,
+    suffix.key: suffix,
+  });
 
   @override
   bool operator ==(Object? other) =>

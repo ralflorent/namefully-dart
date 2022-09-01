@@ -24,4 +24,3 @@ const List<String> kAllowedTokens = [
 ];
 const int kMinNumberOfNameParts = 2;
 const int kMaxNumberOfNameParts = 5;
-const List<String> kRestrictedChars = [' ', "'", '-', '.', ','];

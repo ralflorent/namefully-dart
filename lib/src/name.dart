@@ -8,8 +8,9 @@ import 'utils.dart';
 class Name {
   late String _namon;
   late String _initial;
-
   final CapsRange _capsRange;
+
+  /// The name type.
   final Namon type;
 
   /// Creates augmented names by adding extra functionality to a string name.
@@ -105,9 +106,9 @@ class FirstName extends Name {
   /// Some may consider [more] additional name parts of a given name as their
   /// first names, but not as their middle names. Though, it may mean the same,
   /// [more] provides the freedom to do it as it pleases.
-  FirstName(String namon, [List<String>? more])
+  FirstName(String value, [List<String>? more])
       : _more = more ?? [],
-        super(namon, Namon.firstName);
+        super(value, Namon.firstName);
 
   /// The additional name parts of the first name.
   List<String> get more => _more;
@@ -122,25 +123,22 @@ class FirstName extends Name {
         (hasMore ? (_more.reduce((acc, n) => acc + n)).length : 0);
   }
 
-  @override
-  String toString({bool includeAll = false}) {
-    return includeAll && hasMore ? '$value ${_more.join(" ")}'.trim() : value;
+  /// Returns a combined version of the [value] and [more] if any.
+  List<Name> get asNames {
+    return [Name.first(value), if (hasMore) ..._more.map((n) => Name.first(n))];
   }
 
-  /// Returns a combined version of the [value] and [more] if any.
-  List<Name> asNames() {
-    return [
-      Name(value, Namon.firstName),
-      if (hasMore) ..._more.map((n) => Name(n, Namon.firstName))
-    ];
+  @override
+  String toString({bool withMore = false}) {
+    return withMore && hasMore ? '$value ${_more.join(" ")}'.trim() : value;
   }
 
   /// Gets the initials of the first name.
   @override
-  List<String> initials({bool includeAll = false}) {
+  List<String> initials({bool withMore = false}) {
     return List.unmodifiable([
       _initial,
-      if (includeAll && hasMore) ..._more.map((n) => n[0]),
+      if (withMore && hasMore) ..._more.map((n) => n[0]),
     ]);
   }
 
@@ -158,6 +156,11 @@ class FirstName extends Name {
     range ??= _capsRange;
     value = decapitalize(value, range);
     if (hasMore) _more = _more.map((n) => decapitalize(n, range!)).toList();
+  }
+
+  /// Makes a copy of the current name.
+  FirstName copyWith({String? first, List<String>? more}) {
+    return FirstName(first ?? value, more ?? this.more);
   }
 }
 
@@ -185,6 +188,11 @@ class LastName extends Name {
 
   /// Returns `true` if the [mother]'s surname is defined.
   bool get hasMother => _mother?.isNotEmpty ?? false;
+
+  /// Returns a combined version of the [value] and [mother] if any.
+  List<Name> get asNames {
+    return [Name.last(value), if (hasMother) Name.last(mother!)];
+  }
 
   /// Returns a string representation of the last name.
   @override
@@ -237,5 +245,14 @@ class LastName extends Name {
     range ??= _capsRange;
     value = decapitalize(value, range);
     if (hasMother) _mother = decapitalize(_mother!, range);
+  }
+
+  /// Makes a copy of the current name.
+  LastName copyWith({String? father, String? mother, Surname? format}) {
+    return LastName(
+      father ?? this.father,
+      mother ?? this.mother,
+      format ?? this.format,
+    );
   }
 }

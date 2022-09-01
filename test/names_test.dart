@@ -84,8 +84,15 @@ void main() {
       expect(FirstName('John').hasMore, equals(false));
     });
 
-    test('.asNames() returns the name parts as a pile of [Name]s', () {
-      var names = firstName.asNames();
+    test('.copyWith() makes a copy of the first name with specific parts', () {
+      var copy = firstName.copyWith(first: 'Jacky', more: ['Bob']);
+      expect(copy.toString(), equals('Jacky'));
+      expect(copy.more, equals(['Bob']));
+      expect(copy.type, equals(Namon.firstName));
+    });
+
+    test('.asNames returns the name parts as a pile of [Name]s', () {
+      var names = firstName.asNames;
       expect(names.length, equals(3));
       expect(names.first.toString(), equals('John'));
       for (var name in names) {
@@ -96,24 +103,24 @@ void main() {
 
     test('.toString() returns a string version of the first name', () {
       expect(firstName.toString(), equals('John'));
-      expect(firstName.toString(includeAll: true), equals('John Ben Carl'));
+      expect(firstName.toString(withMore: true), equals('John Ben Carl'));
     });
 
     test('.initials() returns only the initials of the specified parts', () {
       expect(firstName.initials(), equals(['J']));
-      expect(firstName.initials(includeAll: true), equals(['J', 'B', 'C']));
+      expect(firstName.initials(withMore: true), equals(['J', 'B', 'C']));
     });
 
     test('.caps() capitalizes a first name afterwards', () {
       var name = FirstName('john', ['ben', 'carl']);
       expect((name..caps()).toString(), equals('John'));
-      expect((name..caps()).toString(includeAll: true), 'John Ben Carl');
+      expect((name..caps()).toString(withMore: true), 'John Ben Carl');
     });
 
     test('.caps() capitalizes all parts of a first name afterwards', () {
       expect((firstName..caps(CapsRange.all)).toString(), equals('JOHN'));
       expect(
-        (firstName..caps(CapsRange.all)).toString(includeAll: true),
+        (firstName..caps(CapsRange.all)).toString(withMore: true),
         equals('JOHN BEN CARL'),
       );
     });
@@ -121,14 +128,14 @@ void main() {
     test('.decaps() de-capitalizes a first name afterwards', () {
       var name = FirstName('JOHN', ['BEN', 'CARL']);
       expect((name..decaps()).toString(), equals('jOHN'));
-      expect((name..decaps()).toString(includeAll: true), 'jOHN bEN cARL');
+      expect((name..decaps()).toString(withMore: true), 'jOHN bEN cARL');
     });
 
     test('.decaps() de-capitalizes all parts of a first name afterwards', () {
       var name = FirstName('JOHN', ['BEN', 'CARL']);
       expect((name..decaps(CapsRange.all)).toString(), equals('john'));
       expect(
-        (name..decaps(CapsRange.all)).toString(includeAll: true),
+        (name..decaps(CapsRange.all)).toString(withMore: true),
         equals('john ben carl'),
       );
     });
@@ -137,7 +144,7 @@ void main() {
       expect((FirstName('JOHN')..normalize()).toString(), equals('John'));
       expect(
           (FirstName('JOHN', ['BEN', 'CARL'])..normalize())
-              .toString(includeAll: true),
+              .toString(withMore: true),
           equals('John Ben Carl'));
     });
   });
@@ -180,6 +187,17 @@ void main() {
         LastName('Smith', 'Doe', Surname.all).toString(),
         equals('Smith Doe'),
       );
+    });
+
+    test('.asNames returns the name parts as a pile of [Name]s', () {
+      var names = lastName.asNames;
+      expect(names.length, equals(2));
+      expect(names.first.toString(), equals('Smith'));
+      expect(names.last.toString(), equals('Doe'));
+      for (var name in names) {
+        expect(name, isA<Name>());
+        expect(name.type, equals(Namon.lastName));
+      }
     });
 
     test('.toString() outputs a last name with a specific format', () {
@@ -240,6 +258,22 @@ void main() {
         (LastName('SMITH', 'DOE')..normalize()).toString(format: Surname.all),
         equals('Smith Doe'),
       );
+    });
+
+    test('.copyWith() makes a copy of the last name with specific parts', () {
+      var copy = lastName.copyWith(father: 'Moss');
+      expect(copy.father, equals('Moss'));
+      expect(copy.hasMother, equals(true));
+      expect(copy.length, equals(7));
+      expect(copy.toString(format: Surname.mother), equals('Doe'));
+      expect(copy.type, equals(Namon.lastName));
+
+      copy = lastName.copyWith(mother: 'Kruger');
+      expect(copy.father, equals('Smith'));
+      expect(copy.hasMother, equals(true));
+      expect(copy.length, equals(11));
+      expect(copy.toString(format: Surname.mother), equals('Kruger'));
+      expect(copy.type, equals(Namon.lastName));
     });
   });
 }
