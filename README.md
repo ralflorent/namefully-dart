@@ -115,10 +115,7 @@ _Only valid for raw string values_, this option indicates how to split the parts
 of a raw string name under the hood.
 
 ```dart
-var name = Namefully(
-  'John,Smith',
-  config: Config.inline(separator: Separator.comma),
-);
+var name = Namefully('John,Smith', config: Config.inline(separator: Separator.comma));
 print(name.full); // John Smith
 ```
 
@@ -133,12 +130,12 @@ before a name require a period: `Mr., Mrs., Ms., Dr.`. In British and Australian
 English, no periods are used in these abbreviations.
 
 ```dart
-var name = Namefully.fromJson({
-  'prefix': 'Mr',
-  'firstName': 'John',
-  'lastName': 'Smith',
-}, config: Config.inline(title: Title.us));
-
+var name = Namefully.only(
+  prefix: 'Mr',
+  firstName: 'John',
+  lastName: 'Smith',
+  config: Config.inline(title: Title.us),
+);
 print(name.full); // Mr. John Smith
 print(name.prefix); // Mr.
 ```
@@ -151,12 +148,10 @@ Sets an ending character after the full name (a comma before the suffix
 actually).
 
 ```dart
-var name = Namefully.fromJson(
-  {
-    'firstName': 'John',
-    'lastName': 'Smith',
-    'suffix': 'Ph.D',
-  },
+var name = Namefully.only(
+  firstName: 'John',
+  lastName: 'Smith',
+  suffix: 'Ph.D',
   config: Config.inline(ending: true),
 );
 print(name.full); // John Smith, Ph.D
@@ -249,7 +244,7 @@ other words, the most basic/typical case is a name that looks like this:
 `John Smith`, where `John` is the _firstName_ and `Smith`, the _lastName_.
 
 > NOTE: Do notice that the order of appearance matters and (as shown in
-> [orderedBy](#orderedBy)) can be altered through configured parameters. By default,
+> [orderedBy](#orderedby)) can be altered through configured parameters. By default,
 > the order of appearance is as shown above and will be used as a basis for
 > future examples and use cases.
 

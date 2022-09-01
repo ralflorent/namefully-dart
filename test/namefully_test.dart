@@ -421,7 +421,7 @@ void main() {
           config: nameCase.config,
         );
         expect(name.toString(), 'Daniel Michael Blake Day-Lewis');
-        expect(name.firstName(includeAll: false), equals('Daniel'));
+        expect(name.firstName(withMore: false), equals('Daniel'));
         expect(name.firstName(), equals('Daniel Michael Blake'));
         expect(name.hasMiddle, equals(false));
       });

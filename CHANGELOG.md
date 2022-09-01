@@ -1,4 +1,9 @@
-# 0.1.8
+# 0.1.8+1
+
+- Fix list string validator issue
+- Add copy capabilities to `FirstName` and `LastName`.
+
+## 0.1.8
 
 - Add named constructors for `Name`
 - Add text parser for dynamic birth names (ordered by first name)

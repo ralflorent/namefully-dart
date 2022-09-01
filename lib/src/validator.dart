@@ -332,11 +332,40 @@ class ListStringValidator extends Validator<List<String>>
   void validateIndex(List<String> values) => super.validate(values);
 }
 
-class ListNameValidator extends Validator<List<Name>>
-    with ListValidatorMixin<Name> {
+class ListNameValidator extends Validator<List<Name>> {
   static final _validator = ListNameValidator._();
+
   factory ListNameValidator() => _validator;
+
   ListNameValidator._();
+
+  @override
+  void validate(List<Name> value) {
+    if (value.isEmpty || value.length < kMinNumberOfNameParts) {
+      throw InputException(
+        source: value,
+        message: 'expecting at least $kMinNumberOfNameParts elements',
+      );
+    }
+
+    var names = _findBasicNames(value);
+    if (names.length < kMinNumberOfNameParts) {
+      throw InputException(
+        source: value,
+        message: 'both first and last names are required',
+      );
+    }
+  }
+
+  /// Finds if the iterable contains at least a first and last name.
+  Map<String, String> _findBasicNames(List<Name> names) {
+    return names.fold<Map<String, String>>({}, (accumulator, name) {
+      if (name.isFirstName || name.isLastName) {
+        accumulator.putIfAbsent(name.type.key, () => name.toString());
+      }
+      return accumulator;
+    });
+  }
 }
 
 /// A list of validators for a specific namon.

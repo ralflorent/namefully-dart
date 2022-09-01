@@ -160,7 +160,7 @@ void main() {
         ]),
         throwsInputException,
       );
-    }, skip: true);
+    });
 
     test('is thrown if a name list has an unsupported number of entries', () {
       var name = Name.first('jane-');
