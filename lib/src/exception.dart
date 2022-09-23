@@ -104,15 +104,11 @@ abstract class NameException implements Exception {
   /// The string value from the name source input.
   String get sourceAsString {
     var input = '';
-
     if (source == null) input = 'null';
-    if (source is String) input = source as String;
-    if (source is List<String>) input = (source as List<String>).join(' ');
-    if (source is Name) input = (source as Name).toString();
-    if (source is List<Name>) {
-      input = (source as List<Name>).map((n) => n.toString()).join(' ');
-    }
-
+    if (source is String) input = source;
+    if (source is List<String>) input = source.join(' ');
+    if (source is Name) input = source.toString();
+    if (source is List<Name>) input = source.map((n) => n.toString()).join(' ');
     return input;
   }
 

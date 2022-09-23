@@ -135,17 +135,33 @@ class Namefully {
           config: config,
         );
 
-  /// Tries to create a name from a text with an unknown (dynamic) format.
+  /// Constructs a [Namefully] instance from a text.
   ///
-  /// This operation is intended to be used when the developer is not sure of
-  /// the format of a name. It will try to parse the text using a number of
-  /// different parsers, and if successful, will return a potential name.
-  /// Otherwise, it will throw a [NameException].
+  /// It throws a [NameException] if the text cannot be parsed. Use [tryParse]
+  /// instead if a `null` return is preferred over a throwable exception.
+  ///
+  /// This operation is computed asynchronously, which gives more flexibility at
+  /// the time of catching the exception (and stack trace if any). The acceptable
+  /// text format is a string composed of two or more name pieces. For instance,
+  /// `John Lennon`, or `John Winston Ono Lennon` are parsable names and follow
+  /// the basic name standard rules (i.e., first-middle-last).
   ///
   /// Keep in mind that prefix and suffix are not considered during the parsing
   /// process.
-  static Namefully tryParse(String text) {
-    return Namefully.fromParser(Parser.build(text));
+  static Future<Namefully> parse(String text) {
+    return Parser.buildAsync(text).then((value) => Namefully.fromParser(value));
+  }
+
+  /// Constructs a [Namefully] instance from a text.
+  ///
+  /// It works like [parse] except that this function returns `null` where [parse]
+  /// would throw a [NameException].
+  static Namefully? tryParse(String text) {
+    try {
+      return Namefully.fromParser(Parser.build(text));
+    } on NameException {
+      return null;
+    }
   }
 
   /// The current configuration.
@@ -308,7 +324,7 @@ class Namefully {
   /// Ordered by last name obeys the following format:
   ///  `lastName firstName [middleName]`
   /// which means that if no middle name was set, setting [withMid] to true
-  /// will output nothing and warn the end user about it.
+  /// will output nothing.
   List<String> initials({
     NameOrder? orderedBy,
     bool withMid = false,

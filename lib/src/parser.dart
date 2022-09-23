@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'config.dart';
 import 'types.dart';
 import 'exception.dart';
@@ -37,10 +39,21 @@ abstract class Parser<T> {
       ]);
     }
   }
+
+  /// Builds asynchronously a dynamic [Parser].
+  static Future<Parser> buildAsync(String text) {
+    Completer<Parser> completer = Completer<Parser>();
+    try {
+      completer.complete(build(text));
+    } on Object catch (e, s) {
+      completer.completeError(e, s);
+    }
+    return completer.future;
+  }
 }
 
 class StringParser extends Parser<String> {
-  const StringParser(String raw) : super(raw);
+  const StringParser(String names) : super(names);
 
   @override
   FullName parse({Config? options}) {
@@ -50,11 +63,8 @@ class StringParser extends Parser<String> {
   }
 }
 
-class ListStringParser implements Parser<List<String>> {
-  const ListStringParser(this.raw);
-
-  @override
-  final List<String> raw;
+class ListStringParser extends Parser<List<String>> {
+  const ListStringParser(List<String> names) : super(names);
 
   @override
   FullName parse({Config? options}) {
@@ -113,11 +123,8 @@ class ListStringParser implements Parser<List<String>> {
   }
 }
 
-class JsonNameParser implements Parser<Map<String, String>> {
-  const JsonNameParser(this.raw);
-
-  @override
-  final Map<String, String> raw;
+class JsonNameParser extends Parser<Map<String, String>> {
+  const JsonNameParser(Map<String, String> names) : super(names);
 
   @override
   FullName parse({Config? options}) {
@@ -149,11 +156,8 @@ class JsonNameParser implements Parser<Map<String, String>> {
   }
 }
 
-class ListNameParser implements Parser<List<Name>> {
-  const ListNameParser(this.raw);
-
-  @override
-  final List<Name> raw;
+class ListNameParser extends Parser<List<Name>> {
+  const ListNameParser(List<Name> names) : super(names);
 
   @override
   FullName parse({Config? options}) {

@@ -21,7 +21,7 @@ You may want to use this library if:
 ## Key features
 
 1. Accept different data shapes as input
-2. Use of optional parameters to access advanced features
+2. Use optional parameters to access advanced features
 3. Format a name as desired
 4. Offer support for prefixes and suffixes
 5. Access to names' initials
@@ -50,18 +50,18 @@ See `example/namefully.dart`.
 import 'package:namefully/namefully.dart';
 
 void main() {
-  var name = Namefully('Jon Stark Snow');
-  print(name.public); // Jon S
-  print(name.initials(withMid: true)); // ['J', 'S', 'S']
-  print(name.format('L, f m')); // SNOW, Jon Stark
-  print(name.shorten()); // Jon Snow
-  print(name.zip()); // Jon S. S.
+  var name = Namefully('Thomas Alva Edison');
+  print(name.short); // Thomas Edison
+  print(name.public); // Thomas E
+  print(name.initials(withMid: true)); // ['T', 'A', 'E']
+  print(name.format('L, f m')); // EDISON, Thomas Alva Edison
+  print(name.zip()); // Thomas A. E.
 }
 ```
 
 > NOTE: if you intend to use this utility for non-standard name cases such as
 > many middle names or last names, some extra work is required. For example,
-> using `Namefully.tryParse()` lets you parse names containing many middle names
+> using `Namefully.parse()` lets you parse names containing many middle names
 > with the risk of throwing a `NameException` when the parsing is not possible.
 
 ## `Config` and default values

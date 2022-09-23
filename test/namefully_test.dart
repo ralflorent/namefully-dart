@@ -381,27 +381,53 @@ void main() {
         );
       });
 
-      test('tryParse', () {
+      test('tryParse()', () {
         var parsed = Namefully.tryParse('John Smith');
+        expect(parsed, isNotNull);
+        expect(parsed?.short, equals('John Smith'));
+        expect(parsed?.first, equals('John'));
+        expect(parsed?.last, equals('Smith'));
+        expect(parsed?.middle, equals(null));
+
+        parsed = Namefully.tryParse('John Ben Smith');
+        expect(parsed, isNotNull);
+        expect(parsed?.short, equals('John Smith'));
+        expect(parsed?.first, equals('John'));
+        expect(parsed?.last, equals('Smith'));
+        expect(parsed?.middle, equals('Ben'));
+
+        parsed = Namefully.tryParse('John Some Other Name Parts Smith');
+        expect(parsed, isNotNull);
+        expect(parsed?.short, equals('John Smith'));
+        expect(parsed?.first, equals('John'));
+        expect(parsed?.last, equals('Smith'));
+        expect(parsed?.middle, equals('Some'));
+        expect(parsed?.middleName().join(' '), equals('Some Other Name Parts'));
+
+        expect(Namefully.tryParse('John'), isNull);
+      });
+
+      test('parse()', () async {
+        var parsed = await Namefully.parse('John Smith');
         expect(parsed.short, equals('John Smith'));
         expect(parsed.first, equals('John'));
         expect(parsed.last, equals('Smith'));
         expect(parsed.middle, equals(null));
 
-        parsed = Namefully.tryParse('John Ben Smith');
+        parsed = await Namefully.parse('John Ben Smith');
         expect(parsed.short, equals('John Smith'));
         expect(parsed.first, equals('John'));
         expect(parsed.last, equals('Smith'));
         expect(parsed.middle, equals('Ben'));
 
-        parsed = Namefully.tryParse('John Some Other Name Parts Smith');
+        parsed = await Namefully.parse('John Some Other Name Parts Smith');
         expect(parsed.short, equals('John Smith'));
         expect(parsed.first, equals('John'));
         expect(parsed.last, equals('Smith'));
         expect(parsed.middle, equals('Some'));
         expect(parsed.middleName().join(' '), equals('Some Other Name Parts'));
 
-        expect(() => Namefully.tryParse('John'), throwsNameException);
+        expect(() async => await Namefully.parse('John'), throwsNameException);
       });
     });
 
