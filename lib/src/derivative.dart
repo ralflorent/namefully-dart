@@ -1,13 +1,17 @@
 import 'dart:async';
 
-import 'namefully.dart';
+import 'config.dart';
+import 'core.dart';
+import 'exception.dart';
+import 'types.dart';
 
-/// An on-the-fly name builder.
+/// A name derivative builder.
 ///
-/// This builder knows how to take a name from distinct raw forms and build it
-/// through a state management mechanism. That is, as the name changes, its
-/// states are persisted and notified to any subscriber listening to those
-/// changes, thanks to a [StreamController] that broadcasts them.
+/// This builder knows how to take a name from distinct raw forms and build its
+/// derivatives through a state management mechanism. That is, as the name changes,
+/// its derivatives (or states) are persisted and notified to any subscriber
+/// listening to those changes, thanks to a [StreamController] that broadcasts
+/// them.
 ///
 /// The builder starts by creating an initial state of the created name. If a
 /// change event occurs to this name, this change is hence viewed as the current
@@ -24,7 +28,7 @@ import 'namefully.dart';
 /// the name: `Jane Ann Doe`.
 ///
 /// ```dart
-/// var builder = NameBuilder('Jane Ann Doe', config: Config('NameBuilder'))
+/// var builder = NameDerivativeBuilder('Jane Ann Doe', config: Config('builder'))
 ///   ..stream.listen((d) => print('stream name: $d'))
 ///   ..shorten()     // stream name: 'Jane Doe'
 ///   ..upper()       // stream name: 'JANE DOE'
@@ -33,16 +37,16 @@ import 'namefully.dart';
 /// print(builder.build()); // 'doe jane'
 /// ```
 ///
-/// **NOTE**: Most of the operations supported in the name builder can be performed
-/// with [Namefully.format]. This builder is an expensive operation and should
-/// be used in specific use cases, or when judged extremely necessary. Otherwise,
+/// **NOTE**: Most of the operations supported here can be performed using
+/// [Namefully.format]. This builder is an expensive operation and should be
+/// used in specific use cases, or when judged extremely necessary. Otherwise,
 /// keep it sane and simple using the traditional `Namefully` class.
-class NameBuilder {
+class NameDerivative {
   /// The context in which the name is being built up.
   Namefully _context;
 
   /// Whether this builder can continue building additional name states.
-  bool _done = true;
+  bool _done = false;
 
   /// The state of the changing name.
   final _NamefullyState _state;
@@ -54,16 +58,13 @@ class NameBuilder {
   Stream<Namefully> get stream => _streamer.stream.asBroadcastStream();
 
   /// The name for the current context.
-  Namefully get name => _context;
+  Namefully get context => _context;
 
   /// Whether the builder is still open for more nesting operations.
-  bool get isOpen => _done;
-
-  /// Whether the builder can perform more nesting operations.
-  bool get isClosed => !isOpen;
+  bool get isDone => _done;
 
   /// Creates the initial state of the given name.
-  NameBuilder._(this._context) : _state = _NamefullyState(_context) {
+  NameDerivative._(this._context) : _state = _NamefullyState(_context) {
     _streamer.sink.add(_context);
   }
 
@@ -72,51 +73,12 @@ class NameBuilder {
   /// An optional [Config]uration may be provided with specifics on how to treat
   /// a full name during its course. By default, all name parts are validated
   /// against some basic validation rules to avoid common runtime exceptions.
-  NameBuilder(String names, {Config? config})
-      : this._(Namefully(names, config: config));
-
-  /// Creates a name on the fly.
-  NameBuilder.only({
-    required String firstName,
-    List<String>? middleName,
-    required String lastName,
-    Config? config,
-  }) : this._(Namefully.from(FullName.raw(
-          firstName: firstName,
-          middleName: middleName,
-          lastName: lastName,
-          config: config,
-        )));
-
-  /// Creates a name from a list of distinguishable parts.
-  NameBuilder.fromList(List<String> names, {Config? config})
-      : this._(Namefully.fromList(names, config: config));
-
-  /// Creates a name from a list of [Name]s.
-  ///
-  /// [Name] is provided by this utility, representing a namon with some extra
-  /// capabilities, compared to a simple string name. This class helps to define
-  /// the role of a name part (e.g, prefix) beforehand, which, as a consequence,
-  /// gives more flexibility at the time of creating an instance of Namefully.
-  NameBuilder.of(List<Name> names, {Config? config})
-      : this._(Namefully.of(names, config: config));
-
-  /// Creates a name from a [FullName].
-  NameBuilder.from(FullName names, {Config? config})
-      : this._(Namefully.from(names));
-
-  /// Creates a name from a json-like distinguishable name parts.
-  NameBuilder.fromJson(Map<String, String> names, {Config? config})
-      : this._(Namefully.fromJson(names, config: config));
-
-  /// Creates a name from a customized [Parser].
-  NameBuilder.fromParser(Parser names, {Config? config})
-      : this._(Namefully.fromParser(names, config: config));
+  NameDerivative.of(Namefully instance) : this._(instance);
 
   @override
   String toString() {
-    return "NameBuilder's current context[" +
-        (isClosed ? 'closed' : 'open') +
+    return "NameDerivative's current context[" +
+        (_done ? 'closed' : 'open') +
         ']: $_context';
   }
 
@@ -128,7 +90,7 @@ class NameBuilder {
 
   /// Flips definitely the name order from the current config.
   void flip() {
-    if (!_done) throw _builderException(_context.toString(), 'flip');
+    if (_done) throw _builderException(_context.toString(), 'flip');
     _context = Namefully(
       _state.last.full,
       config: _state.last.config.copyWith(),
@@ -142,7 +104,7 @@ class NameBuilder {
   ///
   /// See [Namefully.shorten] for more info.
   void shorten() {
-    if (!_done) throw _builderException(_context.toString(), 'shorten');
+    if (_done) throw _builderException(_context.toString(), 'shorten');
     _context = Namefully(_state.last.shorten(), config: _state.last.config);
     _state.add(_context, id: 'shorten');
     _streamer.sink.add(_context);
@@ -150,7 +112,7 @@ class NameBuilder {
 
   /// Transforms a birth name into UPPERCASE.
   void upper() {
-    if (!_done) throw _builderException(_context.toString(), 'upper');
+    if (_done) throw _builderException(_context.toString(), 'upper');
     _context = Namefully(_state.last.upper(), config: _state.last.config);
     _state.add(_context, id: 'upper');
     _streamer.sink.add(_context);
@@ -158,29 +120,29 @@ class NameBuilder {
 
   /// Transforms a birth name into lowercase.
   void lower() {
-    if (!_done) throw _builderException(_context.toString(), 'lower');
+    if (_done) throw _builderException(_context.toString(), 'lower');
     _context = Namefully(_state.last.lower(), config: _state.last.config);
     _state.add(_context, id: 'lower');
     _streamer.sink.add(_context);
   }
 
   /// Returns the final state of the changing name.
-  Namefully build() {
-    if (!_done) throw _builderException(_context.toString(), 'build');
+  Namefully done() {
+    if (_done) throw _builderException(_context.toString(), 'done');
     close();
     return _context;
   }
 
   /// Closes this builder on demand.
   void close() {
-    _done = false;
+    _done = true;
     _streamer.close();
     _state.dispose();
   }
 
   /// Rolls back to the previous context.
   void rollback() {
-    if (!_done) throw _builderException(_context.toString(), 'rollback');
+    if (_done) throw _builderException(_context.toString(), 'rollback');
     _context = _state.rollback();
     _streamer.sink.add(_context);
   }
@@ -189,7 +151,7 @@ class NameBuilder {
   /// [NameOrder.lastName].
   void _order(NameOrder by) {
     var ops = by == NameOrder.firstName ? 'byFirstName' : 'byLastName';
-    if (!_done) throw _builderException(_context.toString(), ops);
+    if (_done) throw _builderException(_context.toString(), ops);
     _context = Namefully(
       _state.last.fullName(by),
       config: _state.last.config.copyWith(orderedBy: by),
@@ -202,7 +164,7 @@ class NameBuilder {
 NameException _builderException(String source, [String ops = '']) {
   return NotAllowedException(
     source: source,
-    message: 'name builder has been closed',
+    message: 'name derivative builder has been closed',
     operation: ops,
   );
 }

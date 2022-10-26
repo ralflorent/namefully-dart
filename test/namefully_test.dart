@@ -1,4 +1,3 @@
-import 'package:namefully/name_builder.dart';
 import 'package:namefully/namefully.dart';
 import 'package:test/test.dart';
 
@@ -317,28 +316,20 @@ void main() {
     group('can be instantiated with', () {
       test('String', () {
         expect(Namefully('John Smith').full, equals('John Smith'));
-        expect(NameBuilder('John Smith').build().full, equals('John Smith'));
-        expect(
-            NameBuilder.only(firstName: 'John', lastName: 'Smith').build().full,
-            equals('John Smith'));
       });
 
       test('List<String>', () {
-        const names = ['John', 'Smith'];
-        expect(Namefully.fromList(names).toString(), 'John Smith');
-        expect(NameBuilder.fromList(names).build().full, 'John Smith');
+        expect(Namefully.fromList(['John', 'Smith']).toString(), 'John Smith');
       });
 
       test('Map<String, String>', () {
         const names = {'firstName': 'John', 'lastName': 'Smith'};
         expect(Namefully.fromJson(names).full, 'John Smith');
-        expect(NameBuilder.fromJson(names).build().full, 'John Smith');
       });
 
       test('List<Name>', () {
         final names = [FirstName('John'), LastName('Smith')];
         expect(Namefully.of(names).full, 'John Smith');
-        expect(NameBuilder.of(names).build().full, 'John Smith');
         expect(
           Namefully.of([
             Name.first('John'),
@@ -354,7 +345,39 @@ void main() {
           ..rawFirstName('John')
           ..rawLastName('Smith');
         expect(Namefully.from(fullName).full, equals('John Smith'));
-        expect(NameBuilder.from(fullName).build().full, equals('John Smith'));
+      });
+
+      test('NameBuilder', () {
+        final names = [FirstName('John'), LastName('Smith')];
+        final middles = [Name.middle('Ben'), Name.middle('Carl')];
+        expect(NameBuilder.of(names).build().full, 'John Smith');
+
+        var builder = NameBuilder()
+          ..addAll(names)
+          ..addFirst(middles[0]);
+        expect(builder.build().full, 'John Ben Smith');
+
+        builder.removeFirst();
+        expect(builder.build().full, 'John Smith');
+
+        builder.removeLast();
+        builder.addLast(LastName('Doe'));
+        builder.addAll(middles);
+        expect(builder.build().full, 'John Ben Carl Doe');
+
+        builder.remove(names.elementAt(0));
+        builder.retainWhere((name) => !name.isMiddleName);
+        builder.add(FirstName('Jack'));
+        expect(builder.build().full, 'Jack Doe');
+
+        builder.addAll(middles);
+        expect(builder.build().full, 'Jack Ben Carl Doe');
+
+        builder.removeWhere((name) => name.isMiddleName);
+        expect(builder.build().full, 'Jack Doe');
+
+        builder.clear();
+        expect(() => builder.build(), throwsInputException);
       });
 
       test('Parser<T> (Custom Parser)', () {
@@ -363,13 +386,6 @@ void main() {
             SimpleParser('John#Smith'), // simple parsing logic :P
             config: Config.inline(name: 'simpleParser'),
           ).full,
-          equals('John Smith'),
-        );
-        expect(
-          NameBuilder.fromParser(
-            SimpleParser('John#Smith'), // simple parsing logic :P
-            config: Config.inline(name: 'simpleParser'),
-          ).build().full,
           equals('John Smith'),
         );
       });
@@ -525,55 +541,62 @@ void main() {
     });
   });
 
-  group('can be built on the fly', () {
+  group('can be built with derivatives', () {
     Config? config;
 
-    setUp(() => config = Config('NameBuilder'));
+    setUp(() => config = Config('misc'));
 
     test('for basic nesting operations', () {
-      var builder = NameBuilder('Jane Mari Doe', config: config)..shorten();
-      var name = builder.build();
-      expect(builder.isClosed, equals(true));
-
-      expect(name.toString(), equals('Jane Doe'));
-
-      expect(builder.name.toString(), equals('Jane Doe'));
-      expect(builder.toString(),
-          "NameBuilder's current context[closed]: Jane Doe");
+      final namefully = Namefully('Jane Mari Doe', config: config);
+      var derivative = NameDerivative.of(namefully)..shorten();
+      expect(derivative.done().toString(), equals('Jane Doe'));
+      expect(derivative.isDone, equals(true));
+      expect(derivative.context.toString(), equals('Jane Doe'));
+      expect(derivative.toString(), endsWith('context[closed]: Jane Doe'));
     });
 
     test('and roll back on demand', () {
-      var builder = NameBuilder('Jane Mari Doe', config: config)
+      final namefully = Namefully('Jane Mari Doe', config: config);
+      var derivative = namefully.derivative
         ..lower() // 'jane mari doe'
         ..flip() // 'doe mari jane'
         ..shorten(); // 'doe jane'
 
-      expect(builder.name.toString(), equals('doe jane'));
+      expect(derivative.context.toString(), equals('doe jane'));
 
-      builder
+      derivative
         ..rollback() // back to 'doe mari joe'
         ..rollback() // back to 'jane mari doe'
         ..rollback() // back to 'Jane Mari Doe'
         ..rollback() // last rollback is a no-op
         ..close();
 
-      expect(builder.name.toString(), equals('Jane Mari Doe'));
+      expect(derivative.context.toString(), equals('Jane Mari Doe'));
     });
 
     test('and broadcasts its name states', () {
-      var builder = NameBuilder('Jane Mari Doe', config: config);
-      var stream = builder.stream;
-      builder
+      var derivative = Namefully('Jane Mari Doe', config: config).derivative;
+      var stream = derivative.stream;
+      derivative
         ..shorten()
         ..flip()
         ..byFirstName()
         ..close();
-      stream.listen(
-        expectAsync1<void, Namefully>(
-          (name) => expect(name.toString(), isNotEmpty),
-          max: 4,
-        ),
-      );
+
+      _predicate(String expected) => predicate<Namefully>((value) {
+            expect(value.toString(), expected);
+            return true;
+          });
+
+      expect(
+          stream,
+          emitsInOrder([
+            _predicate('Jane Mari Doe'),
+            _predicate('Jane Doe'),
+            _predicate('Doe Jane'),
+            _predicate('Jane Doe'),
+            emitsDone,
+          ]));
     });
   });
 

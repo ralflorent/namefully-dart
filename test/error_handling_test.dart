@@ -1,4 +1,3 @@
-import 'package:namefully/name_builder.dart';
 import 'package:namefully/namefully.dart';
 import 'package:namefully/src/validator.dart';
 import 'package:test/test.dart';
@@ -203,15 +202,15 @@ void main() {
       }
     });
 
-    test('is thrown if a name builder tries to operate after being closed', () {
-      var builder = NameBuilder('Jane Doe')
+    test('is thrown if a derivative builder executes after being closed', () {
+      var derivative = Namefully('Jane Doe').derivative
         ..byLastName() // orders the name by last name
         ..upper() // makes the name uppercase
-        ..build(); // closes the name builder.
+        ..done(); // closes the name builder.
 
-      expect(builder.isClosed, equals(true));
-      expect(() => builder.lower(), throwsNotAllowedException);
-      expect(builder.name.toString(), equals('DOE JANE'));
+      expect(derivative.isDone, equals(true));
+      expect(() => derivative.lower(), throwsNotAllowedException);
+      expect(derivative.context.toString(), equals('DOE JANE'));
     });
   });
 

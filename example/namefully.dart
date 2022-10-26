@@ -42,4 +42,38 @@ void main() {
       .where((part) => !part.isMiddleName) // get rid of middle names
       .fold('#', (prev, curr) => prev.toString() + curr.value);
   print(hashtag); // #ThomasEdison
+
+  exampleBuilder();
+}
+
+void exampleBuilder() {
+  // Gives a simple name some super power.
+  final builder = NameBuilder.of([
+    FirstName('Thomas'),
+    LastName('Edison'),
+  ]);
+
+  // Adds more names later on.
+  builder.add(Name.middle('Alva'));
+
+  // Builds up with a config if needed.
+  final name = builder.build();
+
+  // Gets the count of characters, including space.
+  print(name.length); // 18
+
+  // Gets the first name.
+  print(name.first); // Thomas
+
+  // Gets the first middle name.
+  print(name.middle); // Alva
+
+  // Gets the last name.
+  print(name.last); // Edison
+
+  // Gets all the initials.
+  print(name.initials(withMid: true)); // ['T', 'A', 'E']
+
+  // Formats as desired.
+  print(name.format(r'f $l.')); // Thomas E.
 }
