@@ -28,13 +28,13 @@ import 'types.dart';
 /// the name: `Jane Ann Doe`.
 ///
 /// ```dart
-/// var builder = NameDerivativeBuilder('Jane Ann Doe', config: Config('builder'))
+/// var derivative = NameDerivative('Jane Ann Doe', config: Config('builder'))
 ///   ..stream.listen((d) => print('stream name: $d'))
 ///   ..shorten()     // stream name: 'Jane Doe'
 ///   ..upper()       // stream name: 'JANE DOE'
 ///   ..byLastName()  // stream name: 'DOE JANE'
 ///   ..lower();      // stream name: 'doe jane'
-/// print(builder.build()); // 'doe jane'
+/// print(derivative.done()); // 'doe jane'
 /// ```
 ///
 /// **NOTE**: Most of the operations supported here can be performed using

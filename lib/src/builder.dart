@@ -7,15 +7,18 @@ import 'validator.dart';
 
 /// An on-the-fly name builder.
 ///
-/// The builder uses a lazy-loading method while capturing all necessary names
-/// to finally build a complete [Namefully] instance.
+/// The builder uses a lazy-building method while capturing all necessary [Name]s
+/// to finally construct a complete [Namefully] instance.
 ///
 /// ```dart
-/// var builder = NameBuilder.from([Name.first('Jon'), Name.last('Snow')]);
-/// builder.add(Name.middle('Stark'));
-/// print(builder.build()); // 'Jon Stark Snow'
+/// var builder = NameBuilder.of([Name.first('Thomas'), Name.last('Edison')]);
+/// builder.add(Name.middle('Alva'));
+/// print(builder.build()); // 'Thomas Alva Edison'
 /// ```
-class NameBuilder extends _Builder<Name> {
+///
+/// Other operations such as adding, removing, clearing content are also allowed
+/// at any point during the build.
+class NameBuilder extends _Builder<Name, Namefully> {
   NameBuilder._(Iterable<Name> names) {
     addAll(names);
   }
@@ -26,6 +29,10 @@ class NameBuilder extends _Builder<Name> {
   /// Creates a base builder from many [Name]s to construct [Namefully] later.
   NameBuilder.of(Iterable<Name>? initialNames) : this._(initialNames ?? []);
 
+  /// Builds an instance of [Namefully] from the previously collected names.
+  ///
+  /// Regardless of how the names are added, both first and last names must exist
+  /// to complete a fine build. Otherwise, it throws an [NameException].
   @override
   Namefully build([Config? config]) {
     final names = _queue.toList();
@@ -35,7 +42,7 @@ class NameBuilder extends _Builder<Name> {
 }
 
 /// A generic builder.
-abstract class _Builder<T> {
+abstract class _Builder<T, I> {
   final Queue<T> _queue = Queue<T>();
 
   /// Removes and returns the first element of this queue.
@@ -80,5 +87,6 @@ abstract class _Builder<T> {
   /// Removes all elements in the queue. The size of the queue becomes zero.
   void clear() => _queue.clear();
 
-  Namefully build();
+  /// Builds the desired [I]nstance.
+  I build();
 }
