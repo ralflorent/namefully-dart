@@ -77,9 +77,7 @@ class NameDerivative {
 
   @override
   String toString() {
-    return "NameDerivative's current context[" +
-        (_done ? 'closed' : 'open') +
-        ']: $_context';
+    return "NameDerivative's current context[${_done ? 'closed' : 'open'}]: $_context";
   }
 
   /// Arranges the name by [NameOrder.firstName].
@@ -90,10 +88,10 @@ class NameDerivative {
 
   /// Flips definitely the name order from the current config.
   void flip() {
-    if (_done) throw _builderException(_context.toString(), 'flip');
+    if (_done) throw _builderException(_context, 'flip');
     _context = Namefully(
       _state.last.full,
-      config: _state.last.config.copyWith(),
+      config: _state.last.config.clone(),
     )..flip();
     _state.add(_context);
     _streamer.sink.add(_context);
@@ -104,7 +102,7 @@ class NameDerivative {
   ///
   /// See [Namefully.shorten] for more info.
   void shorten() {
-    if (_done) throw _builderException(_context.toString(), 'shorten');
+    if (_done) throw _builderException(_context, 'shorten');
     _context = Namefully(_state.last.shorten(), config: _state.last.config);
     _state.add(_context, id: 'shorten');
     _streamer.sink.add(_context);
@@ -112,7 +110,7 @@ class NameDerivative {
 
   /// Transforms a birth name into UPPERCASE.
   void upper() {
-    if (_done) throw _builderException(_context.toString(), 'upper');
+    if (_done) throw _builderException(_context, 'upper');
     _context = Namefully(_state.last.upper(), config: _state.last.config);
     _state.add(_context, id: 'upper');
     _streamer.sink.add(_context);
@@ -120,7 +118,7 @@ class NameDerivative {
 
   /// Transforms a birth name into lowercase.
   void lower() {
-    if (_done) throw _builderException(_context.toString(), 'lower');
+    if (_done) throw _builderException(_context, 'lower');
     _context = Namefully(_state.last.lower(), config: _state.last.config);
     _state.add(_context, id: 'lower');
     _streamer.sink.add(_context);
@@ -128,7 +126,7 @@ class NameDerivative {
 
   /// Returns the final state of the changing name.
   Namefully done() {
-    if (_done) throw _builderException(_context.toString(), 'done');
+    if (_done) throw _builderException(_context, 'done');
     close();
     return _context;
   }
@@ -142,7 +140,7 @@ class NameDerivative {
 
   /// Rolls back to the previous context.
   void rollback() {
-    if (_done) throw _builderException(_context.toString(), 'rollback');
+    if (_done) throw _builderException(_context, 'rollback');
     _context = _state.rollback();
     _streamer.sink.add(_context);
   }
@@ -151,7 +149,7 @@ class NameDerivative {
   /// [NameOrder.lastName].
   void _order(NameOrder by) {
     var ops = by == NameOrder.firstName ? 'byFirstName' : 'byLastName';
-    if (_done) throw _builderException(_context.toString(), ops);
+    if (_done) throw _builderException(_context, ops);
     _context = Namefully(
       _state.last.fullName(by),
       config: _state.last.config.copyWith(orderedBy: by),
@@ -161,11 +159,11 @@ class NameDerivative {
   }
 }
 
-NameException _builderException(String source, [String ops = '']) {
+NameException _builderException(Namefully context, [String operation = '']) {
   return NotAllowedException(
-    source: source,
+    source: context.toString(),
     message: 'name derivative builder has been closed',
-    operation: ops,
+    operation: operation,
   );
 }
 

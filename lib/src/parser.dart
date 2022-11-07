@@ -53,7 +53,7 @@ abstract class Parser<T> {
 }
 
 class StringParser extends Parser<String> {
-  const StringParser(String names) : super(names);
+  const StringParser(super.names);
 
   @override
   FullName parse({Config? options}) {
@@ -64,7 +64,7 @@ class StringParser extends Parser<String> {
 }
 
 class ListStringParser extends Parser<List<String>> {
-  const ListStringParser(List<String> names) : super(names);
+  const ListStringParser(super.names);
 
   @override
   FullName parse({Config? options}) {
@@ -124,7 +124,7 @@ class ListStringParser extends Parser<List<String>> {
 }
 
 class JsonNameParser extends Parser<Map<String, String>> {
-  const JsonNameParser(Map<String, String> names) : super(names);
+  const JsonNameParser(super.names);
 
   @override
   FullName parse({Config? options}) {
@@ -157,7 +157,7 @@ class JsonNameParser extends Parser<Map<String, String>> {
 }
 
 class ListNameParser extends Parser<List<Name>> {
-  const ListNameParser(List<Name> names) : super(names);
+  const ListNameParser(super.names);
 
   @override
   FullName parse({Config? options}) {

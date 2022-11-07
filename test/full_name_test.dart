@@ -2,6 +2,7 @@ import 'package:namefully/namefully.dart';
 import 'package:test/test.dart';
 
 void main() {
+  // ignore: no_leading_underscores_for_local_identifiers
   void _runExpectations(FullName fullName) {
     expect(fullName.prefix, isA<Name>());
     expect(fullName.firstName, isA<FirstName>());

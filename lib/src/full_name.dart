@@ -72,7 +72,7 @@ class FullName {
     if (name == null) return;
     if (!_config.bypass) Validators.prefix.validate(name);
     _prefix = Name.prefix(
-      _config.title == Title.us ? (name.value + '.') : name.value,
+      _config.title == Title.us ? '${name.value}.' : name.value,
     );
   }
 
@@ -145,13 +145,13 @@ class FullName {
   /// Parses a [json] name into a full name.
   void _parseJsonName(Map<String, String> json) {
     try {
-      if (json[Namon.prefix.key] != null) rawPrefix(json[Namon.prefix.key]!);
-      if (json[Namon.middleName.key] != null) {
-        rawMiddleName(json[Namon.middleName.key]!.split(' '));
+      if (json[Namon.prefix.name] != null) rawPrefix(json[Namon.prefix.name]!);
+      if (json[Namon.middleName.name] != null) {
+        rawMiddleName(json[Namon.middleName.name]!.split(' '));
       }
-      if (json[Namon.suffix.key] != null) rawSuffix(json[Namon.suffix.key]!);
-      rawFirstName(json[Namon.firstName.key]!);
-      rawLastName(json[Namon.lastName.key]!);
+      if (json[Namon.suffix.name] != null) rawSuffix(json[Namon.suffix.name]!);
+      rawFirstName(json[Namon.firstName.name]!);
+      rawLastName(json[Namon.lastName.name]!);
     } on NameException {
       rethrow; // Let a name exception run its course.
     } catch (error, stackTrace) {

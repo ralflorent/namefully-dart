@@ -1,4 +1,15 @@
-# 0.1.8+1
+# 0.2.0-dev.2
+
+- Upgrade package for Dart SDK 2.18
+- Upgrade dev dependencies
+- Apply new recommended lint rules.
+
+## 0.2.0-dev.1
+
+- Update name builder (includes breaking changes)
+- Fix name derivative builder.
+
+## 0.1.8+1
 
 - Fix list string validator issue
 - Add copy capabilities to `FirstName` and `LastName`.

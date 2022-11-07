@@ -211,10 +211,7 @@ import 'package:namefully/namefully.dart';
 
 // Suppose you want to cover this '#' separator
 class SimpleParser implements Parser<String> {
-  const SimpleParser(this.raw);
-
-  @override
-  final String raw;
+  const SimpleParser(super.names);
 
   @override
   FullName parse({Config? options}) {

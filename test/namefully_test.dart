@@ -583,6 +583,7 @@ void main() {
         ..byFirstName()
         ..close();
 
+      // ignore: no_leading_underscores_for_local_identifiers
       _predicate(String expected) => predicate<Namefully>((value) {
             expect(value.toString(), expected);
             return true;

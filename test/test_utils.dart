@@ -7,11 +7,8 @@ final throwsValidationException = throwsA(TypeMatcher<ValidationException>());
 final throwsNotAllowedException = throwsA(TypeMatcher<NotAllowedException>());
 final throwsUnknownException = throwsA(TypeMatcher<UnknownException>());
 
-class SimpleParser implements Parser<String> {
-  const SimpleParser(this.raw);
-
-  @override
-  final String raw;
+class SimpleParser extends Parser<String> {
+  const SimpleParser(super.names);
 
   @override
   FullName parse({Config? options}) {

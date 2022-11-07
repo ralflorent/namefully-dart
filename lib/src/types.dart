@@ -1,5 +1,3 @@
-import 'utils.dart';
-
 /// The abbreviation type to indicate whether or not to add period to a prefix
 /// using the American or British way.
 enum Title {
@@ -75,96 +73,52 @@ enum CapsRange {
 }
 
 /// The types of name handled in this utility according the name standards.
-///
-/// **Note**:
-/// The word `namon` does not exist. It is a singular form used to refer to a
-/// piece of name. And the plural form is `nama`.
-class Namon {
-  const Namon._(this.index, this.key);
+enum Namon {
+  prefix,
+  firstName,
+  middleName,
+  lastName,
+  suffix;
 
-  /// The integer-based indexing factor.
-  final int index;
-
-  /// The string name of a namon.
-  final String key;
-
-  static const Namon prefix = Namon._(0, 'prefix');
-
-  static const Namon firstName = Namon._(1, 'firstName');
-
-  static const Namon middleName = Namon._(2, 'middleName');
-
-  static const Namon lastName = Namon._(3, 'lastName');
-
-  static const Namon suffix = Namon._(4, 'suffix');
-
-  /// The list of supported name types.
-  static const List<Namon> values = [
-    prefix,
-    firstName,
-    middleName,
-    lastName,
-    suffix,
-  ];
-
-  /// The predefined name types as a [Map].
-  static final Map<String, Namon> nama = Map<String, Namon>.unmodifiable({
-    prefix.key: prefix,
-    firstName.key: firstName,
-    middleName.key: middleName,
-    lastName.key: lastName,
-    suffix.key: suffix,
+  /// All the predefined name types.
+  static final Map<String, Namon> all = Map<String, Namon>.unmodifiable({
+    prefix.name: prefix,
+    firstName.name: firstName,
+    middleName.name: middleName,
+    lastName.name: lastName,
+    suffix.name: suffix,
   });
 
   @override
-  bool operator ==(Object? other) =>
-      other is Namon && other.index == index && other.key == key;
-
-  @override
-  int get hashCode => hashValues(index, key);
-
-  @override
-  String toString() => 'Namon.$key';
+  String toString() => 'Namon.$name';
 
   /// Whether this string [key] is part of the predefined keys.
-  static bool containsKey(String key) => nama.containsKey(key);
+  static bool containsKey(String key) => all.containsKey(key);
 
   /// Makes a string [key] a namon type.
-  static Namon? cast(String key) => containsKey(key) ? nama[key] : null;
+  static Namon? cast(String key) => containsKey(key) ? all[key] : null;
 }
 
 /// The token used to indicate how to split string values.
-class Separator {
-  const Separator._(this.name, this.token);
-
-  /// The name of the separator.
-  final String name;
+enum Separator {
+  comma(','),
+  colon(':'),
+  doubleQuote('"'),
+  empty(''),
+  hyphen('-'),
+  period('.'),
+  semiColon(';'),
+  singleQuote("'"),
+  space(' '),
+  underscore('_');
 
   /// The character representative of the separator.
   final String token;
 
-  static const Separator comma = Separator._('comma', ',');
-
-  static const Separator colon = Separator._('colon', ':');
-
-  static const Separator doubleQuote = Separator._('doubleQuote', '"');
-
-  static const Separator empty = Separator._('empty', '');
-
-  static const Separator hyphen = Separator._('hyphen', '-');
-
-  static const Separator period = Separator._('period', '.');
-
-  static const Separator semiColon = Separator._('semiColon', ';');
-
-  static const Separator singleQuote = Separator._('singleQuote', "'");
-
-  static const Separator space = Separator._('space', ' ');
-
-  static const Separator underscore = Separator._('underscore', '_');
+  const Separator(this.token);
 
   /// All the available separators.
-  static final Map<String, Separator> values = Map.unmodifiable({
+  static final Map<String, Separator> all = Map.unmodifiable({
     comma.name: comma,
     colon.name: colon,
     doubleQuote.name: doubleQuote,
@@ -178,14 +132,7 @@ class Separator {
   });
 
   /// All the available tokens.
-  static final Set<String> tokens = values.values.map((s) => s.token).toSet();
-
-  @override
-  bool operator ==(Object? other) =>
-      other is Separator && other.name == name && other.token == token;
-
-  @override
-  int get hashCode => hashValues(name, token);
+  static final Set<String> tokens = all.values.map((s) => s.token).toSet();
 
   @override
   String toString() => 'Separator.$name';

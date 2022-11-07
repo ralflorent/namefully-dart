@@ -361,7 +361,7 @@ class ListNameValidator extends Validator<List<Name>> {
   Map<String, String> _findBasicNames(List<Name> names) {
     return names.fold<Map<String, String>>({}, (accumulator, name) {
       if (name.isFirstName || name.isLastName) {
-        accumulator.putIfAbsent(name.type.key, () => name.toString());
+        accumulator.putIfAbsent(name.type.name, () => name.toString());
       }
       return accumulator;
     });

@@ -131,7 +131,7 @@ class Namefully {
   /// Keep in mind that prefix and suffix are not considered during the parsing
   /// process.
   static Future<Namefully> parse(String text) {
-    return Parser.buildAsync(text).then((value) => Namefully.fromParser(value));
+    return Parser.buildAsync(text).then(Namefully.fromParser);
   }
 
   /// Constructs a [Namefully] instance from a text.
@@ -216,12 +216,12 @@ class Namefully {
   bool equals(Namefully other) => toString() == other.toString();
 
   /// Gets a Map or json-like representation of the full name.
-  Map<String, String?> toMap() => Map.unmodifiable({
-        Namon.prefix.key: prefix,
-        Namon.firstName.key: first,
-        Namon.middleName.key: middleName().join(' '),
-        Namon.lastName.key: last,
-        Namon.suffix.key: suffix,
+  Map<String, String?> toMap() => Map<String, String?>.unmodifiable({
+        Namon.prefix.name: prefix,
+        Namon.firstName.name: first,
+        Namon.middleName.name: middleName().join(' '),
+        Namon.lastName.name: last,
+        Namon.suffix.name: suffix,
       });
 
   /// Confirms that a name part has been set.
@@ -339,7 +339,7 @@ class Namefully {
       if (withMid) midInits.forEach(initials.addAll);
     }
 
-    return List.unmodifiable(initials);
+    return List<String>.unmodifiable(initials);
   }
 
   /// Shortens a complex full name to a simple typical name, a combination of
@@ -604,10 +604,10 @@ class Namefully {
   void flip() {
     if (_config.orderedBy == NameOrder.firstName) {
       _config.updateOrder(NameOrder.lastName);
-      print('The name order is now changed to: lastName');
+      print('The name order is now changed to: ${NameOrder.lastName.name}');
     } else {
       _config.updateOrder(NameOrder.firstName);
-      print('The name order is now changed to: firstName');
+      print('The name order is now changed to: ${NameOrder.firstName.name}');
     }
   }
 

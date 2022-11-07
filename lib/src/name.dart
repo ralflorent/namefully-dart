@@ -136,7 +136,7 @@ class FirstName extends Name {
   /// Gets the initials of the first name.
   @override
   List<String> initials({bool withMore = false}) {
-    return List.unmodifiable([
+    return List<String>.unmodifiable([
       _initial,
       if (withMore && hasMore) ..._more.map((n) => n[0]),
     ]);
