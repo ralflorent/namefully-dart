@@ -34,18 +34,18 @@ NameCase findName(String name) => NameCase(
 final nameCases = {
   'simpleName': {
     'name': 'John Smith',
-    'options': Config.inline(name: 'simpleName'),
+    'options': Config(name: 'simpleName'),
   },
   'byLastName': {
     'name': 'Obama Barack',
-    'options': Config.inline(name: 'byLastName', orderedBy: NameOrder.lastName),
+    'options': Config(name: 'byLastName', orderedBy: NameOrder.lastName),
   },
   'manyFirstNames': {
     'name': [
       FirstName('Daniel', ['Michael', 'Blake']),
       LastName('Day-Lewis'),
     ],
-    'options': Config.inline(name: 'manyFirstNames'),
+    'options': Config(name: 'manyFirstNames'),
   },
   'manyMiddleNames': {
     'name': [
@@ -55,29 +55,29 @@ final nameCases = {
       Name.middle('Rose'),
       LastName('Clarke')
     ],
-    'options': Config.inline(name: 'manyMiddleNames'),
+    'options': Config(name: 'manyMiddleNames'),
   },
   'manyLastNames': {
     'name': [
       FirstName('Shakira', ['Isabel']),
       LastName('Mebarak', 'Ripoll')
     ],
-    'options': Config.inline(
+    'options': Config(
       name: 'manyLastNames',
       surname: Surname.mother,
     )
   },
   'withTitling': {
     'name': {'prefix': 'Dr', 'firstName': 'Albert', 'lastName': 'Einstein'},
-    'options': Config.inline(name: 'withTitling', title: Title.us),
+    'options': Config(name: 'withTitling', title: Title.us),
   },
   'withEnding': {
     'name': {'firstName': 'Fabrice', 'lastName': 'Piazza', 'suffix': 'Ph.D'},
-    'options': Config.inline(name: 'withEnding', ending: true),
+    'options': Config(name: 'withEnding', ending: true),
   },
   'withSeparator': {
     'name': 'Thiago, Da Silva',
-    'options': Config.inline(
+    'options': Config(
       name: 'withSeparator',
       separator: Separator.comma,
     ),
@@ -89,7 +89,7 @@ final nameCases = {
       'lastName': 'Le Pen',
       'suffix': 'M.Sc.'
     },
-    'options': Config.inline(
+    'options': Config(
       name: 'noBypass',
       bypass: false,
       ending: true,

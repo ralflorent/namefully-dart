@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 import 'test_utils.dart';
 
 void main() {
-  final Config config = Config.inline(name: 'error_handling', bypass: false);
+  final Config config = Config(name: 'error_handling', bypass: false);
 
   group('ValidationException', () {
     test('is thrown when a namon breaks the validation rules', () {

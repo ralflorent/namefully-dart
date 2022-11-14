@@ -115,7 +115,7 @@ _Only valid for raw string values_, this option indicates how to split the parts
 of a raw string name under the hood.
 
 ```dart
-var name = Namefully('John,Smith', config: Config.inline(separator: Separator.comma));
+var name = Namefully('John,Smith', config: Config(separator: Separator.comma));
 print(name.full); // John Smith
 ```
 
@@ -134,7 +134,7 @@ var name = Namefully.only(
   prefix: 'Mr',
   firstName: 'John',
   lastName: 'Smith',
-  config: Config.inline(title: Title.us),
+  config: Config(title: Title.us),
 );
 print(name.full); // Mr. John Smith
 print(name.prefix); // Mr.
@@ -152,7 +152,7 @@ var name = Namefully.only(
   firstName: 'John',
   lastName: 'Smith',
   suffix: 'Ph.D',
-  config: Config.inline(ending: true),
+  config: Config(ending: true),
 );
 print(name.full); // John Smith, Ph.D
 print(name.suffix); // Ph.D
@@ -168,7 +168,7 @@ surnames).
 ```dart
 var name = Namefully.of(
   [FirstName('John'), LastName('Doe', 'Smith')],
-  config: Config.inline(surname: Surname.hyphenated),
+  config: Config(surname: Surname.hyphenated),
 );
 print(name.full); // John Doe-Smith
 ```
@@ -186,7 +186,7 @@ var name = Namefully.fromJson(
     'lastName': 'Smith',
     'suffix': 'M.Sc.', // will fail the validation rule and throw an exception.
   },
-  config: Config.inline(bypass: false, ending: true),
+  config: Config(bypass: false, ending: true),
 );
 ```
 
@@ -225,7 +225,7 @@ class SimpleParser implements Parser<String> {
 
 var name = Namefully.fromParser(
   SimpleParser('Juan#Garcia'),
-  config: Config.inline(name: 'simpleParser'),
+  config: Config(name: 'simpleParser'),
 );
 print(name.full); // Juan Garcia
 ```

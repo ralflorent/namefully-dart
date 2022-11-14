@@ -1,4 +1,8 @@
-# 0.2.0-dev.2
+# 0.2.0-dev.3
+
+- Improve usability of `Config` (now accepts named args directly).
+
+## 0.2.0-dev.2
 
 - Upgrade package for Dart SDK 2.18
 - Upgrade dev dependencies

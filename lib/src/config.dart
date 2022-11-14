@@ -23,13 +23,13 @@ const String _kCopyAlias = '_copy';
 ///
 /// ```dart
 /// var defaultConfig = Config();
-/// var otherConfig = Config.inline(name: 'other', title: Title.us);
+/// var otherConfig = Config(name: 'other', title: Title.us);
 /// var mergedConfig = Config.merge(otherConfig);
 /// var copyConfig = mergedConfig.copyWith(ending: true);
 /// ```
 ///
 /// Additionally, a configuration may be [merge]d with or copied from an existing
-/// configuration, prioritizing the new one's values;
+/// configuration, prioritizing the new one's values.
 abstract class Config {
   /// The order of appearance of a full name.
   NameOrder get orderedBy;
@@ -64,16 +64,9 @@ abstract class Config {
   /// The name of the cached configuration.
   String get name;
 
-  /// Returns a single configuration with default values.
-  factory Config([String? name]) = _Config;
-
-  /// Returns a combined version of the existing values of the default configuration
-  /// and the provided values of an[other] configuration.
-  factory Config.merge(Config? other) = _Config.merge;
-
   /// Returns a unified version of default values of the configuration and the
   /// optional values to consider.
-  factory Config.inline({
+  factory Config({
     String name,
     NameOrder? orderedBy,
     Separator? separator,
@@ -81,11 +74,15 @@ abstract class Config {
     bool? ending,
     bool? bypass,
     Surname? surname,
-  }) = _Config.inline;
+  }) = _Config;
 
-  /// Returns a last name based configuration.
+  /// Returns a combined version of the existing values of the default configuration
+  /// and the provided values of an[other] configuration.
+  factory Config.merge(Config? other) = _Config.merge;
+
+  /// Returns a last name-based configuration.
   factory Config.byLastName({Surname? surname, Separator? separator}) {
-    return _Config.inline(
+    return _Config(
       name: 'byLastName',
       orderedBy: NameOrder.lastName,
       surname: surname,
@@ -146,30 +143,29 @@ class _Config implements Config {
   @override
   Surname surname;
 
+  /// The immutable name of the configuration.
   @override
   final String name;
 
   // Cache for multiple instances.
   static final Map<String, _Config> _cache = {};
 
-  _Config._default(this.name)
-      : orderedBy = NameOrder.firstName,
-        separator = Separator.space,
-        title = Title.uk,
-        ending = false,
-        bypass = true,
-        surname = Surname.father;
+  _Config._default(
+    this.name, {
+    NameOrder? orderedBy,
+    Separator? separator,
+    Title? title,
+    bool? ending,
+    bool? bypass,
+    Surname? surname,
+  })  : orderedBy = orderedBy ?? NameOrder.firstName,
+        separator = separator ?? Separator.space,
+        title = title ?? Title.uk,
+        ending = ending ?? false,
+        bypass = bypass ?? true,
+        surname = surname ?? Surname.father;
 
-  factory _Config([String? name]) {
-    name ??= _kDefaultName;
-    if (_cache.containsKey(name)) {
-      return _cache[name]!;
-    } else {
-      return _cache[name] = _Config._default(name);
-    }
-  }
-
-  factory _Config.inline({
+  factory _Config({
     String name = _kDefaultName,
     NameOrder? orderedBy,
     Separator? separator,
@@ -178,27 +174,38 @@ class _Config implements Config {
     bool? bypass,
     Surname? surname,
   }) {
-    return _Config(name)
-      ..orderedBy = orderedBy ?? NameOrder.firstName
-      ..separator = separator ?? Separator.space
-      ..title = title ?? Title.uk
-      ..ending = ending ?? false
-      ..bypass = bypass ?? true
-      ..surname = surname ?? Surname.father;
+    if (_cache.containsKey(name)) {
+      var restored = _cache[name]!;
+      return _cache[name]!
+        ..orderedBy = orderedBy ?? restored.orderedBy
+        ..separator = separator ?? restored.separator
+        ..title = title ?? restored.title
+        ..ending = ending ?? restored.ending
+        ..bypass = bypass ?? restored.bypass
+        ..surname = surname ?? restored.surname;
+    } else {
+      return _cache[name] = _Config._default(
+        name,
+        orderedBy: orderedBy,
+        separator: separator,
+        title: title,
+        ending: ending,
+        bypass: bypass,
+        surname: surname,
+      );
+    }
   }
 
   factory _Config.merge(Config? other) {
-    return other == null
-        ? _Config()
-        : _Config.inline(
-            name: other.name,
-            orderedBy: other.orderedBy,
-            separator: other.separator,
-            title: other.title,
-            ending: other.ending,
-            bypass: other.bypass,
-            surname: other.surname,
-          );
+    return _Config(
+      name: other?.name ?? _kDefaultName,
+      orderedBy: other?.orderedBy,
+      separator: other?.separator,
+      title: other?.title,
+      ending: other?.ending,
+      bypass: other?.bypass,
+      surname: other?.surname,
+    );
   }
 
   @override
@@ -211,13 +218,15 @@ class _Config implements Config {
     bool? bypass,
     Surname? surname,
   }) {
-    return _Config(genNewName(name ?? this.name + _kCopyAlias))
-      ..orderedBy = orderedBy ?? this.orderedBy
-      ..separator = separator ?? this.separator
-      ..title = title ?? this.title
-      ..ending = ending ?? this.ending
-      ..bypass = bypass ?? this.bypass
-      ..surname = surname ?? this.surname;
+    return _Config(
+      name: genNewName(name ?? this.name),
+      orderedBy: orderedBy ?? this.orderedBy,
+      separator: separator ?? this.separator,
+      title: title ?? this.title,
+      ending: ending ?? this.ending,
+      bypass: bypass ?? this.bypass,
+      surname: surname ?? this.surname,
+    );
   }
 
   @override

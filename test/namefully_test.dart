@@ -11,10 +11,7 @@ void main() {
       setUp(() {
         name = Namefully(
           'Mr John Ben Smith Ph.D',
-          config: Config.inline(
-            name: 'generic',
-            orderedBy: NameOrder.firstName,
-          ),
+          config: Config(name: 'generic', orderedBy: NameOrder.firstName),
         );
       });
 
@@ -137,10 +134,7 @@ void main() {
       setUp(() {
         name = Namefully(
           'Mr John Ben Smith Ph.D',
-          config: Config.inline(
-            name: 'byFirstName',
-            orderedBy: NameOrder.firstName,
-          ),
+          config: Config(name: 'byFirstName', orderedBy: NameOrder.firstName),
         );
       });
 
@@ -284,7 +278,7 @@ void main() {
           equals('Smith John B'),
         );
         expect(
-          Namefully('Smith John', config: Config('byLastName')).flatten(
+          Namefully('Smith John', config: Config(name: 'byLastName')).flatten(
             limit: 10,
             by: Flat.middleName,
             withPeriod: false,
@@ -292,7 +286,7 @@ void main() {
           equals('Smith John'),
         );
         expect(
-          Namefully('Smith John', config: Config('byLastName')).flatten(
+          Namefully('Smith John', config: Config(name: 'byLastName')).flatten(
             limit: 8,
             by: Flat.firstMid,
             withPeriod: true,
@@ -384,7 +378,7 @@ void main() {
         expect(
           Namefully.fromParser(
             SimpleParser('John#Smith'), // simple parsing logic :P
-            config: Config.inline(name: 'simpleParser'),
+            config: Config(name: 'simpleParser'),
           ).full,
           equals('John Smith'),
         );
@@ -544,7 +538,7 @@ void main() {
   group('can be built with derivatives', () {
     Config? config;
 
-    setUp(() => config = Config('misc'));
+    setUp(() => config = Config(name: 'misc'));
 
     test('for basic nesting operations', () {
       final namefully = Namefully('Jane Mari Doe', config: config);
@@ -614,7 +608,7 @@ void main() {
     });
 
     test('creates a configuration with inline options', () {
-      var inlineConfig = Config.inline(
+      var inlineConfig = Config(
         orderedBy: NameOrder.lastName,
         separator: Separator.comma,
         title: Title.us,
@@ -631,7 +625,7 @@ void main() {
     });
 
     test('merges a configuration with another', () {
-      var other = Config.inline(
+      var other = Config(
         orderedBy: NameOrder.firstName,
         separator: Separator.colon,
         title: Title.us,
@@ -649,8 +643,8 @@ void main() {
     });
 
     test('can create more than 1 configuration when necessary', () {
-      var defaultConfig = Config('defaultConfig');
-      var otherConfig = Config.inline(
+      var defaultConfig = Config(name: 'defaultConfig');
+      var otherConfig = Config(
         name: 'otherConfig',
         orderedBy: NameOrder.lastName,
         surname: Surname.mother,
@@ -677,7 +671,7 @@ void main() {
     });
 
     test('can create a copy from an existing configuration', () {
-      var config = Config('config');
+      var config = Config(name: 'config');
       var copyConfig = config.copyWith(
         name: 'config', // can be omitted.
         orderedBy: NameOrder.lastName,

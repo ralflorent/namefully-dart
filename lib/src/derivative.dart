@@ -28,7 +28,7 @@ import 'types.dart';
 /// the name: `Jane Ann Doe`.
 ///
 /// ```dart
-/// var derivative = NameDerivative('Jane Ann Doe', config: Config('builder'))
+/// var derivative = NameDerivative('Jane Ann Doe', config: Config(name: 'builder'))
 ///   ..stream.listen((d) => print('stream name: $d'))
 ///   ..shorten()     // stream name: 'Jane Doe'
 ///   ..upper()       // stream name: 'JANE DOE'
