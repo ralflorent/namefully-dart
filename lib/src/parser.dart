@@ -177,9 +177,11 @@ class ListNameParser extends Parser<List<Name>> {
       } else if (name.isMiddleName) {
         fullName.middleName.add(name);
       } else if (name.isLastName) {
-        fullName.lastName = name is LastName
-            ? LastName(name.value, name.mother, config.surname)
-            : LastName(name.value, null, config.surname);
+        fullName.lastName = LastName(
+          name.value,
+          name is LastName ? name.mother : null,
+          config.surname,
+        );
       } else if (name.isSuffix) {
         fullName.suffix = name;
       }

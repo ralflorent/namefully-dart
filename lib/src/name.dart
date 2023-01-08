@@ -85,18 +85,13 @@ class Name {
 
   /// Capitalizes the name.
   void caps([CapsRange? range]) {
-    range ??= _capsRange;
-    value = capitalize(_namon, range);
+    value = capitalize(_namon, range ?? _capsRange);
   }
 
   /// De-capitalizes the name.
   void decaps([CapsRange? range]) {
-    range ??= _capsRange;
-    value = decapitalize(_namon, range);
+    value = decapitalize(_namon, range ?? _capsRange);
   }
-
-  /// Normalizes the name as it should be.
-  void normalize() => caps(CapsRange.initial);
 }
 
 /// Representation of a first name with some extra functionality.

@@ -142,6 +142,7 @@ void main() {
         throwsInputException,
       );
     });
+
     test('is thrown if a string list has an unsupported number of entries', () {
       expect(() => Namefully.fromList([]), throwsInputException);
       expect(

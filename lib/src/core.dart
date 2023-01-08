@@ -213,7 +213,7 @@ class Namefully {
   }
 
   /// Whether this name is equal to an[other] one from a raw-string perspective.
-  bool equals(Namefully other) => toString() == other.toString();
+  bool equal(Namefully other) => toString() == other.toString();
 
   /// Gets a Map or json-like representation of the full name.
   Map<String, String?> toMap() => Map<String, String?>.unmodifiable({
@@ -475,7 +475,7 @@ class Namefully {
                       ? Flat.midLast
                       : by == Flat.midLast
                           ? Flat.all
-                          : by == Flat.midLast
+                          : by == Flat.all
                               ? Flat.all
                               : by;
       if (next == by) return flat;
@@ -577,7 +577,7 @@ class Namefully {
   String camel() => decapitalize(pascal());
 
   /// Transforms a [birthName] into PascalCase.
-  String pascal() => split().map((n) => capitalize(n)).join();
+  String pascal() => split().map(capitalize).join();
 
   /// Transforms a [birthName] into snake_case.
   String snake() => split().map((n) => n.toLowerCase()).join('_');
@@ -647,11 +647,11 @@ class Namefully {
       case 'O':
         final sxSep = _config.ending ? ',' : '';
         final nama = <String>[
-          if (_fullName.prefix != null) prefix!,
+          if (prefix != null) prefix!,
           '$last,'.toUpperCase(),
           if (hasMiddle) ...[first, middleName().join(' ') + sxSep] else
             first + sxSep,
-          if (_fullName.suffix != null) suffix!
+          if (suffix != null) suffix!
         ].join(' ').trim();
 
         return char == 'o' ? nama : nama.toUpperCase();
@@ -671,7 +671,7 @@ class Namefully {
         return _fullName.lastName.initials().first;
       case r'$m':
       case r'$M':
-        return _fullName.middleName.map((n) => n.initials().first).first;
+        return hasMiddle ? middle![0] : null;
       default:
         return null;
     }

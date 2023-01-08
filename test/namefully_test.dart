@@ -26,9 +26,9 @@ void main() {
         expect(name.toString(), equals('Mr John Ben Smith Ph.D'));
       });
 
-      test('.equals() checks whether two names are equal', () {
-        expect(name.equals(Namefully('Mr John Ben Smith Ph.D')), equals(true));
-        expect(name.equals(Namefully('Mr John Ben Smith')), equals(false));
+      test('.equal() checks whether two names are equal', () {
+        expect(name.equal(Namefully('Mr John Ben Smith Ph.D')), equals(true));
+        expect(name.equal(Namefully('Mr John Ben Smith')), equals(false));
       });
 
       test('[] gets the raw form of a name', () {

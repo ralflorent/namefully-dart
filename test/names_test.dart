@@ -9,7 +9,7 @@ void main() {
 
     setUp(() => name = Name.middle('John'));
 
-    test('throws an exception if a name is less than 2 characters', () {
+    test('throws an exception if a name has less than 2 characters', () {
       expect(() => Name.first(''), throwsInputException);
     });
 
@@ -53,10 +53,6 @@ void main() {
       var n = Name.first('MORTY');
       expect((n..decaps()).toString(), 'mORTY');
       expect((n..decaps(CapsRange.all)).toString(), 'morty');
-    });
-
-    test('.normalize() normalizes the name afterward', () {
-      expect((Name.prefix('MR')..normalize()).toString(), 'Mr');
     });
   });
 
@@ -138,14 +134,6 @@ void main() {
         (name..decaps(CapsRange.all)).toString(withMore: true),
         equals('john ben carl'),
       );
-    });
-
-    test('.normalize() normalizes a first name afterwards', () {
-      expect((FirstName('JOHN')..normalize()).toString(), equals('John'));
-      expect(
-          (FirstName('JOHN', ['BEN', 'CARL'])..normalize())
-              .toString(withMore: true),
-          equals('John Ben Carl'));
     });
   });
 
@@ -249,14 +237,6 @@ void main() {
       expect(
         (name..decaps(CapsRange.all)).toString(format: Surname.all),
         equals('smith doe'),
-      );
-    });
-
-    test('.normalize() normalizes the last name afterwards', () {
-      expect((LastName('SMITH')..normalize()).toString(), equals('Smith'));
-      expect(
-        (LastName('SMITH', 'DOE')..normalize()).toString(format: Surname.all),
-        equals('Smith Doe'),
       );
     });
 

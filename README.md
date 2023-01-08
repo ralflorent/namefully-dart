@@ -54,7 +54,7 @@ void main() {
   print(name.short); // Thomas Edison
   print(name.public); // Thomas E
   print(name.initials(withMid: true)); // ['T', 'A', 'E']
-  print(name.format('L, f m')); // EDISON, Thomas Alva Edison
+  print(name.format('L, f m')); // EDISON, Thomas Alva
   print(name.zip()); // Thomas A. E.
 }
 ```
@@ -68,10 +68,9 @@ void main() {
 
 `Config` is a single configuration to use across the other components.
 
-The multiton pattern is used to keep one configuration across the `Namefully`
-setup. This is useful for avoiding confusion when building other components such
-as `FirstName`, `LastName`, or `Name` of distinct types (or `Namon`) that may
-be of particular shapes.
+The multiton pattern is used to handle configurations across the `namefully`
+setup. This adds consistency when building other components such as `FirstName`,
+`LastName`, or `Name` of distinct types that may be of particular shapes.
 
 Below are enlisted the options supported by `namefully`.
 
@@ -223,10 +222,7 @@ class SimpleParser implements Parser<String> {
   }
 }
 
-var name = Namefully.fromParser(
-  SimpleParser('Juan#Garcia'),
-  config: Config(name: 'simpleParser'),
-);
+var name = Namefully.fromParser(SimpleParser('Juan#Garcia'));
 print(name.full); // Juan Garcia
 ```
 
