@@ -13,24 +13,13 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        sdk: [2.18.0]
+    runs-on: ubuntu-latest
+
+    container:
+      image:  dart:latest
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: "~/.pub-cache"
-          key: ${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
-
-      - uses: dart-lang/setup-dart@v1.0
-        with:
-          sdk: ${{ matrix.sdk }}
-
       - name: Install dependencies
         run: dart pub get
 
@@ -44,8 +33,8 @@ jobs:
         run: |
           set -e
 
-          echo "Installing coverage tool"
-          pub global activate coverage &>/dev/null
+          echo "Installing coverage tools"
+          dart pub global activate coverage &>/dev/null
           echo "Collecting coverage on port 8888..."
           dart --disable-service-auth-codes \
             --enable-vm-service=8888 \
