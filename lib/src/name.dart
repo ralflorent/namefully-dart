@@ -42,10 +42,7 @@ class Name {
   /// The piece of string treated as a name.
   String get value => _namon;
   set value(String newValue) {
-    if (newValue.isInvalid) {
-      throw InputException(source: newValue, message: 'must be 2+ characters');
-    }
-
+    _validate(newValue);
     _namon = newValue;
     _initial = newValue[0];
   }
@@ -92,6 +89,12 @@ class Name {
   void decaps([CapsRange? range]) {
     value = decapitalize(_namon, range ?? _capsRange);
   }
+
+  void _validate(String name) {
+    if (name.isInvalid) {
+      throw InputException(source: name, message: 'must be 2+ characters');
+    }
+  }
 }
 
 /// Representation of a first name with some extra functionality.
@@ -102,8 +105,10 @@ class FirstName extends Name {
   /// first names, but not as their middle names. Though, it may mean the same,
   /// [more] provides the freedom to do it as it pleases.
   FirstName(String value, [List<String>? more])
-      : _more = more ?? [],
-        super(value, Namon.firstName);
+      : super(value, Namon.firstName) {
+    more?.forEach(_validate);
+    _more = more ?? [];
+  }
 
   /// The additional name parts of the first name.
   List<String> get more => _more;
@@ -165,8 +170,11 @@ class LastName extends Name {
   ///
   /// Some people may keep their [mother]'s surname and want to keep a clear cut
   /// from their [father]'s surname. However, there are no clear rules about it.
-  LastName(String father, [this._mother, this.format = Surname.father])
-      : super(father, Namon.lastName);
+  LastName(String father, [String? mother, this.format = Surname.father])
+      : super(father, Namon.lastName) {
+    if (mother != null) _validate(mother);
+    _mother = mother;
+  }
 
   /// The internal last name format.
   final Surname format;

@@ -124,9 +124,8 @@ class FirstNameValidator implements Validator {
         );
       }
     } else if (value is FirstName) {
-      Validators.firstName.validate(value.value);
-      if (value.more.isNotEmpty) {
-        value.more.forEach(Validators.firstName.validate);
+      for (var name in value.asNames) {
+        validate(name.value);
       }
     } else {
       throw InputException(
@@ -209,9 +208,8 @@ class LastNameValidator implements Validator {
         );
       }
     } else if (value is LastName) {
-      Validators.lastName.validate(value.father);
-      if (value.mother?.isNotEmpty == true) {
-        Validators.lastName.validate(value.mother);
+      for (var name in value.asNames) {
+        validate(name.value);
       }
     } else {
       throw InputException(

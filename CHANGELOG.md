@@ -1,4 +1,13 @@
-# 0.2.0-dev.3
+# 0.2.0
+
+- Improve usability of `Config` (now accepts named args directly).
+- Upgrade package for Dart SDK 2.18
+- Upgrade dev dependencies
+- Apply new recommended lint rules
+- Update name builder (includes breaking changes)
+- Fix name derivative builder.
+
+## 0.2.0-dev.3
 
 - Improve usability of `Config` (now accepts named args directly).
 
