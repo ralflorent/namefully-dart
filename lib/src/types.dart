@@ -137,3 +137,9 @@ enum Separator {
   @override
   String toString() => 'Separator.$name';
 }
+
+/// A convenient void callback function definition.
+typedef VoidCallback = void Function();
+
+/// A convenient callback function receiving a [P]aram and [R]eturning a value.
+typedef Callback<P, R> = R Function(P param);

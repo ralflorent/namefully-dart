@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'config.dart';
 import 'core.dart';
 import 'name.dart';
+import 'types.dart';
 import 'validator.dart';
 
 /// An on-the-fly name builder.
@@ -19,7 +20,19 @@ import 'validator.dart';
 /// Other operations such as adding, removing, clearing content are also allowed
 /// at any point during the build.
 class NameBuilder extends _Builder<Name, Namefully> {
-  NameBuilder._(Iterable<Name> names) {
+  Namefully? _context;
+  final VoidCallback? prebuild;
+  final Callback<Namefully, void>? postbuild;
+  final Callback<Namefully, void>? preclear;
+  final VoidCallback? postclear;
+
+  NameBuilder._(
+    Iterable<Name> names, {
+    this.prebuild,
+    this.postbuild,
+    this.preclear,
+    this.postclear,
+  }) {
     addAll(names);
   }
 
@@ -29,16 +42,45 @@ class NameBuilder extends _Builder<Name, Namefully> {
   /// Creates a base builder from many [Name]s to construct [Namefully] later.
   NameBuilder.of(Iterable<Name>? initialNames) : this._(initialNames ?? []);
 
+  /// Creates a base builder from many [Name]s with lifecycle hooks.
+  NameBuilder.use({
+    Iterable<Name>? names,
+    VoidCallback? prebuild,
+    Callback<Namefully, void>? postbuild,
+    Callback<Namefully, void>? preclear,
+    VoidCallback? postclear,
+  }) : this._(
+          names ?? [],
+          prebuild: prebuild,
+          postbuild: postbuild,
+          preclear: preclear,
+          postclear: postclear,
+        );
+
   /// Builds an instance of [Namefully] from the previously collected names.
   ///
   /// Regardless of how the names are added, both first and last names must exist
   /// to complete a fine build. Otherwise, it throws an [NameException].
   @override
   Namefully build([Config? config]) {
+    prebuild?.call();
     final names = _queue.toList();
     ListNameValidator().validate(names);
-    return Namefully.of(names, config: config);
+    _context = Namefully.of(names, config: config);
+    postbuild?.call(_context!);
+    return _context!;
   }
+
+  /// Clears the builder.
+  @override
+  void clear() {
+    preclear?.call(_context!);
+    super.clear();
+    postclear?.call();
+    _context = null;
+  }
+
+  int get size => _queue.length;
 }
 
 /// A generic builder.
@@ -77,12 +119,12 @@ abstract class _Builder<T, I> {
   /// Removes all elements matched by [test] from the queue.
   ///
   /// The `test` function must not throw or modify the queue.
-  void removeWhere(bool Function(T value) test) => _queue.removeWhere(test);
+  void removeWhere(Callback<T, bool> test) => _queue.removeWhere(test);
 
   /// Removes all elements not matched by [test] from the queue.
   ///
   /// The `test` function must not throw or modify the queue.
-  void retainWhere(bool Function(T value) test) => _queue.retainWhere(test);
+  void retainWhere(Callback<T, bool> test) => _queue.retainWhere(test);
 
   /// Removes all elements in the queue. The size of the queue becomes zero.
   void clear() => _queue.clear();

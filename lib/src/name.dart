@@ -107,12 +107,12 @@ class FirstName extends Name {
   FirstName(String value, [List<String>? more])
       : super(value, Namon.firstName) {
     more?.forEach(_validate);
-    _more = more ?? [];
+    _more = more?.map(Name.first) ?? [];
   }
 
   /// The additional name parts of the first name.
-  List<String> get more => _more;
-  late List<String> _more;
+  List<String> get more => _more.map((n) => n.value).toList();
+  late Iterable<Name> _more;
 
   /// Determines whether a first name has [more] name parts.
   bool get hasMore => _more.isNotEmpty;
@@ -120,13 +120,13 @@ class FirstName extends Name {
   @override
   int get length {
     return super.length +
-        (hasMore ? (_more.reduce((acc, n) => acc + n)).length : 0);
+        (hasMore
+            ? (_more.map((n) => n.value).reduce((acc, n) => acc + n)).length
+            : 0);
   }
 
   /// Returns a combined version of the [value] and [more] if any.
-  List<Name> get asNames {
-    return [Name.first(value), if (hasMore) ..._more.map((n) => Name.first(n))];
-  }
+  List<Name> get asNames => [Name.first(value), if (hasMore) ..._more];
 
   @override
   String toString({bool withMore = false}) {
@@ -138,7 +138,7 @@ class FirstName extends Name {
   List<String> initials({bool withMore = false}) {
     return List<String>.unmodifiable([
       _initial,
-      if (withMore && hasMore) ..._more.map((n) => n[0]),
+      if (withMore && hasMore) ..._more.map((n) => n.initials().first),
     ]);
   }
 
@@ -147,7 +147,7 @@ class FirstName extends Name {
   void caps([CapsRange? range]) {
     range ??= _capsRange;
     value = capitalize(value, range);
-    if (hasMore) _more = _more.map((n) => capitalize(n, range!)).toList();
+    if (hasMore) _more = _more.map((n) => n..caps(range!));
   }
 
   /// De-capitalizes the first name.
@@ -155,7 +155,7 @@ class FirstName extends Name {
   void decaps([CapsRange? range]) {
     range ??= _capsRange;
     value = decapitalize(value, range);
-    if (hasMore) _more = _more.map((n) => decapitalize(n, range!)).toList();
+    if (hasMore) _more = _more.map((n) => n..decaps(range!));
   }
 
   /// Makes a copy of the current name.
@@ -172,8 +172,10 @@ class LastName extends Name {
   /// from their [father]'s surname. However, there are no clear rules about it.
   LastName(String father, [String? mother, this.format = Surname.father])
       : super(father, Namon.lastName) {
-    if (mother != null) _validate(mother);
-    _mother = mother;
+    if (mother != null) {
+      _validate(mother);
+      _mother = Name.last(mother);
+    }
   }
 
   /// The internal last name format.
@@ -186,11 +188,11 @@ class LastName extends Name {
   String get father => _namon;
 
   /// The surname inherited from a mother side.
-  String? get mother => _mother;
-  String? _mother;
+  String? get mother => _mother?.value;
+  Name? _mother;
 
   /// Returns `true` if the [mother]'s surname is defined.
-  bool get hasMother => _mother?.isNotEmpty ?? false;
+  bool get hasMother => _mother?.value.isNotEmpty ?? false;
 
   /// Returns a combined version of the [value] and [mother] if any.
   List<Name> get asNames {
@@ -201,15 +203,16 @@ class LastName extends Name {
   @override
   String toString({Surname? format}) {
     format = format ?? this.format;
+    var mother = _mother?.value ?? '';
     switch (format) {
       case Surname.father:
         return value;
       case Surname.mother:
-        return _mother ?? '';
+        return mother;
       case Surname.hyphenated:
-        return hasMother ? '$value-$_mother' : value;
+        return hasMother ? '$value-$mother' : value;
       case Surname.all:
-        return hasMother ? '$value $_mother' : value;
+        return hasMother ? '$value $mother' : value;
     }
   }
 
@@ -223,12 +226,12 @@ class LastName extends Name {
         initials.add(_initial);
         break;
       case Surname.mother:
-        if (hasMother) initials.add(_mother![0]);
+        if (hasMother) initials.add(_mother!.initials().first);
         break;
       case Surname.hyphenated:
       case Surname.all:
         initials.add(_initial);
-        if (hasMother) initials.add(_mother![0]);
+        if (hasMother) initials.add(_mother!.initials().first);
         break;
     }
     return List.unmodifiable(initials);
@@ -239,7 +242,7 @@ class LastName extends Name {
   void caps([CapsRange? range]) {
     range ??= _capsRange;
     value = capitalize(value, range);
-    if (hasMother) _mother = capitalize(_mother!, range);
+    if (hasMother) _mother = _mother!..caps(range);
   }
 
   /// De-capitalizes the last name.
@@ -247,7 +250,7 @@ class LastName extends Name {
   void decaps([CapsRange? range]) {
     range ??= _capsRange;
     value = decapitalize(value, range);
-    if (hasMother) _mother = decapitalize(_mother!, range);
+    if (hasMother) _mother = _mother!..decaps(range);
   }
 
   /// Makes a copy of the current name.

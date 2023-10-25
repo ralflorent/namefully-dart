@@ -185,6 +185,9 @@ class Namefully {
   /// The first name combined with the last name's initial.
   String get public => format(r'f $l');
 
+  /// A formal salutation.
+  String get salutation => format('p l');
+
   /// Returns an [Iterable] of existing [Name]s.
   ///
   /// Regardless of the order of appearance, this method will always return the
