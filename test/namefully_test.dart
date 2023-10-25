@@ -148,6 +148,7 @@ void main() {
         expect(name.short, 'John Smith');
         expect(name.long, 'John Ben Smith');
         expect(name.public, 'John S');
+        expect(name.salutation, 'Mr Smith');
         expect(name.full, 'Mr John Ben Smith Ph.D');
         expect(name.fullName(), 'Mr John Ben Smith Ph.D');
         expect(name.fullName(NameOrder.lastName), 'Mr Smith John Ben Ph.D');
@@ -237,6 +238,7 @@ void main() {
         expect(name.middle, equals('Ben'));
         expect(name.last, 'Smith');
         expect(name.suffix, 'Ph.D');
+        expect(name.salutation, 'Mr Smith');
         expect(name.fullName(), 'Mr Smith John Ben Ph.D');
         expect(name.fullName(NameOrder.firstName), 'Mr John Ben Smith Ph.D');
         expect(name.birthName(), 'Smith John Ben');
@@ -344,9 +346,23 @@ void main() {
       test('NameBuilder', () {
         final names = [FirstName('John'), LastName('Smith')];
         final middles = [Name.middle('Ben'), Name.middle('Carl')];
+
         expect(NameBuilder.of(names).build().full, 'John Smith');
 
-        var builder = NameBuilder()
+        var builder = NameBuilder.use(
+          prebuild: () {},
+          postbuild: (n) => expect(n.full, 'John Carl Smith'),
+          preclear: (n) => expect(n.full, 'John Carl Smith'),
+          postclear: () {},
+        )
+          ..addAll(names)
+          ..add(middles[1])
+          ..build();
+        expect(builder.size, 3); // 3 name parts
+        expect(builder.prebuild, isA<VoidCallback>());
+        expect(builder.postclear, isA<VoidCallback>());
+
+        builder = NameBuilder()
           ..addAll(names)
           ..addFirst(middles[0]);
         expect(builder.build().full, 'John Ben Smith');
@@ -533,65 +549,64 @@ void main() {
         );
       });
     });
-  });
 
-  group('can be built with derivatives', () {
-    Config? config;
+    group('can be built with derivatives', () {
+      Config? config;
 
-    setUp(() => config = Config(name: 'misc'));
+      setUp(() => config = Config(name: 'misc'));
 
-    test('for basic nesting operations', () {
-      final namefully = Namefully('Jane Mari Doe', config: config);
-      var derivative = NameDerivative.of(namefully)..shorten();
-      expect(derivative.done().toString(), equals('Jane Doe'));
-      expect(derivative.isDone, equals(true));
-      expect(derivative.context.toString(), equals('Jane Doe'));
-      expect(derivative.toString(), endsWith('context[closed]: Jane Doe'));
-    });
+      test('for basic nesting operations', () {
+        final namefully = Namefully('Jane Mari Doe', config: config);
+        var derivative = NameDerivative.of(namefully)..shorten();
+        expect(derivative.done().toString(), equals('Jane Doe'));
+        expect(derivative.isDone, equals(true));
+        expect(derivative.context.toString(), equals('Jane Doe'));
+        expect(derivative.toString(), endsWith('context[closed]: Jane Doe'));
+      });
 
-    test('and roll back on demand', () {
-      final namefully = Namefully('Jane Mari Doe', config: config);
-      var derivative = namefully.derivative
-        ..lower() // 'jane mari doe'
-        ..flip() // 'doe mari jane'
-        ..shorten(); // 'doe jane'
+      test('and roll back on demand', () {
+        final namefully = Namefully('Jane Mari Doe', config: config);
+        var derivative = namefully.derivative
+          ..lower() // 'jane mari doe'
+          ..flip() // 'doe mari jane'
+          ..shorten(); // 'doe jane'
 
-      expect(derivative.context.toString(), equals('doe jane'));
+        expect(derivative.context.toString(), equals('doe jane'));
 
-      derivative
-        ..rollback() // back to 'doe mari joe'
-        ..rollback() // back to 'jane mari doe'
-        ..rollback() // back to 'Jane Mari Doe'
-        ..rollback() // last rollback is a no-op
-        ..close();
+        derivative
+          ..rollback() // back to 'doe mari joe'
+          ..rollback() // back to 'jane mari doe'
+          ..rollback() // back to 'Jane Mari Doe'
+          ..rollback() // last rollback is a no-op
+          ..close();
 
-      expect(derivative.context.toString(), equals('Jane Mari Doe'));
-    });
+        expect(derivative.context.toString(), equals('Jane Mari Doe'));
+      });
 
-    test('and broadcasts its name states', () {
-      var derivative = Namefully('Jane Mari Doe', config: config).derivative;
-      var stream = derivative.stream;
-      derivative
-        ..shorten()
-        ..flip()
-        ..byFirstName()
-        ..close();
+      test('and broadcasts its name states', () {
+        var derivative = Namefully('Jane Mari Doe', config: config).derivative;
+        var stream = derivative.stream;
+        derivative
+          ..shorten()
+          ..flip()
+          ..byFirstName()
+          ..close();
 
-      // ignore: no_leading_underscores_for_local_identifiers
-      _predicate(String expected) => predicate<Namefully>((value) {
-            expect(value.toString(), expected);
-            return true;
-          });
+        emitsValue(String expected) => predicate<Namefully>((value) {
+              expect(value.toString(), expected);
+              return true;
+            });
 
-      expect(
-          stream,
-          emitsInOrder([
-            _predicate('Jane Mari Doe'),
-            _predicate('Jane Doe'),
-            _predicate('Doe Jane'),
-            _predicate('Jane Doe'),
-            emitsDone,
-          ]));
+        expect(
+            stream,
+            emitsInOrder([
+              emitsValue('Jane Mari Doe'),
+              emitsValue('Jane Doe'),
+              emitsValue('Doe Jane'),
+              emitsValue('Jane Doe'),
+              emitsDone,
+            ]));
+      });
     });
   });
 

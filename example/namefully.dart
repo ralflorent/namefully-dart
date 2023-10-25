@@ -48,10 +48,10 @@ void main() {
 
 void exampleBuilder() {
   // Gives a simple name some super power.
-  final builder = NameBuilder.of([
+  final builder = NameBuilder.use(names: [
     FirstName('Thomas'),
     LastName('Edison'),
-  ]);
+  ], postbuild: (name) => print('built name: $name'));
 
   // Adds more names later on.
   builder.add(Name.middle('Alva'));

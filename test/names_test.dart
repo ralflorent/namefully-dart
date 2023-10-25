@@ -73,6 +73,7 @@ void main() {
       expect(firstName.toString(), equals('John'));
       expect(firstName.more, equals(['Ben', 'Carl']));
       expect(firstName.type, equals(Namon.firstName));
+      expect(firstName.length, equals(11));
     });
 
     test('.hasMore indicates if a first name has more than 1 name part', () {

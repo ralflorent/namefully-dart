@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'config.dart';
 import 'core.dart';
 import 'exception.dart';
 import 'types.dart';
@@ -28,7 +27,7 @@ import 'types.dart';
 /// the name: `Jane Ann Doe`.
 ///
 /// ```dart
-/// var derivative = NameDerivative('Jane Ann Doe', config: Config(name: 'builder'))
+/// var derivative = Namefully('Jane Ann Doe').derivative
 ///   ..stream.listen((d) => print('stream name: $d'))
 ///   ..shorten()     // stream name: 'Jane Doe'
 ///   ..upper()       // stream name: 'JANE DOE'
@@ -68,11 +67,7 @@ class NameDerivative {
     _streamer.sink.add(_context);
   }
 
-  /// Creates a name with distinguishable parts from a raw string content.
-  ///
-  /// An optional [Config]uration may be provided with specifics on how to treat
-  /// a full name during its course. By default, all name parts are validated
-  /// against some basic validation rules to avoid common runtime exceptions.
+  /// Creates name derivatives, starting from this first [instance].
   NameDerivative.of(Namefully instance) : this._(instance);
 
   @override

@@ -1,4 +1,10 @@
-# 0.2.0
+# 0.2.1
+
+- Apply minor improvements in code docs
+- Make `FirstName.more` and `LastName.mother` nullable `Name` objects instead of strings.
+- Add support for salutations (e.g., `Mr Smith`).
+
+## 0.2.0
 
 - Improve usability of `Config` (now accepts named args directly).
 - Upgrade package for Dart SDK 2.18
