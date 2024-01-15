@@ -152,6 +152,9 @@ class Namefully {
   /// The number of characters of the [birthName], including spaces.
   int get length => birth.length;
 
+  /// The number of name parts.
+  int get size => _fullName.size;
+
   /// The prefix part.
   String? get prefix => _fullName.prefix?.toString();
 
@@ -206,14 +209,7 @@ class Namefully {
   String toString() => full;
 
   /// Fetches the raw form of a [namon].
-  Object? operator [](Namon namon) {
-    if (namon == Namon.prefix) return _fullName.prefix;
-    if (namon == Namon.firstName) return _fullName.firstName;
-    if (namon == Namon.middleName) return _fullName.middleName;
-    if (namon == Namon.lastName) return _fullName.lastName;
-    if (namon == Namon.suffix) return _fullName.suffix;
-    return null;
-  }
+  Object? operator [](Namon namon) => _fullName[namon];
 
   /// Whether this name is equal to an[other] one from a raw-string perspective.
   bool equal(Namefully other) => toString() == other.toString();
@@ -596,8 +592,7 @@ class Namefully {
 
   /// Splits a [birthName] using a [separator].
   List<String> split([RegExp? separator]) {
-    separator ??= RegExp("[' -.]");
-    return birth.replaceAll(separator, ' ').split(' ');
+    return birth.replaceAll(separator ?? RegExp("[' -.]"), ' ').split(' ');
   }
 
   /// Joins the name parts of a [birthName] using a [separator].
@@ -605,13 +600,9 @@ class Namefully {
 
   /// Flips definitely the name order from the preset/current config.
   void flip() {
-    if (_config.orderedBy == NameOrder.firstName) {
-      _config.updateOrder(NameOrder.lastName);
-      print('The name order is now changed to: ${NameOrder.lastName.name}');
-    } else {
-      _config.updateOrder(NameOrder.firstName);
-      print('The name order is now changed to: ${NameOrder.firstName.name}');
-    }
+    _config.updateOrder(_config.orderedBy == NameOrder.firstName
+        ? NameOrder.lastName
+        : NameOrder.firstName);
   }
 
   /// Builds the core elements for name data.

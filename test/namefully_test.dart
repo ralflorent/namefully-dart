@@ -57,6 +57,17 @@ void main() {
             }));
       });
 
+      test('.size returns the number of name parts', () {
+        expect(name.size, equals(5));
+        expect(
+          Namefully.of([
+            FirstName('John', ['Ben']),
+            LastName('Smith', 'Doe')
+          ]).size,
+          4,
+        );
+      });
+
       test('.parts returns an Iterable of Names', () {
         var names = name.parts;
         expect(names.length, equals(5));
@@ -141,7 +152,7 @@ void main() {
       test('creates a full name', () {
         expect(name.prefix, 'Mr');
         expect(name.first, 'John');
-        expect(name.middle, equals('Ben'));
+        expect(name.middle, 'Ben');
         expect(name.last, 'Smith');
         expect(name.suffix, 'Ph.D');
         expect(name.birth, 'John Ben Smith');

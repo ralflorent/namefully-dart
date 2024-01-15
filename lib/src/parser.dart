@@ -126,23 +126,7 @@ class ListStringParser extends Parser<List<String>> {
 class JsonNameParser extends Parser<Map<String, String>> {
   const JsonNameParser(super.names);
 
-  @override
-  FullName parse({Config? options}) {
-    // Given this setting;
-    final config = Config.merge(options);
-
-    // Try to validate first;
-    if (config.bypass) {
-      NamaValidator().validateKeys(_asNama());
-    } else {
-      NamaValidator().validate(_asNama());
-    }
-
-    // Then create a [FullName] from json.
-    return FullName.fromJson(raw, config: config);
-  }
-
-  Map<Namon, String> _asNama() {
+  Map<Namon, String> get _asNama {
     return raw.map<Namon, String>((key, value) {
       Namon? namon = Namon.cast(key);
       if (namon == null) {
@@ -153,6 +137,22 @@ class JsonNameParser extends Parser<Map<String, String>> {
       }
       return MapEntry(namon, value);
     });
+  }
+
+  @override
+  FullName parse({Config? options}) {
+    // Given this setting;
+    final config = Config.merge(options);
+
+    // Try to validate first;
+    if (config.bypass) {
+      NamaValidator().validateKeys(_asNama);
+    } else {
+      NamaValidator().validate(_asNama);
+    }
+
+    // Then create a [FullName] from json.
+    return FullName.fromJson(raw, config: config);
   }
 }
 

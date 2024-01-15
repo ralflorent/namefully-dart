@@ -1,7 +1,8 @@
 # 0.2.1
 
 - Apply minor improvements in code docs
-- Make `FirstName.more` and `LastName.mother` nullable `Name` objects instead of strings.
+- `NameBuilder` now supports lifecycle hooks
+- Make `FirstName.more` and `LastName.mother` nullable `Name` objects instead of strings
 - Add support for salutations (e.g., `Mr Smith`).
 
 ## 0.2.0

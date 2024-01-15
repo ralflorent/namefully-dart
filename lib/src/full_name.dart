@@ -42,9 +42,9 @@ class FullName {
   FullName({Config? config}) : _config = config ?? Config();
 
   /// Creates a full name json-like string content.
-  FullName.fromJson(Map<String, String> jsonName, {Config? config})
+  FullName.fromJson(Map<String, String> name, {Config? config})
       : _config = config ?? Config() {
-    _parseJsonName(jsonName);
+    _parseJsonName(name);
   }
 
   /// Creates a full name from raw string content.
@@ -105,6 +105,19 @@ class FullName {
     _suffix = name;
   }
 
+  /// Returns the number of set names.
+  int get size => toIterable(flat: true).length;
+
+  /// Fetches the raw form of a [namon].
+  Object? operator [](Namon namon) {
+    if (namon == Namon.prefix) return _prefix;
+    if (namon == Namon.firstName) return _firstName;
+    if (namon == Namon.middleName) return _middleName;
+    if (namon == Namon.lastName) return _lastName;
+    if (namon == Namon.suffix) return _suffix;
+    return null;
+  }
+
   /// Returns true if a [namon] has been set.
   bool has(Namon namon) {
     if (namon == Namon.prefix) return prefix != null;
@@ -113,11 +126,17 @@ class FullName {
   }
 
   /// Returns an [Iterable] of existing [Name]s.
-  Iterable<Name> toIterable() sync* {
+  Iterable<Name> toIterable({bool flat = false}) sync* {
     if (prefix != null) yield prefix!;
-    yield firstName;
-    yield* middleName;
-    yield lastName;
+    if (flat) {
+      yield* firstName.asNames;
+      yield* middleName;
+      yield* lastName.asNames;
+    } else {
+      yield firstName;
+      yield* middleName;
+      yield lastName;
+    }
     if (suffix != null) yield suffix!;
   }
 
