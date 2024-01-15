@@ -1,4 +1,4 @@
-.PHONY: help clean format test report api prepublish
+.PHONY: help usage clean format test report docs prepublish
 
 help: 		## This help dialog.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
@@ -16,6 +16,11 @@ format: 	## Formats the codebase.
 	@echo '>> 📂 Formatting codebase...'
 	@dart format lib
 	@dart analyze || (echo '▓▓ Lint errors ▓▓'; exit 1)
+
+usage: 		## Runs the example.
+	@echo '>> 🚀 Running example/namefully.dart...'
+	@dart example/namefully.dart
+	@echo '>> 🎉 Done!'
 
 test: 		## Runs unit tests.
 	@echo '>> 🧪 Running unit tests...'
@@ -44,8 +49,8 @@ report: 	## Reports on test coverage.
 		--output-directory coverage/html \
 		--show-details || (echo '▓▓ No html content generated ▓▓'; exit 1)
 
-api: 		## Generates API documentation.
-	@echo '>> Generating API docs...'
+docs: 		## Generates API documentation.
+	@echo '>> 📖 Generating API docs...'
 	@dartdoc || (echo '▓▓ No docs content generated ▓▓'; exit 1)
 
 prepublish: format test report

@@ -118,12 +118,7 @@ class FirstName extends Name {
   bool get hasMore => _more.isNotEmpty;
 
   @override
-  int get length {
-    return super.length +
-        (hasMore
-            ? (_more.map((n) => n.value).reduce((acc, n) => acc + n)).length
-            : 0);
-  }
+  int get length => super.length + _more.map((n) => n.value).join().length;
 
   /// Returns a combined version of the [value] and [more] if any.
   List<Name> get asNames => [Name.first(value), if (hasMore) ..._more];

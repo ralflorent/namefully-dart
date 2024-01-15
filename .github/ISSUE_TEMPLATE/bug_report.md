@@ -10,29 +10,26 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
+**Steps to reproduce**
 Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+
+1. Use this name '...'
+2. Include this config '....'
+3. Call this function or method '....'
+4. See error details in '...'
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Supporting details**
+If applicable, add screenshots, examples or error logs to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Dev environment (please complete the following information):**
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+- Platform: [e.g. Dart VM, Flutter]
+- OS: [e.g. Windows, Linux, macOS]
+- SDK: [e.g. Dart 2.12.0, Flutter 2.0.0]
+- Version: [e.g. 0.2.0-dev.3]
 
 **Additional context**
 Add any other context about the problem here.

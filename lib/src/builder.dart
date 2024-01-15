@@ -20,18 +20,12 @@ import 'validator.dart';
 /// Other operations such as adding, removing, clearing content are also allowed
 /// at any point during the build.
 class NameBuilder extends _Builder<Name, Namefully> {
-  Namefully? _context;
-  final VoidCallback? prebuild;
-  final Callback<Namefully, void>? postbuild;
-  final Callback<Namefully, void>? preclear;
-  final VoidCallback? postclear;
-
   NameBuilder._(
     Iterable<Name> names, {
-    this.prebuild,
-    this.postbuild,
-    this.preclear,
-    this.postclear,
+    super.prebuild,
+    super.postbuild,
+    super.preclear,
+    super.postclear,
   }) {
     addAll(names);
   }
@@ -66,26 +60,40 @@ class NameBuilder extends _Builder<Name, Namefully> {
     prebuild?.call();
     final names = _queue.toList();
     ListNameValidator().validate(names);
-    _context = Namefully.of(names, config: config);
-    postbuild?.call(_context!);
-    return _context!;
+    _instance = Namefully.of(names, config: config);
+    postbuild?.call(_instance!);
+    return _instance!;
   }
-
-  /// Clears the builder.
-  @override
-  void clear() {
-    preclear?.call(_context!);
-    super.clear();
-    postclear?.call();
-    _context = null;
-  }
-
-  int get size => _queue.length;
 }
 
 /// A generic builder.
 abstract class _Builder<T, I> {
+  /// A callback that is called before building the desired [I]nstance.
+  final VoidCallback? prebuild;
+
+  /// A callback that is called after building the desired [I]nstance.
+  final Callback<I, void>? postbuild;
+
+  /// A callback that is called before clearing the builder.
+  final Callback<I, void>? preclear;
+
+  /// A callback that is called after clearing the builder.
+  final VoidCallback? postclear;
+
   final Queue<T> _queue = Queue<T>();
+
+  _Builder({
+    this.prebuild,
+    this.postbuild,
+    this.preclear,
+    this.postclear,
+  });
+
+  /// The current built instance.
+  I? _instance;
+
+  /// The current size of the builder.
+  int get size => _queue.length;
 
   /// Removes and returns the first element of this queue.
   ///
@@ -127,7 +135,12 @@ abstract class _Builder<T, I> {
   void retainWhere(Callback<T, bool> test) => _queue.retainWhere(test);
 
   /// Removes all elements in the queue. The size of the queue becomes zero.
-  void clear() => _queue.clear();
+  void clear() {
+    if (_instance != null) preclear?.call(_instance as I);
+    _queue.clear();
+    postclear?.call();
+    _instance = null;
+  }
 
   /// Builds the desired [I]nstance.
   I build();
